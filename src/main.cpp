@@ -1,19 +1,24 @@
+#include <chrono>
 #include <SDL2/SDL.h>
+#include "Game.hpp"
 
-int main(int argc, char *argv[]) {
-    SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Window* window = SDL_CreateWindow("Endeavour", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
+double frameTime = 1000.0 / 60.0;
+double execTime = 0;
 
-    if (window == NULL) {
-        // In the case that the window could not be made...
-        printf("Could not create window: %s\n", SDL_GetError());
-        return 1;
+int main(int argc, char *argv[])
+{
+    Game game = Game("Endeavour: game with a stupid title", 800, 600, false);
+    while (Game::running)
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        game.handleEvents();
+        game.update();
+        game.render();
+        auto end = std::chrono::high_resolution_clock::now();
+
+        execTime = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+        SDL_Delay(std::max<int>(0, std::round(frameTime - execTime)));
     }
-
-    SDL_Delay(3000);
-
-    SDL_DestroyWindow(window);
-
-    SDL_Quit();
+    game.clean();
     return 0;
 }
