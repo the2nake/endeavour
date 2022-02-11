@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <SDL2/SDL.h>
+#include "SDL.h"
 
 #include "Player.hpp"
 // Game should only be initialised once

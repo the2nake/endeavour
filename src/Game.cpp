@@ -2,8 +2,8 @@
 #include <iostream>
 #include <string>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include "SDL.h"
+#include "SDL_image.h"
 
 #include "Game.hpp"
 
@@ -83,11 +83,14 @@ void Game::handleEvents()
         default:
             break;
         }
+
+        player.handleEvent(event);
     }
 }
 
 void Game::update()
 {
+    // player.update();
 }
 
 void Game::render()

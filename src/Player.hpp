@@ -1,10 +1,9 @@
 #pragma once
+
 #include <string>
 #include <unordered_map>
-#include <SDL2/SDL.h>
-
-typedef void (*playerAction)(void);
-typedef std::unordered_map<int, playerAction> keybindMap;
+#include <functional>
+#include "SDL.h"
 
 class Player
 {
@@ -18,11 +17,24 @@ public:
 
     void clean();
 
+    using keybindMap = std::unordered_map<int, void (Player::*)()>;
     keybindMap keybinds;
+    
+    void resetDefaultKeybind(std::string alias = "");
 
+    void moveRight();
+    void moveLeft();
+    void moveDown();
+    void moveUp();
     // TODO: https://stackoverflow.com/questions/2136998/using-a-stl-map-of-function-pointers, for keybinds
+
+    SDL_Texture* getTexture() {return texture;}
+    int getX() {return x;}
+    int getY() {return y;}
 
 private:
     SDL_Texture *texture;
     int x = 0, y = 0;
 };
+
+typedef void (Player::*playerAction)();

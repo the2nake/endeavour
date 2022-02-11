@@ -1,5 +1,5 @@
 #include <chrono>
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #include "Game.hpp"
 
 double frameTime = 1000.0 / 60.0;
