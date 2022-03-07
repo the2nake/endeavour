@@ -1,3 +1,0 @@
-/home/thuong-vivobook-s15/Documents/dev/endeavour/CMakeFiles/Endeavour.dir
-/home/thuong-vivobook-s15/Documents/dev/endeavour/CMakeFiles/edit_cache.dir
-/home/thuong-vivobook-s15/Documents/dev/endeavour/CMakeFiles/rebuild_cache.dir
