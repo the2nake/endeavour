@@ -4,7 +4,7 @@ project(Endeavour)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/vendor/cmake_modules/)
 
 add_executable(Endeavour src/main.cpp src/Game.cpp src/Entity.cpp src/Player.cpp src/TextureManager.cpp src/AI.cpp)
 
