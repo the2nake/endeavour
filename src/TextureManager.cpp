@@ -8,15 +8,17 @@
 
 #include "Game.hpp"
 
-SDL_Texture *TextureManager::loadTexture(std::string pathToTexture, SDL_Rect *cropRect)
+SDL_Texture *TextureManager::loadTexture(std::string pathToTexture, SDL_Rect *cropRect, SDL_Rect* outDim)
 {
     SDL_Texture *croppedTexture;
     if (std::filesystem::exists(pathToTexture.c_str()))
     {
         SDL_Surface *sourceSurface = IMG_Load(pathToTexture.c_str());
         SDL_Texture *sourceTexture = SDL_CreateTextureFromSurface(Game::renderer, sourceSurface);
-        if (cropRect != nullptr)
+        if (outDim != nullptr)
         {
+            croppedTexture = SDL_CreateTexture(Game::renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, outDim->w, outDim->h);
+        } else if (cropRect != nullptr) {
             croppedTexture = SDL_CreateTexture(Game::renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, cropRect->w, cropRect->h);
         }
         else

@@ -2,5 +2,5 @@
 
 cd build
 cmake ..
-cmake --build .
+cmake --build . -j 10
 cd ..

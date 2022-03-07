@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <unordered_map>
 #include "SDL.h"
 
 #include "Player.hpp"
@@ -15,10 +16,13 @@ public:
 
     void clean();
 
+    static std::unordered_map<int, bool> keyIsDownMap;
+
     static Player player;
 
     static SDL_Window* window;
     static SDL_Renderer* renderer;
     static bool running;
+    static double targetFrameTime;
 private:
 };

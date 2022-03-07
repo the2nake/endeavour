@@ -1,15 +1,21 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 #include "SDL.h"
 #include "SDL_image.h"
 
 #include "Game.hpp"
+#include "TextureManager.hpp"
+#include "Player.hpp"
 
 bool Game::running = true;
 SDL_Window *Game::window = nullptr;
 SDL_Renderer *Game::renderer = nullptr;
+double Game::targetFrameTime = 1000.0 / 60.0;
+
+std::unordered_map<int, bool> Game::keyIsDownMap;
 
 Player Game::player;
 
@@ -61,17 +67,17 @@ Game::Game(std::string windowTitle, int w, int h, bool fullscreen)
     initSDLImage(IMG_INIT_PNG | IMG_INIT_JPG);
     createWindow(windowTitle, w, h, fullscreen);
     createRendererForWindow(Game::window);
-    SDL_Rect cropRect;
-    cropRect.x = 0;
-    cropRect.y = 0;
-    cropRect.w = 10;
-    cropRect.h = 10;
-    player.init(1, 1, "res/tex/playerTexture.png", cropRect);
+    SDL_Rect cropRect{4*8, 0, 8, 8};
+    SDL_Rect outDim{0, 0, 32, 32};
+    player.init(16, 16, TextureManager::loadTexture("res/tex/tilemap_proto.png", &cropRect, &outDim));
 }
 
 void Game::handleEvents()
 {
     SDL_Event event;
+    std::vector<int> registeredKeys;
+    bool keyIsRegistered = false;
+
     while (SDL_PollEvent(&event))
     {
         switch (event.type)
@@ -79,7 +85,12 @@ void Game::handleEvents()
         case SDL_QUIT:
             Game::running = false;
             break;
-
+        case SDL_KEYDOWN:
+            Game::keyIsDownMap.insert_or_assign(event.key.keysym.sym, true);
+            break;
+        case SDL_KEYUP:
+            Game::keyIsDownMap.insert_or_assign(event.key.keysym.sym, false);
+            break;
         default:
             break;
         }
@@ -90,7 +101,7 @@ void Game::handleEvents()
 
 void Game::update()
 {
-    // player.update();
+    player.update();
 }
 
 void Game::render()

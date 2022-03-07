@@ -1,5 +1,6 @@
 #include "Player.hpp"
 
+#include <iostream>
 #include <string>
 #include "SDL.h"
 
@@ -7,61 +8,139 @@
 #include "Game.hpp"
 
 std::string RESET_ALL_KEYBINDS = "";
+std::vector<int> Player::registeredKeys;
 
-void Player::init(int x, int y, std::string pathToTexture, SDL_Rect cropRect)
+void Player::init(int x, int y, SDL_Texture *texture)
 {
-    this->texture = TextureManager::loadTexture(pathToTexture, &cropRect);
+    this->texture = texture;
     this->x = x;
     this->y = y;
 
-    resetDefaultKeybind(RESET_ALL_KEYBINDS);
+    SDL_QueryTexture(texture, nullptr, nullptr, &texw, &texh);
+
+    resetDefaultKeybind(RESET_ALL_KEYBINDS); // should replace with reading from text file and if file doesn't exist resetting the keybinds and saving them
+    initAliasMap();
 }
 
-playerAction getFunctionOf(std::string alias) {
-    // returns the function pointer referred to by an alias, hardcoded or use shared library to import references?
-    return nullptr;
+void Player::initAliasMap() {
+    aliasFunctionMap.clear();
+    aliasFunctionMap.insert_or_assign("moveUp", &Player::moveUp);
+    aliasFunctionMap.insert_or_assign("moveDown", &Player::moveDown);
+    aliasFunctionMap.insert_or_assign("moveRight", &Player::moveRight);
+    aliasFunctionMap.insert_or_assign("moveLeft", &Player::moveLeft);
 }
 
-int getDefaultKeybind(std::string alias) {
+void Player::resetDefaultKeybind(std::string alias)
+{
+    if (alias != RESET_ALL_KEYBINDS)
+    {
+        int key = getDefaultKey(alias);
+        if (key != -1)
+        {
+            keybinds.insert_or_assign(key, alias);
+        }
+    }
+    else
+    {
+        keybinds.clear();
+        // set the default keybinds for ALL of the keys
+        keybinds.insert_or_assign(SDLK_w, "moveUp");
+        keybinds.insert_or_assign(SDLK_s, "moveDown");
+        keybinds.insert_or_assign(SDLK_a, "moveLeft");
+        keybinds.insert_or_assign(SDLK_d, "moveRight");
+
+        keybinds.insert_or_assign(SDLK_UP, "moveUp");
+        keybinds.insert_or_assign(SDLK_DOWN, "moveDown");
+        keybinds.insert_or_assign(SDLK_LEFT, "moveLeft");
+        keybinds.insert_or_assign(SDLK_RIGHT, "moveRight");
+    }
+}
+
+int Player::getDefaultKey(std::string alias)
+{
     // returns the default key for an alias for a function pointer
     return -1;
 }
 
-void Player::resetDefaultKeybind(std::string alias) {
-    if (alias != RESET_ALL_KEYBINDS) {
-        int key = getDefaultKeybind(alias);
-        if (key != -1) {
-            keybinds.insert_or_assign(key, getFunctionOf(alias));
-        }
-    } else {
-        keybinds.clear();
-        // set the default keybinds for ALL of the keys
-        keybinds.insert_or_assign(SDLK_w, &Player::moveUp);
-        keybinds.insert_or_assign(SDLK_s, &Player::moveDown);
-        keybinds.insert_or_assign(SDLK_a, &Player::moveLeft);
-        keybinds.insert_or_assign(SDLK_d, &Player::moveRight);
+Player::playerAction Player::getFunctionOf(std::string alias)
+{
+    auto it = aliasFunctionMap.find(alias);
+    if (it != aliasFunctionMap.end()) {
+        return it->second;
     }
+    return nullptr;
 }
 
-void Player::moveRight() { x += 10; }
-void Player::moveLeft() { x -= 10; }
-void Player::moveDown() { y += 10; }
-void Player::moveUp() { y -= 10; }
+void Player::moveRight() { x += 1; }
+void Player::moveLeft() { x -= 1; }
+void Player::moveDown() { y += 1; }
+void Player::moveUp() { y -= 1; }
 
 void Player::handleEvent(SDL_Event event)
 {
-    keybindMap::iterator iter;
     switch (event.type)
     {
-    case SDL_KEYDOWN:
-        iter = keybinds.find(event.key.keysym.sym);
-        if (iter != keybinds.end())
-        {
-            (this->*(iter->second))();
-        }
-        break;
     default:
         break;
+    }
+}
+
+void Player::update()
+{
+    registeredKeys.clear();
+    for (std::unordered_map<int, std::string>::iterator it = Game::player.keybinds.begin(); it != Game::player.keybinds.end(); it++)
+    {
+        registeredKeys.push_back(it->first);
+    }
+
+    // cooldowns under the targetFrameTime will not be noticeable
+    std::unordered_map<std::string, double>::iterator defaultCooldownIter;
+    defaultCooldowns.insert_or_assign("moveUp", 10.0);
+    defaultCooldowns.insert_or_assign("moveDown", 10.0);
+    defaultCooldowns.insert_or_assign("moveLeft", 10.0);
+    defaultCooldowns.insert_or_assign("moveRight", 10.0);
+
+    for (auto &it : currentCooldowns)
+    {
+        it.second -= Game::targetFrameTime;
+    }
+
+    for (int i = 0; i < registeredKeys.size(); i++)
+    {
+        auto checkPressIter = Game::keyIsDownMap.find(registeredKeys[i]);
+        if (checkPressIter == Game::keyIsDownMap.end())
+        {
+            continue;
+        }
+
+        bool keyIsDown = checkPressIter->second;
+        if (!keyIsDown)
+        {
+            continue;
+        }
+
+        auto boundActionIter = keybinds.find(registeredKeys[i]);
+        if (boundActionIter == keybinds.end())
+        {
+            continue;
+        }
+
+        auto currentCooldownIter = currentCooldowns.find(boundActionIter->second);
+        if (currentCooldownIter == currentCooldowns.end() || (currentCooldownIter != currentCooldowns.end() && currentCooldownIter->second <= 0.0))
+        {
+            // execute
+            if (getFunctionOf(boundActionIter->second) != nullptr)
+            {
+                (this->*(getFunctionOf(boundActionIter->second)))();
+            }
+            // deal with cooldown
+            auto defaultCooldownIter = defaultCooldowns.find(boundActionIter->second);
+            if (defaultCooldownIter != defaultCooldowns.end()) {
+                currentCooldowns.insert_or_assign(boundActionIter->second, defaultCooldownIter->second);
+            } else {
+                currentCooldowns.insert_or_assign(boundActionIter->second, 1.0);
+            }
+        }
     }
 }
 
@@ -69,13 +148,7 @@ void Player::render()
 {
     if (texture != nullptr)
     {
-        int texW = 0, texH = 0;
-        SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
-        SDL_Rect dst;
-        dst.x = x;
-        dst.y = y;
-        dst.w = texW;
-        dst.h = texH;
+        SDL_Rect dst{x, y, texw, texh};
         SDL_RenderCopy(Game::renderer, texture, nullptr, &dst);
     }
 }
