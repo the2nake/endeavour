@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
     double execTime = 9;
-    Game game = Game("Endeavour: game with a stupid title", 800, 600, false);
+    Game game = Game("Endeavour: game with a stupid title", 800, 600, false, true);
     while (Game::running)
     {
         auto start = std::chrono::high_resolution_clock::now();

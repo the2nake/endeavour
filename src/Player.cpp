@@ -10,11 +10,12 @@
 std::string RESET_ALL_KEYBINDS = "";
 std::vector<int> Player::registeredKeys;
 
-void Player::init(int x, int y, SDL_Texture *texture)
+void Player::init(int x, int y, std::string name, SDL_Texture *texture)
 {
     this->texture = texture;
     this->x = x;
     this->y = y;
+    this->name = name;
 
     SDL_QueryTexture(texture, nullptr, nullptr, &texw, &texh);
 
@@ -22,7 +23,8 @@ void Player::init(int x, int y, SDL_Texture *texture)
     initAliasMap();
 }
 
-void Player::initAliasMap() {
+void Player::initAliasMap()
+{
     aliasFunctionMap.clear();
     aliasFunctionMap.insert_or_assign("moveUp", &Player::moveUp);
     aliasFunctionMap.insert_or_assign("moveDown", &Player::moveDown);
@@ -65,7 +67,8 @@ int Player::getDefaultKey(std::string alias)
 Player::playerAction Player::getFunctionOf(std::string alias)
 {
     auto it = aliasFunctionMap.find(alias);
-    if (it != aliasFunctionMap.end()) {
+    if (it != aliasFunctionMap.end())
+    {
         return it->second;
     }
     return nullptr;
@@ -135,9 +138,12 @@ void Player::update()
             }
             // deal with cooldown
             auto defaultCooldownIter = defaultCooldowns.find(boundActionIter->second);
-            if (defaultCooldownIter != defaultCooldowns.end()) {
+            if (defaultCooldownIter != defaultCooldowns.end())
+            {
                 currentCooldowns.insert_or_assign(boundActionIter->second, defaultCooldownIter->second);
-            } else {
+            }
+            else
+            {
                 currentCooldowns.insert_or_assign(boundActionIter->second, 1.0);
             }
         }

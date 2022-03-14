@@ -38,26 +38,13 @@ struct GridLocation
     int x, y;
 };
 
-bool operator==(GridLocation a, GridLocation b)
-{
-    return a.x == b.x && a.y == b.y;
-}
+bool operator==(GridLocation a, GridLocation b);
 
-bool operator!=(GridLocation a, GridLocation b)
-{
-    return !(a == b);
-}
+bool operator!=(GridLocation a, GridLocation b);
 
-bool operator<(GridLocation a, GridLocation b)
-{
-    return std::tie(a.x, a.y) < std::tie(b.x, b.y);
-}
+bool operator<(GridLocation a, GridLocation b);
 
-std::basic_iostream<char>::basic_ostream &operator<<(std::basic_iostream<char>::basic_ostream &out, const GridLocation &loc)
-{
-    out << '(' << loc.x << ',' << loc.y << ')';
-    return out;
-}
+std::basic_iostream<char>::basic_ostream &operator<<(std::basic_iostream<char>::basic_ostream &out, const GridLocation &loc);
 
 namespace std
 {
@@ -88,7 +75,7 @@ struct SquareGrid
         return 0 <= id.x && id.x < width && 0 <= id.y && id.y < height;
     }
 
-    bool passable(GridLocation id) const
+    bool traversable(GridLocation id) const
     {
         return walls.find(id) == walls.end();
     }
@@ -100,7 +87,7 @@ struct SquareGrid
         for (GridLocation dir : DIRS)
         {
             GridLocation next{id.x + dir.x, id.y + dir.y};
-            if (in_bounds(next) && passable(next))
+            if (in_bounds(next) && traversable(next))
             {
                 results.push_back(next);
             }
@@ -109,14 +96,6 @@ struct SquareGrid
         return results;
     }
 };
-
-std::array<GridLocation, 8> SquareGrid::DIRS = {
-    /* East, West, North, South */
-    GridLocation{1, 0}, GridLocation{-1, 0},
-    GridLocation{0, -1}, GridLocation{0, 1},
-    /* SE, NE, SW, NW */
-    GridLocation{1, 1}, GridLocation{1, -1},
-    GridLocation{-1, 1}, GridLocation{-1, -1}};
 
 struct GridWithWeights : SquareGrid
 {

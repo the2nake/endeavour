@@ -8,7 +8,7 @@
 
 class Game {
 public:
-    Game(std::string windowTitle, int w, int h, bool fullscreen);
+    Game(std::string windowTitle, int w, int h, bool fullscreen = false, bool shown = true);
     
     void handleEvents();
     void update();

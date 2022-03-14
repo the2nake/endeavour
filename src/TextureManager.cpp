@@ -1,24 +1,43 @@
 #include "TextureManager.hpp"
 
-#include <iostream>
-#include <string>
-#include <filesystem>
+#include "Game.hpp"
+
 #include "SDL.h"
 #include "SDL_image.h"
 
-#include "Game.hpp"
+#include <iostream>
+#include <string>
+#include <filesystem>
+#include <map>
 
-SDL_Texture *TextureManager::loadTexture(std::string pathToTexture, SDL_Rect *cropRect, SDL_Rect* outDim)
+std::map<std::string, SDL_Texture *> TextureManager::cachedTextures;
+bool TextureManager::textureCacheUsed = false; // used for testing
+
+SDL_Texture *TextureManager::loadTexture(std::string pathToTexture, SDL_Rect *cropRect, SDL_Rect *outDim)
 {
-    SDL_Texture *croppedTexture;
+    SDL_Texture *croppedTexture = nullptr;
+    SDL_Surface *sourceSurface = nullptr;
+    SDL_Texture *sourceTexture = nullptr;
     if (std::filesystem::exists(pathToTexture.c_str()))
     {
-        SDL_Surface *sourceSurface = IMG_Load(pathToTexture.c_str());
-        SDL_Texture *sourceTexture = SDL_CreateTextureFromSurface(Game::renderer, sourceSurface);
+        if (cachedTextures.find(pathToTexture) != cachedTextures.end())
+        {
+            sourceTexture = cachedTextures[pathToTexture];
+            textureCacheUsed = true;
+        }
+        else
+        {
+            sourceSurface = IMG_Load(pathToTexture.c_str());
+            sourceTexture = SDL_CreateTextureFromSurface(Game::renderer, sourceSurface);
+            cachedTextures.insert_or_assign(pathToTexture, sourceTexture);
+        }
+
         if (outDim != nullptr)
         {
             croppedTexture = SDL_CreateTexture(Game::renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, outDim->w, outDim->h);
-        } else if (cropRect != nullptr) {
+        }
+        else if (cropRect != nullptr)
+        {
             croppedTexture = SDL_CreateTexture(Game::renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, cropRect->w, cropRect->h);
         }
         else
@@ -34,7 +53,6 @@ SDL_Texture *TextureManager::loadTexture(std::string pathToTexture, SDL_Rect *cr
         SDL_RenderClear(Game::renderer);
         SDL_RenderCopy(Game::renderer, sourceTexture, cropRect, nullptr);
 
-        SDL_DestroyTexture(sourceTexture);
         SDL_FreeSurface(sourceSurface);
         SDL_SetRenderTarget(Game::renderer, nullptr);
     }
@@ -44,4 +62,16 @@ SDL_Texture *TextureManager::loadTexture(std::string pathToTexture, SDL_Rect *cr
     }
 
     return croppedTexture;
+}
+
+SDL_Texture *TextureManager::retriveCachedTexture(std::string pathToTexture)
+{
+    if (cachedTextures.find(pathToTexture) != cachedTextures.end())
+    {
+        return cachedTextures[pathToTexture];
+    }
+    else
+    {
+        return nullptr;
+    }
 }

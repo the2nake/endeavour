@@ -9,6 +9,7 @@
 #include "Game.hpp"
 #include "TextureManager.hpp"
 #include "Player.hpp"
+#include "Level.hpp"
 
 bool Game::running = true;
 SDL_Window *Game::window = nullptr;
@@ -37,9 +38,9 @@ void initSDLImage(int flags)
     }
 }
 
-void createWindow(std::string windowTitle, int w, int h, bool fullscreen)
+void createWindow(std::string windowTitle, int w, int h, bool fullscreen, bool shown)
 {
-    Game::window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | fullscreen);
+    Game::window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | (shown ? SDL_WINDOW_SHOWN : 0));
     if (Game::window == nullptr)
     {
         Game::running = false;
@@ -61,15 +62,13 @@ void createRendererForWindow(SDL_Window *window)
     }
 }
 
-Game::Game(std::string windowTitle, int w, int h, bool fullscreen)
+Game::Game(std::string windowTitle, int w, int h, bool fullscreen, bool shown)
 {
     initSDL();
     initSDLImage(IMG_INIT_PNG | IMG_INIT_JPG);
-    createWindow(windowTitle, w, h, fullscreen);
+    createWindow(windowTitle, w, h, fullscreen, shown);
     createRendererForWindow(Game::window);
-    SDL_Rect cropRect{4*8, 0, 8, 8};
-    SDL_Rect outDim{0, 0, 32, 32};
-    player.init(16, 16, TextureManager::loadTexture("res/tex/tilemap_proto.png", &cropRect, &outDim));
+    Level::loadPlayerData("Mark", "save_1");
 }
 
 void Game::handleEvents()
@@ -116,5 +115,8 @@ void Game::clean()
 {
     SDL_DestroyWindow(Game::window);
     SDL_DestroyRenderer(Game::renderer);
+
+    player.clean();
+
     SDL_Quit();
 }

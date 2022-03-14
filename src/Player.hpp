@@ -11,7 +11,7 @@ class Player
 {
 public:
     Player() {}
-    void init(int x, int y, SDL_Texture* texture);
+    void init(int x, int y, std::string name, SDL_Texture* texture);
 
     void handleEvent(SDL_Event event);
     void update();
@@ -40,11 +40,13 @@ public:
     SDL_Texture* getTexture() {return texture;}
     int getX() {return x;}
     int getY() {return y;}
+    std::string getName() {return name;}
 
 private:
     SDL_Texture *texture;
     int x = 0, y = 0;
     int texw = 0, texh = 0;
+    std::string name;
 };
 
 typedef void (Player::*playerAction)();
