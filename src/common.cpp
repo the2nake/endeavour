@@ -3,6 +3,9 @@
 #include "SDL.h"
 
 #include <string>
+#include <algorithm>
+#include <cctype>
+#include <locale>
 
 void splitString(std::vector<std::string> &container, std::string s, std::string delim)
 {
@@ -16,6 +19,12 @@ void splitString(std::vector<std::string> &container, std::string s, std::string
         container.push_back(token);
         s.erase(0, pos + delim.length());
     }
+}
+
+std::string trimWhitespace(std::string s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
+    return s;
 }
 
 SDL_Rect stringToSDLRect(std::string s, std::string delim) {

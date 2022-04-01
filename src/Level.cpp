@@ -11,39 +11,125 @@
 #include <iostream>
 #include <filesystem>
 
+int Level::gridW = 0;
+int Level::gridH = 0;
 std::vector<Entity *> Level::entities;
 std::unordered_map<std::string, Tile> Level::tileDataLookup;
 std::vector<std::vector<std::string>> Level::tiles;
 
 void Level::loadPlayerData(std::string playerName, std::string saveName)
 {
+    using namespace pugi;
+
     std::string pathToSave = "saves/" + playerName + "/" + saveName + "/player.xml";
     if (std::filesystem::exists(pathToSave.c_str()))
     {
-        pugi::xml_document playerFile;
-        pugi::xml_parse_result result = playerFile.load_file(pathToSave.c_str());
-        pugi::xml_node playerNode = playerFile.child("player");
+        xml_document playerFile;
+        xml_parse_result result = playerFile.load_file(pathToSave.c_str());
 
-        std::string loadedPlayerName = playerNode.attribute("name").as_string();
-        int playerX = playerNode.attribute("x").as_int();
-        int playerY = playerNode.attribute("y").as_int();
-        pugi::xml_node firstFrameNode = playerNode.child("animation").child("frame");
+        if (result)
+        {
+            xml_node playerNode = playerFile.child("player");
 
-        SDL_Rect cropRect = stringToSDLRect(firstFrameNode.attribute("crop").as_string());
-        SDL_Rect outRect = stringToSDLRect(firstFrameNode.attribute("outRect").as_string());
-        SDL_Texture *playerTexture = TextureManager::loadTexture(firstFrameNode.attribute("texture").as_string(), &cropRect, &outRect);
+            std::string loadedPlayerName = playerNode.attribute("name").as_string();
+            int playerX = playerNode.attribute("x").as_int();
+            int playerY = playerNode.attribute("y").as_int();
+            xml_node firstFrameNode = playerNode.child("animation").child("frame");
 
-        Game::player = Player();
-        Game::player.init(playerX, playerY, loadedPlayerName, playerTexture);
-    } else {
+            SDL_Rect cropRect = stringToSDLRect(firstFrameNode.attribute("crop").as_string());
+            SDL_Rect outRect = stringToSDLRect(firstFrameNode.attribute("outRect").as_string());
+            SDL_Texture *playerTexture = TextureManager::loadTexture(firstFrameNode.attribute("texture").as_string(), &cropRect, &outRect);
+
+            Game::player = Player();
+            Game::player.init(playerX, playerY, loadedPlayerName, playerTexture);
+        }
+        else
+        {
+            // problem loading save
+        }
+    }
+    else
+    {
         std::cout << "Save file at " + pathToSave + " could not be found." << std::endl;
     }
 }
 
-void Level::loadLevel(std::string pathToLevelData)
+void Level::loadLevel(std::string playerName, std::string saveName, std::string levelName)
 {
-    pugi::xml_document saveFile;
-    pugi::xml_parse_result result = saveFile.load_file(pathToLevelData.c_str());
+    using namespace pugi;
 
-    std::cout << saveFile.child("npc").attribute("name").value() << std::endl;
+    xml_document saveFile;
+    std::string pathToSave = "saves/" + playerName + "/" + saveName + "/" + levelName + ".xml";
+    xml_parse_result result = saveFile.load_file(pathToSave.c_str());
+    xml_node levelEl, tileIndexEl, backgroundEl;
+    Tile tempTile;
+    if (result)
+    {
+        Level::tiles.clear();
+
+        tileIndexEl = saveFile.child("tiles");
+
+        levelEl = saveFile.child("level");
+        backgroundEl = levelEl.child("background");
+
+        Level::gridW = levelEl.attribute("gridW").as_int();
+        Level::gridH = levelEl.attribute("gridH").as_int();
+
+        for (xml_node tileEl : tileIndexEl.children("tile"))
+        {
+            SDL_Rect src = stringToSDLRect(tileEl.attribute("cropRect").as_string());
+            SDL_Rect dst = stringToSDLRect(tileEl.attribute("outRect").as_string());
+            tempTile.texture = TextureManager::loadTexture(tileEl.attribute("src").as_string(), &src, &dst); // this should point to the same texture pointed to in TextureManager::loadedTextures
+                                                                                                             // if there are duplcicates
+            tempTile.movementCost = tileEl.attribute("movementCost").as_int();
+            Level::tileDataLookup.insert_or_assign(tileEl.attribute("name").as_string(), tempTile);
+        }
+
+        int rowNum = 0;
+        for (xml_node row : backgroundEl.children("row"))
+        {
+            tiles.push_back({});
+            std::string rowText = row.text().as_string();
+            std::vector<std::string> rowSplit = {};
+            splitString(rowSplit, rowText, ",");
+            for (std::string tileName : rowSplit)
+            {
+                Level::tiles[rowNum].push_back(trimWhitespace(tileName));
+            }
+            rowNum++;
+        }
+
+        // TODO: do the pathfinding weighting based on tile data
+        // TODO: natural textures? (flip, rotation based on a flag)
+        // How to create a formula for flipping and rotating? modular arithmetic?
+        // Invariant is the output (for the same map, the output must always be the same)
+    }
+    else
+    {
+        // problem loading save
+        // check if file exists
+        // check if file has proper syntax (single tags need to have </>, etc.)
+    }
+}
+
+void Level::renderBackground()
+{
+    // TODO: make sure Level::tiles contains data and is a rectangle grid before continuing
+    // SDL_RenderCopy(Game::renderer, Level::tileDataLookup.at("grass1").texture, nullptr, nullptr);
+    for (int y = 0; y < Level::tiles.size(); y++)
+    {
+        for (int x = 0; x < Level::tiles[0].size(); x++)
+        {
+            std::string tileName = Level::tiles[y][x];
+            if (Level::tileDataLookup.find(tileName) != tileDataLookup.end())
+            {
+                SDL_Rect dst{x * Level::gridW, y * Level::gridH, gridW, gridH};
+                SDL_RenderCopy(Game::renderer, Level::tileDataLookup.at(tileName).texture, nullptr, &dst);
+            }
+            else
+            {
+                // error; tile does not exist
+            }
+        }
+    }
 }

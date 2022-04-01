@@ -69,6 +69,7 @@ Game::Game(std::string windowTitle, int w, int h, bool fullscreen, bool shown)
     createWindow(windowTitle, w, h, fullscreen, shown);
     createRendererForWindow(Game::window);
     Level::loadPlayerData("Mark", "save_1");
+    Level::loadLevel("Mark", "save_1", "level1");
 }
 
 void Game::handleEvents()
@@ -106,6 +107,12 @@ void Game::update()
 void Game::render()
 {
     SDL_RenderClear(Game::renderer);
+
+    // render the background
+
+    Level::renderBackground();
+
+    // other renders
 
     player.render();
 
