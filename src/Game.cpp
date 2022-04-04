@@ -60,6 +60,7 @@ void createRendererForWindow(SDL_Window *window)
         Game::running = false;
         std::cout << "The renderer could not be created." << std::endl;
     }
+    SDL_SetRenderDrawBlendMode(Game::renderer, SDL_BLENDMODE_BLEND);
 }
 
 Game::Game(std::string windowTitle, int w, int h, bool fullscreen, bool shown)

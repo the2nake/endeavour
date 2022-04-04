@@ -7,8 +7,9 @@
 
 
 struct Tile {
-    SDL_Texture* texture;
-    int movementCost;
+    SDL_Texture* texture = nullptr;
+    int movementCost = 1;
+    bool naturalTexture = false;
 };
 
 class Level

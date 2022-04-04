@@ -82,6 +82,7 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
             tempTile.texture = TextureManager::loadTexture(tileEl.attribute("src").as_string(), &src, &dst); // this should point to the same texture pointed to in TextureManager::loadedTextures
                                                                                                              // if there are duplcicates
             tempTile.movementCost = tileEl.attribute("movementCost").as_int();
+            tempTile.naturalTexture = tileEl.attribute("naturalTexture").as_bool();
             Level::tileDataLookup.insert_or_assign(tileEl.attribute("name").as_string(), tempTile);
         }
 
@@ -100,9 +101,6 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
         }
 
         // TODO: do the pathfinding weighting based on tile data
-        // TODO: natural textures? (flip, rotation based on a flag)
-        // How to create a formula for flipping and rotating? modular arithmetic?
-        // Invariant is the output (for the same map, the output must always be the same)
     }
     else
     {
@@ -115,7 +113,12 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
 void Level::renderBackground()
 {
     // TODO: make sure Level::tiles contains data and is a rectangle grid before continuing
-    // SDL_RenderCopy(Game::renderer, Level::tileDataLookup.at("grass1").texture, nullptr, nullptr);
+    if (Level::tiles.empty() || !isRectangularVector(Level::tiles)) {
+        std::cout << "Level::tiles is empty or invalid. Check if level was loaded properly." << std::endl;
+        return;
+    }
+
+    // following code assumes that tiles are squares
     for (int y = 0; y < Level::tiles.size(); y++)
     {
         for (int x = 0; x < Level::tiles[0].size(); x++)
@@ -124,7 +127,8 @@ void Level::renderBackground()
             if (Level::tileDataLookup.find(tileName) != tileDataLookup.end())
             {
                 SDL_Rect dst{x * Level::gridW, y * Level::gridH, gridW, gridH};
-                SDL_RenderCopy(Game::renderer, Level::tileDataLookup.at(tileName).texture, nullptr, &dst);
+                Tile tileData = Level::tileDataLookup.at(tileName);
+                SDL_RenderCopyEx(Game::renderer, tileData.texture, nullptr, &dst, tileData.naturalTexture ? 90 * ((x * y) % 3) : 0, nullptr, SDL_FLIP_NONE);
             }
             else
             {

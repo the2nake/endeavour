@@ -155,6 +155,7 @@ void Player::render()
     if (texture != nullptr)
     {
         SDL_Rect dst{x, y, texw, texh};
+        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
         SDL_RenderCopy(Game::renderer, texture, nullptr, &dst);
     }
 }

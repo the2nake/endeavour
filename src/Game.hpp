@@ -24,5 +24,7 @@ public:
     static SDL_Renderer* renderer;
     static bool running;
     static double targetFrameTime;
+
 private:
+
 };
