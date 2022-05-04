@@ -6,6 +6,7 @@
 class Entity {
 public:
     Entity() {}
+    ~Entity();
     void init(int x, int y, SDL_Texture* texture);
 
     virtual void handleEvent(SDL_Event event);

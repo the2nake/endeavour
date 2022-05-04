@@ -16,9 +16,9 @@ Each save is contained within a folder. Each folder contains:
  * One player file, including the player's inventory, quests, and which level they are in.
    * The first level that includes the player is loaded and shown in the game
 
-## During gameplay
+## Before gameplay
 
-1. The level data that contains the player will be loaded
+The level data that contains the player will be loaded
 
 ### Repeating until the game ends:
 
@@ -27,3 +27,5 @@ Each save is contained within a folder. Each folder contains:
    * Note that levels may contain one-way exits: some tiles (such as pit tiles) lead to an exit tile which doesn't lead back.
    * The check to go to another level is decided in the movement update code, and thus should _not_ be triggered by level entry.
 3. Levels adjacent to the current level are simulated as well
+
+### Implementation

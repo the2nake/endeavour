@@ -1,6 +1,7 @@
 #include "Level.hpp"
 
 #include "Entity.hpp"
+#include "AI.hpp"
 #include "Game.hpp"
 #include "TextureManager.hpp"
 #include "common.hpp"
@@ -59,7 +60,7 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
     using namespace pugi;
 
     xml_document saveFile;
-    std::string pathToSave = "saves/" + playerName + "/" + saveName + "/" + levelName + ".xml";
+    std::string pathToSave = "saves/" + playerName + "/" + saveName + "/levels/" + levelName + ".xml";
     xml_parse_result result = saveFile.load_file(pathToSave.c_str());
     xml_node levelEl, tileIndexEl, backgroundEl;
     Tile tempTile;
@@ -99,8 +100,8 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
             }
             rowNum++;
         }
-
-        // TODO: do the pathfinding weighting based on tile data
+        // TODO: create a graph for A*
+        Level::loadNPCs(playerName, saveName, levelName);
     }
     else
     {
@@ -110,10 +111,49 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
     }
 }
 
+void Level::loadNPCs(std::string playerName, std::string saveName, std::string levelName)
+{
+    using namespace pugi;
+    // TODO: Iterate over all the valid NPC files and load them
+    // Valid npc files are: adjacent to this level, have proper format, and contain at least one npc
+    /*for (xml_node npcEl : npcFile.children("npc"))
+    {
+        xml_node textureEl = npcEl.child("texture");
+        if (textureEl.attribute("src").as_string() != "")
+        {
+            SDL_Rect *cropRect, *outDim;
+            std::string pathToNPCTexture = textureEl.attribute("src").as_string();
+            if (textureEl.attribute("cropRect").as_string() != "")
+            {
+                SDL_Rect tmp = stringToSDLRect(textureEl.attribute("cropRect").as_string());
+                cropRect = &tmp;
+            }
+            else
+            {
+                cropRect = nullptr;
+            }
+            if (textureEl.attribute("outRect").as_string() != "")
+            {
+                SDL_Rect tmp2 = stringToSDLRect(textureEl.attribute("outRect").as_string());
+                outDim = &tmp2;
+            }
+            else
+            {
+                outDim = nullptr;
+            }
+            AI *npc = new AI();
+            SDL_Texture *npcTexture = TextureManager::loadTexture(pathToNPCTexture, cropRect, outDim);
+            npc->init(npcEl.attribute("x").as_int(), npcEl.attribute("y").as_int(), npcTexture);
+            Level::entities.push_back(npc);
+        }
+    }*/
+}
+
 void Level::renderBackground()
 {
     // TODO: make sure Level::tiles contains data and is a rectangle grid before continuing
-    if (Level::tiles.empty() || !isRectangularVector(Level::tiles)) {
+    if (Level::tiles.empty() || !isRectangularVector(Level::tiles))
+    {
         std::cout << "Level::tiles is empty or invalid. Check if level was loaded properly." << std::endl;
         return;
     }
@@ -135,5 +175,14 @@ void Level::renderBackground()
                 // error; tile does not exist
             }
         }
+    }
+}
+
+void Level::clean()
+{
+    for (std::vector<Entity *>::iterator it; it != Level::entities.end();)
+    {
+        (*it.base())->~Entity();
+        Level::entities.erase(it);
     }
 }

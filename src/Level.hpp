@@ -22,8 +22,11 @@ public:
 
     static void loadPlayerData(std::string playerName, std::string saveName);
     static void loadLevel(std::string playerName, std::string saveName, std::string levelName);
+    static void loadNPCs(std::string playerName, std::string saveName, std::string levelName);
 
     static void renderBackground();
+
+    static void clean();
 private:
     static std::vector<std::vector<std::string>> tiles;
     static std::unordered_map<std::string, Tile> tileDataLookup; // note that unordered_map does not require the data to have a hash function, only the key
