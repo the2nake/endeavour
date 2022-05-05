@@ -6,7 +6,7 @@
 class Entity {
 public:
     Entity() {}
-    ~Entity();
+    virtual ~Entity();
     void init(int x, int y, SDL_Texture* texture);
 
     virtual void handleEvent(SDL_Event event);
@@ -20,7 +20,7 @@ public:
     int getY() {return y;}
 
 private:
-    SDL_Texture *texture;
+    SDL_Texture *texture = nullptr;
     int x = 0, y = 0;
     int texw = 0, texh = 0;
 };

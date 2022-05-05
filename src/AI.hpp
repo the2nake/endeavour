@@ -4,13 +4,13 @@
 class AI : public Entity {
 public:
     AI() {}
-    ~AI();
+    ~AI() override;
     void init(int x, int y, SDL_Texture* texture);
 
     void handleEvent(SDL_Event event) override;
     void update() override;
-    //void render() override;
-    //void clean() override;
+    void render() override;
+    void clean() override;
 
     SDL_Texture* getTexture() {return texture;}
     int getX() {return x;}

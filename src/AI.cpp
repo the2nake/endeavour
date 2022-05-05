@@ -1,5 +1,9 @@
 #include "AI.hpp"
 
+#include "Game.hpp"
+
+#include <iostream>
+
 AI::~AI() {
     clean();
 }
@@ -20,10 +24,11 @@ void AI::update() {
     
 }
 
-//void AI::render() {
-//
-//}
-//
-//void AI::clean() {
-//    
-//}
+void AI::render() {
+    SDL_Rect dst{x, y, texw, texh};
+    SDL_RenderCopy(Game::renderer, texture, nullptr, &dst);
+}
+
+void AI::clean() {
+    SDL_DestroyTexture(texture);
+}

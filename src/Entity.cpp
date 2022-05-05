@@ -1,9 +1,13 @@
 #include "Entity.hpp"
-#include "SDL.h"
+
 #include "Game.hpp"
 
+#include "SDL.h"
+
+#include <iostream>
+
 Entity::~Entity() {
-    Entity::clean();
+    clean();
 }
 
 void Entity::init(int x, int y, SDL_Texture* texture) {

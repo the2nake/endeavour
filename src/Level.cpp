@@ -114,39 +114,50 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
 void Level::loadNPCs(std::string playerName, std::string saveName, std::string levelName)
 {
     using namespace pugi;
-    // TODO: Iterate over all the valid NPC files and load them
-    // Valid npc files are: adjacent to this level, have proper format, and contain at least one npc
-    /*for (xml_node npcEl : npcFile.children("npc"))
+
+    xml_document npcFile;
+    std::string npcFileFolder = "saves/" + playerName + "/" + saveName + "/npcs/";
+    for (const auto &npcFileName : std::filesystem::directory_iterator(npcFileFolder))
     {
-        xml_node textureEl = npcEl.child("texture");
-        if (textureEl.attribute("src").as_string() != "")
+        std::string pathToSave = npcFileName.path().c_str();
+        xml_parse_result result = npcFile.load_file(pathToSave.c_str());
+        // TODO: Iterate over all the valid NPC files and load them
+        // Valid npc files are: adjacent to this level, have proper format, and contain at least one npc
+        for (xml_node npcEl : npcFile.children("npc"))
         {
-            SDL_Rect *cropRect, *outDim;
-            std::string pathToNPCTexture = textureEl.attribute("src").as_string();
-            if (textureEl.attribute("cropRect").as_string() != "")
+            // TODO: write unit test for level loading functions
+            // TODO: change npc texture format to match player
+            xml_node textureEl = npcEl.child("texture");
+            if (textureEl.attribute("src").as_string() != "")
             {
-                SDL_Rect tmp = stringToSDLRect(textureEl.attribute("cropRect").as_string());
-                cropRect = &tmp;
+                SDL_Rect *cropRect, *outDim;
+                SDL_Rect tmpCrop, tmpOut;
+                std::string pathToNPCTexture = textureEl.attribute("src").as_string();
+                if (textureEl.attribute("cropRect").as_string() != "")
+                {
+                    tmpCrop = stringToSDLRect(textureEl.attribute("cropRect").as_string());
+                    cropRect = &tmpCrop;
+                }
+                else
+                {
+                    cropRect = nullptr;
+                }
+                if (textureEl.attribute("outRect").as_string() != "")
+                {
+                    tmpOut = stringToSDLRect(textureEl.attribute("outRect").as_string());
+                    outDim = &tmpOut;
+                }
+                else
+                {
+                    outDim = nullptr;
+                }
+                AI *npc = new AI();
+                SDL_Texture *npcTexture = TextureManager::loadTexture(pathToNPCTexture, cropRect, outDim);
+                npc->init(npcEl.attribute("x").as_int(), npcEl.attribute("y").as_int(), npcTexture);
+                Level::entities.push_back(npc);
             }
-            else
-            {
-                cropRect = nullptr;
-            }
-            if (textureEl.attribute("outRect").as_string() != "")
-            {
-                SDL_Rect tmp2 = stringToSDLRect(textureEl.attribute("outRect").as_string());
-                outDim = &tmp2;
-            }
-            else
-            {
-                outDim = nullptr;
-            }
-            AI *npc = new AI();
-            SDL_Texture *npcTexture = TextureManager::loadTexture(pathToNPCTexture, cropRect, outDim);
-            npc->init(npcEl.attribute("x").as_int(), npcEl.attribute("y").as_int(), npcTexture);
-            Level::entities.push_back(npc);
         }
-    }*/
+    }
 }
 
 void Level::renderBackground()
@@ -180,9 +191,10 @@ void Level::renderBackground()
 
 void Level::clean()
 {
-    for (std::vector<Entity *>::iterator it; it != Level::entities.end();)
+    // handles cleaning of entities as well, is this "doing more than one thing?"
+    for (Entity *entity : Level::entities)
     {
-        (*it.base())->~Entity();
-        Level::entities.erase(it);
+        entity->~Entity();
     }
+    Level::entities.clear();
 }

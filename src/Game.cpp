@@ -103,6 +103,10 @@ void Game::handleEvents()
 void Game::update()
 {
     player.update();
+
+    for (Entity *entity : Level::entities) {
+        entity->update();
+    }
 }
 
 void Game::render()
@@ -117,6 +121,10 @@ void Game::render()
 
     player.render();
 
+    for (Entity *entity : Level::entities) {
+        entity->render();
+    }
+
     SDL_RenderPresent(Game::renderer);
 }
 void Game::clean()
@@ -125,6 +133,7 @@ void Game::clean()
     SDL_DestroyRenderer(Game::renderer);
 
     player.clean();
+    Level::clean();
 
     SDL_Quit();
 }
