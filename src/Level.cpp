@@ -127,7 +127,7 @@ void Level::loadNPCs(std::string playerName, std::string saveName, std::string l
         {
             // TODO: write unit test for level loading functions
             // TODO: change npc texture format to match player
-            xml_node textureEl = npcEl.child("texture");
+            xml_node textureEl = npcEl.child("animation").child("frame");
             if (textureEl.attribute("src").as_string() != "")
             {
                 SDL_Rect *cropRect, *outDim;
