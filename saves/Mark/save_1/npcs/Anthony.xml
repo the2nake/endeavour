@@ -1,4 +1,4 @@
-<npc name="Anthony" level="level1" x="312" y="192">
+<npc name="Anthony" x="312" y="192">
 	<animation name="idle">
 		<frame src="res/tex/tilemap_proto.png" cropRect="64 0 8 8" outRect="0 0 32 32" />
 	</animation>

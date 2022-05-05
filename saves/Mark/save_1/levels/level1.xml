@@ -54,3 +54,6 @@
 		</row>
 	</background>
 </level>
+<npcs>
+	<npc id-name="Anthony"/>
+</npcs>

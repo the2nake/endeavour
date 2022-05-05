@@ -115,54 +115,59 @@ void Level::loadNPCs(std::string playerName, std::string saveName, std::string l
 {
     using namespace pugi;
 
-    xml_document npcFile;
+    xml_document npcFile, levelFile;
     std::string npcFileFolder = "saves/" + playerName + "/" + saveName + "/npcs/";
-    for (const auto &npcFileName : std::filesystem::directory_iterator(npcFileFolder))
+    std::string levelFilePath = "saves/" + playerName + "/" + saveName + "/levels/" + levelName + ".xml";
+    xml_parse_result result = levelFile.load_file(levelFilePath.c_str());
+
+    std::vector<std::string> npcsToLoad = {};
+    for (xml_node npcListingEl : levelFile.child("npcs").children("npc"))
     {
-        std::string pathToSave = npcFileName.path().c_str();
+        npcsToLoad.push_back(npcListingEl.attribute("id-name").as_string());
+    }
+
+    for (std::string npcName : npcsToLoad)
+    {
+        std::string pathToSave = npcFileFolder + npcName + ".xml";
         xml_parse_result result = npcFile.load_file(pathToSave.c_str());
-        // TODO: Iterate over all the valid NPC files and load them
         // Valid npc files are: adjacent to this level, have proper format, and contain at least one npc
-        for (xml_node npcEl : npcFile.children("npc"))
+        xml_node npcEl = npcFile.child("npc");
+        // TODO: write unit test for level loading functions
+        // TODO: Make load surrounding levels (low-priority, requires level exits)
+        xml_node textureEl = npcEl.child("animation").child("frame");
+        if (textureEl.attribute("src").as_string() != "")
         {
-            // TODO: write unit test for level loading functions
-            xml_node textureEl = npcEl.child("animation").child("frame");
-            // eventually should be std::find(neighbouringLevels.begin(), neighbouringLevels.end(), npcEl.attirbute("level").as_string()) != neighbouringLevels.end()
-            if (npcEl.attribute("level").as_string() == levelName && textureEl.attribute("src").as_string() != "")
+            SDL_Rect *cropRect, *outDim;
+            SDL_Rect tmpCrop, tmpOut;
+            std::string pathToNPCTexture = textureEl.attribute("src").as_string();
+            if (textureEl.attribute("cropRect").as_string() != "")
             {
-                SDL_Rect *cropRect, *outDim;
-                SDL_Rect tmpCrop, tmpOut;
-                std::string pathToNPCTexture = textureEl.attribute("src").as_string();
-                if (textureEl.attribute("cropRect").as_string() != "")
-                {
-                    tmpCrop = stringToSDLRect(textureEl.attribute("cropRect").as_string());
-                    cropRect = &tmpCrop;
-                }
-                else
-                {
-                    cropRect = nullptr;
-                }
-                if (textureEl.attribute("outRect").as_string() != "")
-                {
-                    tmpOut = stringToSDLRect(textureEl.attribute("outRect").as_string());
-                    outDim = &tmpOut;
-                }
-                else
-                {
-                    outDim = nullptr;
-                }
-                AI *npc = new AI();
-                SDL_Texture *npcTexture = TextureManager::loadTexture(pathToNPCTexture, cropRect, outDim);
-                npc->init(npcEl.attribute("x").as_int(), npcEl.attribute("y").as_int(), npcTexture);
-                Level::entities.push_back(npc);
+                tmpCrop = stringToSDLRect(textureEl.attribute("cropRect").as_string());
+                cropRect = &tmpCrop;
             }
+            else
+            {
+                cropRect = nullptr;
+            }
+            if (textureEl.attribute("outRect").as_string() != "")
+            {
+                tmpOut = stringToSDLRect(textureEl.attribute("outRect").as_string());
+                outDim = &tmpOut;
+            }
+            else
+            {
+                outDim = nullptr;
+            }
+            AI *npc = new AI();
+            SDL_Texture *npcTexture = TextureManager::loadTexture(pathToNPCTexture, cropRect, outDim);
+            npc->init(npcEl.attribute("x").as_int(), npcEl.attribute("y").as_int(), npcTexture);
+            Level::entities.push_back(npc);
         }
     }
 }
 
 void Level::renderBackground()
 {
-    // TODO: make sure Level::tiles contains data and is a rectangle grid before continuing
     if (Level::tiles.empty() || !isRectangularVector(Level::tiles))
     {
         std::cout << "Level::tiles is empty or invalid. Check if level was loaded properly." << std::endl;
