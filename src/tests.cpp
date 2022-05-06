@@ -8,6 +8,9 @@
 #include "common.hpp"
 #include "pathfinding.hpp"
 #include "Game.hpp"
+#include "AI.hpp"
+#include "Entity.hpp"
+#include "Level.hpp"
 
 #if __STDC_VERSION__ < 199901L
 #if __GNUC__ >= 2
@@ -195,10 +198,55 @@ bool testTextureCache()
     // TextureManager::loadTexture();
     // load, check if cached
     // load again, check if cache was used by setting a test flag (#ifdef PRINT_IF_USED_CACHE)
-    TextureManager::loadTexture("res/tex/tilemap_proto.png");
-    bool result = TextureManager::retriveCachedTexture("res/tex/tilemap_proto.png") != nullptr;
-    TextureManager::loadTexture("res/tex/tilemap_proto.png");
-    result = result && TextureManager::textureCacheUsed;
+    bool result = false;
+    if (!std::filesystem::exists("res/tex/tilemap_proto.png"))
+    {
+        std::cout << "" << std::endl;
+    }
+    else
+    {
+        TextureManager::loadTexture("res/tex/tilemap_proto.png");
+        result = TextureManager::retriveCachedTexture("res/tex/tilemap_proto.png") != nullptr;
+        TextureManager::loadTexture("res/tex/tilemap_proto.png");
+        result = result && TextureManager::textureCacheUsed;
+    }
+    if (result)
+    {
+        std::cout << "PASS: " << __func__ << std::endl;
+    }
+    else
+    {
+        std::cout << "FAIL: " << __func__ << std::endl;
+    }
+
+    return result;
+}
+
+bool testEntityClean()
+{
+    bool result = false;
+
+    Entity ent = Entity();
+    ent.init(0, 0, TextureManager::loadTexture("res/tex/tilemap_proto.png", nullptr, nullptr));
+    ent.clean();
+    SDL_RenderCopy(Game::renderer, ent.getTexture(), nullptr, nullptr);
+    result = SDL_GetError() != "Invalid texture";
+
+    if (result)
+    {
+        std::cout << "PASS: " << __func__ << std::endl;
+    }
+    else
+    {
+        std::cout << "FAIL: " << __func__ << std::endl;
+    }
+
+    return result;
+}
+
+bool testEntityDeconstructorClean()
+{
+    bool result = false;
 
     if (result)
     {
@@ -227,7 +275,9 @@ int main()
              &testKeyBindReset,
              &testStringSplit,
              &testStringToRect,
-             &testTextureCache};
+             &testTextureCache,
+             &testEntityClean
+             }; //, &testEntityDeconstructorClean};
     // ---
     for (int i = 0; i < tests.size(); i++)
     {

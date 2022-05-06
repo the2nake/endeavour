@@ -21,7 +21,8 @@ void AI::handleEvent(SDL_Event event) {
 }
 
 void AI::update() {
-    
+    // calculate next position
+    // move towards player
 }
 
 void AI::render() {
