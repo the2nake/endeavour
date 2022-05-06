@@ -89,6 +89,14 @@ struct SquareGrid
             GridLocation next{id.x + dir.x, id.y + dir.y};
             if (in_bounds(next) && traversable(next))
             {
+                bool isDiagonal = std::abs(dir.x) + std::abs(dir.y) == 2;
+                if (isDiagonal)
+                {
+                    if (in_bounds({id.x + dir.x, id.y}) && in_bounds({id.x, id.y + dir.y}))
+                    {
+                        results.push_back(next);
+                    }
+                }
                 results.push_back(next);
             }
         }
@@ -99,13 +107,22 @@ struct SquareGrid
 
 struct GridWithWeights : SquareGrid
 {
-    std::unordered_set<GridLocation> forests;
+    std::unordered_map<GridLocation, int> weights;
     GridWithWeights(int w, int h) : SquareGrid(w, h) {}
     double cost(GridLocation from_node, GridLocation to_node) const
     {
         // may only be called on nodes accessible via movements in DIRS
         bool isDiagonal = std::abs(from_node.x - to_node.x) + std::abs(from_node.y - to_node.y) == 2;
-        return (forests.find(to_node) == forests.end() ? 1 : 5) * (isDiagonal ? 14 : 10);
+        int weight;
+        if (weights.find(to_node) == weights.end())
+        {
+            weight = 1;
+        }
+        else
+        {
+            weight = weights.at(to_node);
+        }
+        return weight * (isDiagonal ? 14 : 10);
     }
 };
 
@@ -173,6 +190,8 @@ std::vector<Location> getPathToLocation(std::unordered_map<Location, Location> t
         {
             checked.push_back(currentCheck);
             currentCheck = trace[currentCheck];
+        } else {
+            break;
         }
     }
     std::reverse(checked.begin(), checked.end());
