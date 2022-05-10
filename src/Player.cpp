@@ -74,10 +74,10 @@ Player::playerAction Player::getFunctionOf(std::string alias)
     return nullptr;
 }
 
-void Player::moveRight() { x += 1; }
-void Player::moveLeft() { x -= 1; }
-void Player::moveDown() { y += 1; }
-void Player::moveUp() { y -= 1; }
+void Player::moveRight() { dx += 1; }
+void Player::moveLeft() { dx -= 1; }
+void Player::moveDown() { dy += 1; }
+void Player::moveUp() { dy -= 1; }
 
 void Player::handleEvent(SDL_Event event)
 {
@@ -92,6 +92,7 @@ void Player::update()
 {
     drawX = std::round(x);
     drawY = std::round(y);
+    dx = 0; dy = 0;
     registeredKeys.clear();
     for (std::unordered_map<int, std::string>::iterator it = Game::player.keybinds.begin(); it != Game::player.keybinds.end(); it++)
     {
@@ -109,7 +110,7 @@ void Player::update()
     {
         it.second -= Game::targetFrameTime;
     }
-
+    // executing the right function and handling the cooldowns
     for (int i = 0; i < registeredKeys.size(); i++)
     {
         auto checkPressIter = Game::keyIsDownMap.find(registeredKeys[i]);
@@ -149,6 +150,15 @@ void Player::update()
                 currentCooldowns.insert_or_assign(boundActionIter->second, 1.0);
             }
         }
+    }
+
+    // update the player's position
+    if (std::abs(dx) + std::abs(dy) == 2) {
+        x += dx * 0.70710678118 * getFloatAttribute("speed");
+        y += dy * 0.70710678118 * getFloatAttribute("speed");
+    } else {
+        x += dx * getFloatAttribute("speed");
+        y += dy * getFloatAttribute("speed");
     }
 }
 

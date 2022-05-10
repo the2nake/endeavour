@@ -48,6 +48,7 @@ void Level::loadPlayerData(std::string playerName, std::string saveName)
 
             Game::player = Player();
             Game::player.init(playerX, playerY, loadedPlayerName, playerTexture);
+            Game::player.setAttribute("speed", playerNode.attribute("speed").as_string() == "" ? (float)(1) : playerNode.attribute("speed").as_float());
         }
         else
         {

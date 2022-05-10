@@ -80,7 +80,7 @@ public:
 
 private:
     SDL_Texture *texture;
-    float x = 0, y = 0;
+    float x = 0, y = 0, dx = 0, dy = 0;
     int drawX = 0, drawY = 0;
     int texw = 0, texh = 0;
     std::string name;
