@@ -109,6 +109,18 @@ struct GridWithWeights : SquareGrid
 {
     std::unordered_map<GridLocation, int> weights;
     GridWithWeights(int w, int h) : SquareGrid(w, h) {}
+
+    void clear() {
+        weights.clear();
+        walls.clear();
+        width = 0;
+        height = 0;
+    }
+
+    void setCost(GridLocation node, int cost) {
+        weights.insert_or_assign(node, cost);
+    }
+
     double cost(GridLocation from_node, GridLocation to_node) const
     {
         // may only be called on nodes accessible via movements in DIRS

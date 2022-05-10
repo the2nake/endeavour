@@ -10,7 +10,7 @@
 std::string RESET_ALL_KEYBINDS = "";
 std::vector<int> Player::registeredKeys;
 
-void Player::init(int x, int y, std::string name, SDL_Texture *texture)
+void Player::init(float x, float y, std::string name, SDL_Texture *texture)
 {
     this->texture = texture;
     this->x = x;
@@ -90,6 +90,8 @@ void Player::handleEvent(SDL_Event event)
 
 void Player::update()
 {
+    drawX = std::round(x);
+    drawY = std::round(y);
     registeredKeys.clear();
     for (std::unordered_map<int, std::string>::iterator it = Game::player.keybinds.begin(); it != Game::player.keybinds.end(); it++)
     {
@@ -154,7 +156,7 @@ void Player::render()
 {
     if (texture != nullptr)
     {
-        SDL_Rect dst{x, y, texw, texh};
+        SDL_Rect dst{drawX, drawY, texw, texh};
         SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
         SDL_RenderCopy(Game::renderer, texture, nullptr, &dst);
     }

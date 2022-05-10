@@ -1,21 +1,23 @@
 #pragma once
 #include "Entity.hpp"
 
-#include <vector>
-#include "SDL.h"
 #include "pathfinding.hpp"
 
+#include "SDL.h"
 
-struct Tile {
-    SDL_Texture* texture = nullptr;
+#include <vector>
+
+struct Tile
+{
+    SDL_Texture *texture = nullptr;
     int movementCost = 1;
-    bool naturalTexture = false;
+    bool isNatural = false;
 };
 
 class Level
 {
 public:
-    static int gridW, gridH;
+    static int tileW, tileH, levelW, levelH;
 
     static std::vector<Entity *> entities;
     static GridWithWeights pathfindingGrid;
@@ -25,8 +27,22 @@ public:
     static void loadNPCs(std::string playerName, std::string saveName, std::string levelName);
 
     static void renderBackground();
+    static void generatePathfindingGrid();
+
+    static Tile getTileFromName(std::string name)
+    {
+        if (tileDataLookup.find(name) != tileDataLookup.end())
+        {
+            return tileDataLookup[name];
+        }
+        else
+        {
+            return Tile{nullptr, 1, false};
+        }
+    }
 
     static void clean();
+
 private:
     static std::vector<std::vector<std::string>> tiles;
     static std::unordered_map<std::string, Tile> tileDataLookup; // note that unordered_map does not require the data to have a hash function, only the key
