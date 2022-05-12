@@ -35,3 +35,5 @@
 build/**
 CmakeFiles/**
 .vscode
+
+sandbox.cpp
