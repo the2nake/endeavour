@@ -1,9 +1,10 @@
 #pragma once
-#include <string>
-#include <unordered_map>
+#include "Player.hpp"
+
 #include "SDL.h"
 
-#include "Player.hpp"
+#include <string>
+#include <unordered_map>
 // Game should only be initialised once
 
 class Game {
@@ -15,6 +16,9 @@ public:
     void render();
 
     void clean();
+
+    static void add_error(std::string msg);
+    static std::unordered_map<std::string, int> errors;
 
     static std::unordered_map<int, bool> keyIsDownMap;
 

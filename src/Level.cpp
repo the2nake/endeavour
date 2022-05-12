@@ -57,7 +57,7 @@ void Level::loadPlayerData(std::string playerName, std::string saveName)
     }
     else
     {
-        std::cout << "Save file at " + pathToSave + " could not be found." << std::endl;
+        Game::add_error("Save file at " + pathToSave + " could not be found.");
     }
 }
 
@@ -184,7 +184,7 @@ void Level::renderBackground()
 {
     if (Level::tiles.empty() || !isRectangularVector(Level::tiles))
     {
-        std::cout << "Level::tiles is empty or invalid. Check if level was loaded properly." << std::endl;
+        Game::add_error("Level::tiles is empty or invalid. Check if level was loaded properly.");
         return;
     }
 
