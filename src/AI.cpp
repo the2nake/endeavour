@@ -58,8 +58,6 @@ s
     if (std::abs(diffX) > 1 || std::abs(diffY) > 1)
     {
         float scaleFactor = getFloatAttribute("speed") / std::pow(diffX * diffX + diffY * diffY, 0.5);
-        std::cout << scaleFactor << std::endl;
-        std::cout << diffX * scaleFactor << std::endl;
         x += diffX * scaleFactor;
         y += diffY * scaleFactor;
     }
