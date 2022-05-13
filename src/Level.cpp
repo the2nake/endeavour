@@ -89,7 +89,7 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
             tempTile.texture = TextureManager::loadTexture(tileEl.attribute("src").as_string(), &src, &dst); // this should point to the same texture pointed to in TextureManager::loadedTextures
                                                                                                              // if there are duplcicates
             tempTile.movementCost = tileEl.attribute("movementCost").as_int(1);
-            tempTile.isNatural = tileEl.attribute("isNatural").as_bool();
+            tempTile.isNatural = tileEl.attribute("isNatural").as_bool(false);
             Level::tileDataLookup.insert_or_assign(tileEl.attribute("name").as_string(), tempTile);
         }
 

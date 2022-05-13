@@ -16,7 +16,7 @@ SDL_Rect stringToSDLRect(std::string s, std::string delim = " ");
 template <typename T>
 bool isRectangularVector(std::vector<std::vector<T>> &v) {
     for (int i = 0; i < v.size(); i++) {
-        if (v[i] != v[0]) {
+        if (v[i].size() != v[0].size()) {
             return false;
         }
     }
