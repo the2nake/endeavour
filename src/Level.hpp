@@ -29,6 +29,21 @@ public:
     static void renderBackground();
     static void generatePathfindingGrid();
 
+    static std::string getTileNameAt(float x, float y)
+    {
+        if (0 <= std::round(x / Level::tileW) && std::round(x / Level::tileW) < Level::levelW)
+        {
+            if (0 <= std::round(y / Level::tileH) && std::round(y / Level::tileH) < Level::levelH)
+            {
+                return Level::tiles[std::round(y / Level::tileH)][std::round(x / Level::tileW)];
+            } else {
+                return "";
+            }
+        } else {
+            return "";
+        }
+    }
+
     static Tile getTileFromName(std::string name)
     {
         if (tileDataLookup.find(name) != tileDataLookup.end())

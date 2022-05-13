@@ -6,6 +6,7 @@
 
 #include "TextureManager.hpp"
 #include "Game.hpp"
+#include "Level.hpp"
 
 std::string RESET_ALL_KEYBINDS = "";
 std::vector<int> Player::registeredKeys;
@@ -92,7 +93,8 @@ void Player::update()
 {
     drawX = std::round(x);
     drawY = std::round(y);
-    dx = 0; dy = 0;
+    dx = 0;
+    dy = 0;
     registeredKeys.clear();
     for (std::unordered_map<int, std::string>::iterator it = Game::player.keybinds.begin(); it != Game::player.keybinds.end(); it++)
     {
@@ -152,13 +154,19 @@ void Player::update()
         }
     }
 
+    Tile currentTile = Level::getTileFromName(Level::getTileNameAt(x, y));
+    float calculatedSpeed = getFloatAttribute("speed") / currentTile.movementCost;
+
     // update the player's position
-    if (std::abs(dx) + std::abs(dy) == 2) {
-        x += dx * 0.70710678118 * getFloatAttribute("speed");
-        y += dy * 0.70710678118 * getFloatAttribute("speed");
-    } else {
-        x += dx * getFloatAttribute("speed");
-        y += dy * getFloatAttribute("speed");
+    if (std::abs(dx) + std::abs(dy) == 2)
+    {
+        x += dx * 0.70710678118 * calculatedSpeed;
+        y += dy * 0.70710678118 * calculatedSpeed;
+    }
+    else
+    {
+        x += dx * calculatedSpeed;
+        y += dy * calculatedSpeed;
     }
 }
 
