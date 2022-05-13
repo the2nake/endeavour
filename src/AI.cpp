@@ -55,9 +55,12 @@ s
     float diffX = Game::player.getX() - x; // targetX - x;
     float diffY = Game::player.getY() - y; // targetY - y;
 
+    Tile currentTile = Level::getTileFromName(Level::getTileNameAt(x, y));
+    float calculatedSpeed = getFloatAttribute("speed") / currentTile.movementCost;
+
     if (std::abs(diffX) > 1 || std::abs(diffY) > 1)
     {
-        float scaleFactor = getFloatAttribute("speed") / std::pow(diffX * diffX + diffY * diffY, 0.5);
+        float scaleFactor = calculatedSpeed / std::pow(diffX * diffX + diffY * diffY, 0.5);
         x += diffX * scaleFactor;
         y += diffY * scaleFactor;
     }
