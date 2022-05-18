@@ -62,7 +62,7 @@ bool testKeyBindMapExecution()
 
     iter = player1.keybinds.find(SDLK_d);
     (player1.*player1.getFunctionOf(iter->second))();
-    player2.moveRight();
+    player2.callbackMoveRight();
 
     if (!(isEqual(player1.getX(), player2.getX()) && isEqual(player1.getY(), player2.getY())))
     {
@@ -72,8 +72,8 @@ bool testKeyBindMapExecution()
     iter = player1.keybinds.find(SDLK_s);
     (player1.*player1.getFunctionOf(iter->second))();
     (player1.*player1.getFunctionOf(iter->second))();
-    player2.moveDown();
-    player2.moveDown();
+    player2.callbackMoveDown();
+    player2.callbackMoveDown();
 
     if (!(isEqual(player1.getX(), player2.getX()) && isEqual(player1.getY(), player2.getY())))
     {
@@ -82,7 +82,7 @@ bool testKeyBindMapExecution()
 
     iter = player1.keybinds.find(SDLK_w);
     (player1.*player1.getFunctionOf(iter->second))();
-    player2.moveUp();
+    player2.callbackMoveUp();
 
     if (!(isEqual(player1.getX(), player2.getX()) && isEqual(player1.getY(), player2.getY())))
     {
@@ -91,7 +91,7 @@ bool testKeyBindMapExecution()
 
     iter = player1.keybinds.find(SDLK_a);
     (player1.*player1.getFunctionOf(iter->second))();
-    player2.moveLeft();
+    player2.callbackMoveLeft();
 
     if (!(isEqual(player1.getX(), player2.getX()) && isEqual(player1.getY(), player2.getY())))
     {

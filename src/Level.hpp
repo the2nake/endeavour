@@ -31,11 +31,11 @@ public:
 
     static std::string getTileNameAt(float x, float y)
     {
-        if (0 <= std::round(x / Level::tileW) && std::round(x / Level::tileW) < Level::levelW)
+        if (0 <= std::floor(x / Level::tileW) && std::floor(x / Level::tileW) < Level::levelW)
         {
-            if (0 <= std::round(y / Level::tileH) && std::round(y / Level::tileH) < Level::levelH)
+            if (0 <= std::floor(y / Level::tileH) && std::floor(y / Level::tileH) < Level::levelH)
             {
-                return Level::tiles[std::round(y / Level::tileH)][std::round(x / Level::tileW)];
+                return Level::tiles[std::floor(y / Level::tileH)][std::floor(x / Level::tileW)];
             } else {
                 return "";
             }

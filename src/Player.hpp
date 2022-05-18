@@ -31,13 +31,16 @@ public:
     std::unordered_map<std::string, void (Player::*)()> aliasFunctionMap;
     void initAliasMap();
 
-    void moveRight();
-    void moveLeft();
-    void moveDown();
-    void moveUp();
+    void callbackMoveRight();
+    void callbackMoveLeft();
+    void callbackMoveDown();
+    void callbackMoveUp();
 
     std::unordered_map<std::string, double> defaultCooldowns; // in milliseconds
     std::unordered_map<std::string, double> currentCooldowns; // in milliseconds
+
+    void moveX(float mx);
+    void moveY(float my);
 
     SDL_Texture *getTexture() { return texture; }
     float getX() { return x; }
@@ -49,7 +52,9 @@ public:
         if (int_attrs.find(name) != int_attrs.end())
         {
             return int_attrs.at(name);
-        } else {
+        }
+        else
+        {
             return -1;
         }
     }
@@ -59,7 +64,9 @@ public:
         if (flt_attrs.find(name) != flt_attrs.end())
         {
             return flt_attrs.at(name);
-        } else {
+        }
+        else
+        {
             return -1;
         }
     }
@@ -69,7 +76,9 @@ public:
         if (str_attrs.find(name) != str_attrs.end())
         {
             return str_attrs.at(name);
-        } else {
+        }
+        else
+        {
             return "";
         }
     }

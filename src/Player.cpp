@@ -27,10 +27,10 @@ void Player::init(float x, float y, std::string name, SDL_Texture *texture)
 void Player::initAliasMap()
 {
     aliasFunctionMap.clear();
-    aliasFunctionMap.insert_or_assign("moveUp", &Player::moveUp);
-    aliasFunctionMap.insert_or_assign("moveDown", &Player::moveDown);
-    aliasFunctionMap.insert_or_assign("moveRight", &Player::moveRight);
-    aliasFunctionMap.insert_or_assign("moveLeft", &Player::moveLeft);
+    aliasFunctionMap.insert_or_assign("callbackMoveUp", &Player::callbackMoveUp);
+    aliasFunctionMap.insert_or_assign("callbackMoveDown", &Player::callbackMoveDown);
+    aliasFunctionMap.insert_or_assign("callbackMoveRight", &Player::callbackMoveRight);
+    aliasFunctionMap.insert_or_assign("callbackMoveLeft", &Player::callbackMoveLeft);
 }
 
 void Player::resetDefaultKeybind(std::string alias)
@@ -47,15 +47,15 @@ void Player::resetDefaultKeybind(std::string alias)
     {
         keybinds.clear();
         // set the default keybinds for ALL of the keys
-        keybinds.insert_or_assign(SDLK_w, "moveUp");
-        keybinds.insert_or_assign(SDLK_s, "moveDown");
-        keybinds.insert_or_assign(SDLK_a, "moveLeft");
-        keybinds.insert_or_assign(SDLK_d, "moveRight");
+        keybinds.insert_or_assign(SDLK_w, "callbackMoveUp");
+        keybinds.insert_or_assign(SDLK_s, "callbackMoveDown");
+        keybinds.insert_or_assign(SDLK_a, "callbackMoveLeft");
+        keybinds.insert_or_assign(SDLK_d, "callbackMoveRight");
 
-        keybinds.insert_or_assign(SDLK_UP, "moveUp");
-        keybinds.insert_or_assign(SDLK_DOWN, "moveDown");
-        keybinds.insert_or_assign(SDLK_LEFT, "moveLeft");
-        keybinds.insert_or_assign(SDLK_RIGHT, "moveRight");
+        keybinds.insert_or_assign(SDLK_UP, "callbackMoveUp");
+        keybinds.insert_or_assign(SDLK_DOWN, "callbackMoveDown");
+        keybinds.insert_or_assign(SDLK_LEFT, "callbackMoveLeft");
+        keybinds.insert_or_assign(SDLK_RIGHT, "callbackMoveRight");
     }
 }
 
@@ -75,10 +75,92 @@ Player::playerAction Player::getFunctionOf(std::string alias)
     return nullptr;
 }
 
-void Player::moveRight() { dx += 1; }
-void Player::moveLeft() { dx -= 1; }
-void Player::moveDown() { dy += 1; }
-void Player::moveUp() { dy -= 1; }
+void Player::callbackMoveRight() { dx += 1; }
+void Player::callbackMoveLeft() { dx -= 1; }
+void Player::callbackMoveDown() { dy += 1; }
+void Player::callbackMoveUp() { dy -= 1; }
+
+void Player::moveX(float mx)
+{
+    if (mx == 0)
+    {
+        return;
+    }
+
+    bool movingLeft = mx < 0;
+    int newx;
+    if (movingLeft)
+    {
+        newx = std::floor(x + mx);
+    }
+    else
+    {
+        newx = std::ceil(x + mx);
+    }
+
+    int mcnw = Level::getTileFromName(Level::getTileNameAt(newx, y)).movementCost;
+    int mcne = Level::getTileFromName(Level::getTileNameAt(newx + texw - 1, y)).movementCost;
+    int mcse = Level::getTileFromName(Level::getTileNameAt(newx + texw - 1, y + texh - 1)).movementCost;
+    int mcsw = Level::getTileFromName(Level::getTileNameAt(newx, y + texh - 1)).movementCost;
+    if (!(mcnw == -1 || mcne == -1 || mcse == -1 || mcsw == -1))
+    {
+        x += mx;
+    }
+    else
+    {
+        // get the bounding rectangle of the tile that it is bumping into
+        SDL_Rect bounding;
+        if (movingLeft)
+        {
+            x = Level::tileW * std::floor(newx / Level::tileW) + Level::tileW;
+        }
+        else
+        {
+            x = Level::tileW * std::floor((newx + texw - 1) / Level::tileW) - texw;
+        }
+    }
+}
+
+void Player::moveY(float my)
+{
+    if (my == 0)
+    {
+        return;
+    }
+
+    bool movingUp = my < 0;
+    int newy;
+    if (movingUp)
+    {
+        newy = std::floor(y + my);
+    }
+    else
+    {
+        newy = std::ceil(y + my);
+    }
+
+    int mcnw = Level::getTileFromName(Level::getTileNameAt(x, newy)).movementCost;
+    int mcne = Level::getTileFromName(Level::getTileNameAt(x + texw - 1, newy)).movementCost;
+    int mcse = Level::getTileFromName(Level::getTileNameAt(x + texw - 1, newy + texh - 1)).movementCost;
+    int mcsw = Level::getTileFromName(Level::getTileNameAt(x, newy + texh - 1)).movementCost;
+    if (!(mcnw == -1 || mcne == -1 || mcse == -1 || mcsw == -1))
+    {
+        y += my;
+    }
+    else
+    {
+        // get the bounding rectangle of the tile that it is bumping into
+        SDL_Rect bounding;
+        if (movingUp)
+        {
+            y = Level::tileH * std::floor(newy / Level::tileH) + Level::tileH;
+        }
+        else
+        {
+            y = Level::tileH * std::floor((newy + texh - 1) / Level::tileH) - texh;
+        }
+    }
+}
 
 void Player::handleEvent(SDL_Event event)
 {
@@ -154,20 +236,27 @@ void Player::update()
         }
     }
 
-    Tile currentTile = Level::getTileFromName(Level::getTileNameAt(x, y));
-    float calculatedSpeed = getFloatAttribute("speed") / currentTile.movementCost;
+    // averaging out movement costs
+    float movementCost = (Level::getTileFromName(Level::getTileNameAt(x, y)).movementCost +
+                          Level::getTileFromName(Level::getTileNameAt(x + texw, y)).movementCost +
+                          Level::getTileFromName(Level::getTileNameAt(x, y + texh)).movementCost +
+                          Level::getTileFromName(Level::getTileNameAt(x + texw, y + texh)).movementCost) /
+                         4.0f;
+    float calculatedSpeed = getFloatAttribute("speed") / std::max(movementCost, 1.0f);
 
     // update the player's position
     if (std::abs(dx) + std::abs(dy) == 2)
     {
-        x += dx * 0.70710678118 * calculatedSpeed;
-        y += dy * 0.70710678118 * calculatedSpeed;
+        moveX(dx * 0.70710678118 * calculatedSpeed);
+        moveY(dy * 0.70710678118 * calculatedSpeed);
     }
     else
     {
-        x += dx * calculatedSpeed;
-        y += dy * calculatedSpeed;
+        moveX(dx * calculatedSpeed);
+        moveY(dy * calculatedSpeed);
     }
+
+    // TODO: implement moveX for Y;
 }
 
 void Player::render()

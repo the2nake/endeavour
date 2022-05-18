@@ -1,10 +1,13 @@
 <tiles>
 	<tile name="grass1" src="res/tex/tilemap_proto.png" movementCost="1" cropRect="32 32 8 8" outRect="0 0 32 32" isNatural="1" />
 	<tile name="floor" src="res/tex/tilemap_proto.png" movementCost="1" cropRect="8 8 8 8" outRect="0 0 32 32" isNatural="0" />
-	<tile name="wall1left" src="res/tex/tilemap_proto.png" movementCost="10" cropRect="0 8 8 8" outRect="0 0 32 32" isNatural="0" />
-	<tile name="wall1topleft" src="res/tex/tilemap_proto.png" movementCost="10" cropRect="0 0 8 8" outRect="0 0 32 32" isNatural="0" />
-	<tile name="wall1bottomleft" src="res/tex/tilemap_proto.png" movementCost="10" cropRect="0 16 8 8" outRect="0 0 32 32" isNatural="0" />
-	<tile name="wall1right" src="res/tex/tilemap_proto.png" movementCost="10" cropRect="24 8 8 8" outRect="0 0 32 32" isNatural="0" />
+	<tile name="wall1left" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 8 8 8" outRect="0 0 32 32" isNatural="0" />
+	<tile name="wall1topleft" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 0 8 8" outRect="0 0 32 32" isNatural="0" />
+	<tile name="wall1bottomleft" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 16 8 8" outRect="0 0 32 32" isNatural="0" />
+	<tile name="wall1right" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="24 8 8 8" outRect="0 0 32 32" isNatural="0" />
+
+	<tile name="wall1top" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="8 0 8 8" outRect="0 0 32 32" isNatural="0" />
+	<tile name="wall1bottom" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="8 0 8 8" outRect="0 0 32 32" isNatural="0" />
 	<!-- Natural textures rotate modularly. Do not use them for plants, furniture, housing, ... as a default, they are off. -->
 </tiles>
 <level width="1024" height="512" tileW="32" tileH="32">
@@ -13,19 +16,19 @@
 			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
 		</row>
 		<row>
-			grass1, wall1topleft, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+			grass1, wall1topleft, wall1top, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
 		</row>
 		<row>
-			grass1, wall1left, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+			grass1, wall1left, floor, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
 		</row>
 		<row>
-			grass1, wall1bottomleft, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+			grass1, wall1left, floor, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
 		</row>
 		<row>
-			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+			grass1, wall1left, floor, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
 		</row>
 		<row>
-			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+			grass1, wall1bottomleft, wall1bottom, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
 		</row>
 		<row>
 			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
