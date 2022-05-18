@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <filesystem>
 #include "SDL.h"
 
 #include "Player.hpp"
@@ -54,10 +55,10 @@ bool testKeyBindMapExecution()
     player1.initAliasMap();
     player1.initAliasMap();
 
-    player1.keybinds.insert_or_assign(SDLK_d, "moveRight");
-    player1.keybinds.insert_or_assign(SDLK_a, "moveLeft");
-    player1.keybinds.insert_or_assign(SDLK_w, "moveUp");
-    player1.keybinds.insert_or_assign(SDLK_s, "moveDown");
+    player1.keybinds.insert_or_assign(SDLK_d, "callbackMoveRight");
+    player1.keybinds.insert_or_assign(SDLK_a, "callbackMoveLeft");
+    player1.keybinds.insert_or_assign(SDLK_w, "callbackMoveUp");
+    player1.keybinds.insert_or_assign(SDLK_s, "callbackMoveDown");
     std::unordered_map<int, std::string>::iterator iter;
 
     iter = player1.keybinds.find(SDLK_d);
@@ -117,7 +118,7 @@ bool testKeyBindReset()
 
     player1.keybinds.clear();
     player2.keybinds.clear();
-    player1.keybinds.insert_or_assign(SDLK_a, "moveUp");
+    player1.keybinds.insert_or_assign(SDLK_a, "callbackMoveUp");
     player1.resetDefaultKeybind();
     player2.resetDefaultKeybind();
 
@@ -230,7 +231,8 @@ bool testEntityClean()
     ent.init(0, 0, TextureManager::loadTexture("res/tex/tilemap_proto.png", nullptr, nullptr));
     ent.clean();
     SDL_RenderCopy(Game::renderer, ent.getTexture(), nullptr, nullptr);
-    result = SDL_GetError() != "Invalid texture";
+    const char *err = SDL_GetError();
+    result = (std::string)(err) == (std::string)("Invalid texture"); // should have an error because the texture should be deleted
 
     if (result)
     {
@@ -262,6 +264,16 @@ bool testEntityDeconstructorClean()
 
 int main()
 {
+    auto path = std::filesystem::current_path();
+    bool workingDirIsCorrect = std::filesystem::exists(path.string() + "/res") &&
+                                std::filesystem::exists(path.string() + "/res/tex") &&
+                                std::filesystem::exists(path.string() + "/saves");
+    if (!workingDirIsCorrect)
+    {
+        std::cout << "The game has started in the wrong working directory. Attempting to correct working directory." << std::endl;
+        std::filesystem::current_path(path.string() + "/..");
+    }
+
     int passedTotal = 0;
     int testTotal = 0;
 
