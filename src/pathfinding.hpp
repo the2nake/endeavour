@@ -110,14 +110,16 @@ struct GridWithWeights : SquareGrid
     std::unordered_map<GridLocation, int> weights;
     GridWithWeights(int w, int h) : SquareGrid(w, h) {}
 
-    void clear() {
+    void clear()
+    {
         weights.clear();
         walls.clear();
         width = 0;
         height = 0;
     }
 
-    void setCost(GridLocation node, int cost) {
+    void setCost(GridLocation node, int cost)
+    {
         weights.insert_or_assign(node, cost);
     }
 
@@ -202,7 +204,9 @@ std::vector<Location> getPathToLocation(std::unordered_map<Location, Location> t
         {
             checked.push_back(currentCheck);
             currentCheck = trace[currentCheck];
-        } else {
+        }
+        else
+        {
             break;
         }
     }

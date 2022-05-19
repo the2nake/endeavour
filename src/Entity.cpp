@@ -6,11 +6,13 @@
 
 #include <iostream>
 
-Entity::~Entity() {
+Entity::~Entity()
+{
     clean();
 }
 
-void Entity::init(float x, float y, SDL_Texture* texture) {
+void Entity::init(float x, float y, SDL_Texture *texture)
+{
     this->texture = texture;
     this->x = x;
     this->y = y;
@@ -18,21 +20,24 @@ void Entity::init(float x, float y, SDL_Texture* texture) {
     SDL_QueryTexture(texture, nullptr, nullptr, &texw, &texh);
 }
 
-void Entity::handleEvent(SDL_Event event) {
-
+void Entity::handleEvent(SDL_Event event)
+{
 }
 
-void Entity::update() {
+void Entity::update()
+{
     drawX = std::round(x);
     drawY = std::round(y);
 }
 
-void Entity::render() {
+void Entity::render()
+{
     SDL_Rect dst{drawX, drawY, texw, texh};
     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
     SDL_RenderCopy(Game::renderer, texture, nullptr, &dst);
 }
 
-void Entity::clean() {
+void Entity::clean()
+{
     SDL_DestroyTexture(texture);
 }

@@ -24,13 +24,14 @@ public:
     virtual float getX() { return x; }
     virtual float getY() { return y; }
 
-
     virtual int getIntAttribute(std::string name)
     {
         if (int_attrs.find(name) != int_attrs.end())
         {
             return int_attrs.at(name);
-        } else {
+        }
+        else
+        {
             return -1;
         }
     }
@@ -40,7 +41,9 @@ public:
         if (flt_attrs.find(name) != flt_attrs.end())
         {
             return flt_attrs.at(name);
-        } else {
+        }
+        else
+        {
             return -1;
         }
     }
@@ -50,7 +53,9 @@ public:
         if (str_attrs.find(name) != str_attrs.end())
         {
             return str_attrs.at(name);
-        } else {
+        }
+        else
+        {
             return "";
         }
     }

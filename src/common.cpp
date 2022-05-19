@@ -21,26 +21,36 @@ void splitString(std::vector<std::string> &container, std::string s, std::string
     }
 }
 
-std::string trimWhitespace(std::string s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) { return !std::isspace(ch); }));
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
+std::string trimWhitespace(std::string s)
+{
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch)
+                                    { return !std::isspace(ch); }));
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch)
+                         { return !std::isspace(ch); })
+                .base(),
+            s.end());
     return s;
 }
 
-SDL_Rect stringToSDLRect(std::string s, std::string delim) {
+SDL_Rect stringToSDLRect(std::string s, std::string delim)
+{
     SDL_Rect rect;
     std::vector<std::string> temp;
     splitString(temp, s, delim);
-    if (temp.size() >= 1) {
+    if (temp.size() >= 1)
+    {
         rect.x = std::atoi(temp[0].c_str());
     }
-    if (temp.size() >= 2) {
+    if (temp.size() >= 2)
+    {
         rect.y = std::atoi(temp[1].c_str());
     }
-    if (temp.size() >= 3) {
+    if (temp.size() >= 3)
+    {
         rect.w = std::atoi(temp[2].c_str());
     }
-    if (temp.size() >= 4) {
+    if (temp.size() >= 4)
+    {
         rect.h = std::atoi(temp[3].c_str());
     }
     return rect;

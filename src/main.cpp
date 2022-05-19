@@ -11,8 +11,8 @@ int main(int argc, char *argv[])
 {
     auto path = std::filesystem::current_path();
     bool workingDirIsCorrect = std::filesystem::exists(path.string() + "/res") &&
-                                std::filesystem::exists(path.string() + "/res/tex") &&
-                                std::filesystem::exists(path.string() + "/saves");
+                               std::filesystem::exists(path.string() + "/res/tex") &&
+                               std::filesystem::exists(path.string() + "/saves");
     if (!workingDirIsCorrect)
     {
         std::cout << "The game has started in the wrong working directory. Attempting to correct working directory." << std::endl;

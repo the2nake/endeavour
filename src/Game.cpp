@@ -106,19 +106,23 @@ void Game::update()
 {
     player.update();
 
-    for (Entity *entity : Level::entities) {
+    for (Entity *entity : Level::entities)
+    {
         entity->update();
     }
 
     // errors
     std::vector<std::string> endedErrorCooldowns = {};
-    for (auto errorCooldownPair : Game::errors) {
+    for (auto errorCooldownPair : Game::errors)
+    {
         Game::errors.insert_or_assign(errorCooldownPair.first, errorCooldownPair.second - 1);
-        if (errorCooldownPair.second <= 0) {
+        if (errorCooldownPair.second <= 0)
+        {
             endedErrorCooldowns.push_back(errorCooldownPair.first);
         }
     }
-    for (std::string s : endedErrorCooldowns) {
+    for (std::string s : endedErrorCooldowns)
+    {
         Game::errors.erase(s);
     }
 }
@@ -135,15 +139,18 @@ void Game::render()
 
     player.render();
 
-    for (Entity *entity : Level::entities) {
+    for (Entity *entity : Level::entities)
+    {
         entity->render();
     }
 
     SDL_RenderPresent(Game::renderer);
 }
 
-void Game::add_error(std::string msg) {
-    if (Game::errors.find(msg) == Game::errors.end()) {
+void Game::add_error(std::string msg)
+{
+    if (Game::errors.find(msg) == Game::errors.end())
+    {
         std::cout << msg << std::endl;
         Game::errors.insert_or_assign(msg, 60);
     }
