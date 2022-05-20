@@ -207,7 +207,7 @@ bool testTextureCache()
     else
     {
         TextureManager::loadTexture("res/tex/tilemap_proto.png");
-        result = TextureManager::retriveCachedTexture("res/tex/tilemap_proto.png") != nullptr;
+        result = TextureManager::retriveCachedTexture("res/tex/tilemap_proto.png");
         TextureManager::loadTexture("res/tex/tilemap_proto.png");
         result = result && TextureManager::textureCacheUsed;
     }
@@ -228,7 +228,7 @@ bool testEntityClean()
     bool result = false;
 
     Entity ent = Entity();
-    ent.init(0, 0, TextureManager::loadTexture("res/tex/tilemap_proto.png", nullptr, nullptr));
+    ent.init(0, 0, TextureManager::loadTexture("res/tex/tilemap_proto.png"));
     ent.clean();
     SDL_RenderCopy(Game::renderer, ent.getTexture(), nullptr, nullptr);
     const char *err = SDL_GetError();
@@ -246,9 +246,37 @@ bool testEntityClean()
     return result;
 }
 
-bool testEntityDeconstructorClean()
+bool testPolymorphicDeconstructorClean()
 {
+    // Test if calling ai->~Entity() deconstructs properly
     bool result = false;
+
+    AI ai = AI();
+    ai.init(0, 0, TextureManager::loadTexture("res/tex/tilemap_proto.png"));
+    SDL_Texture* tex = ai.getTexture();
+    Entity* ai_ptr = &ai;
+    ai_ptr->~Entity();
+    
+    SDL_RenderCopy(Game::renderer, tex, nullptr, nullptr);
+    const char *err = SDL_GetError();
+    result = tex != nullptr && (std::string)(err) == (std::string)("Invalid texture");
+
+    if (result)
+    {
+        std::cout << "PASS: " << __func__ << std::endl;
+    }
+    else
+    {
+        std::cout << "FAIL: " << __func__ << std::endl;
+    }
+
+    return result;
+}
+
+bool testLevelLoading() {
+    bool result = false;
+
+    
 
     if (result)
     {
@@ -266,8 +294,8 @@ int main()
 {
     auto path = std::filesystem::current_path();
     bool workingDirIsCorrect = std::filesystem::exists(path.string() + "/res") &&
-                                std::filesystem::exists(path.string() + "/res/tex") &&
-                                std::filesystem::exists(path.string() + "/saves");
+                               std::filesystem::exists(path.string() + "/res/tex") &&
+                               std::filesystem::exists(path.string() + "/saves");
     if (!workingDirIsCorrect)
     {
         std::cout << "The game has started in the wrong working directory. Attempting to correct working directory." << std::endl;
@@ -280,7 +308,7 @@ int main()
     std::vector<testFunction> tests;
 
     // necessary to test texture loading
-    Game game = Game("Some", 1, 1, false, false);
+    Game game = Game("Some", 0, 0, false, false);
 
     // --- add more tests in this section ---
     tests = {&testKeyBindMapExecution,
@@ -288,8 +316,9 @@ int main()
              &testStringSplit,
              &testStringToRect,
              &testTextureCache,
-             &testEntityClean
-             }; //, &testEntityDeconstructorClean};
+             &testEntityClean,
+             &testPolymorphicDeconstructorClean,
+             &testLevelLoading};
     // ---
     for (int i = 0; i < tests.size(); i++)
     {
