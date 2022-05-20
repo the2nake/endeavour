@@ -64,11 +64,6 @@ s
         x += diffX * scaleFactor;
         y += diffY * scaleFactor;
     }
-
-    // TODO: optimize pathfinding
-    // TODO: fix pathfinding path being a less efficient path
-    // TODO: implement last seen system
-    // TODO: implement collisions
 }
 
 void AI::render()

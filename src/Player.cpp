@@ -255,8 +255,6 @@ void Player::update()
         moveX(dx * calculatedSpeed);
         moveY(dy * calculatedSpeed);
     }
-
-    // TODO: implement moveX for Y;
 }
 
 void Player::render()

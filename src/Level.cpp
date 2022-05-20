@@ -109,7 +109,6 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
             rowNum++;
         }
         Level::levelH = rowNum;
-        // TODO: create a graph for A*
         Level::loadNPCs(playerName, saveName, levelName);
         Level::generatePathfindingGrid();
     }
@@ -142,8 +141,6 @@ void Level::loadNPCs(std::string playerName, std::string saveName, std::string l
         xml_parse_result result = npcFile.load_file(pathToSave.c_str());
         // Valid npc files are: adjacent to this level, have proper format, and contain at least one npc
         xml_node npcEl = npcFile.child("npc");
-        // TODO: write unit test for level loading functions
-        // TODO: Make load surrounding levels (low-priority, requires level exits)
         xml_node textureEl = npcEl.child("animation").child("frame");
         if (textureEl.attribute("src").as_string() != "")
         {
