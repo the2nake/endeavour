@@ -1,4 +1,4 @@
-(A) Write unit test for level loading {due:2022-05-21}
+(A) Write unit test for level loading {due:2022-05-21} {cm:2022-05-23}
 (B) Optimize pathfinding {due:2022-05-27}
 (B) Correct pathfinding algorithm {due:2022-05-27}
 (C) Implement system to record where the entity saw something last {due:2022-05-28}

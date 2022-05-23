@@ -171,6 +171,7 @@ void Level::loadNPCs(std::string playerName, std::string saveName, std::string l
             AI *npc = new AI();
             SDL_Texture *npcTexture = TextureManager::loadTexture(pathToNPCTexture, cropRect, outDim);
             npc->init(npcEl.attribute("x").as_float(), npcEl.attribute("y").as_float(), npcTexture);
+            npc->setAttribute("name", npcEl.attribute("name").as_string());
             npc->setAttribute("speed", npcEl.attribute("speed").as_float());
             Level::entities.push_back(npc);
         }

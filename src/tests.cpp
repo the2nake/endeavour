@@ -200,15 +200,15 @@ bool testTextureCache()
     // load, check if cached
     // load again, check if cache was used by setting a test flag (#ifdef PRINT_IF_USED_CACHE)
     bool result = false;
-    if (!std::filesystem::exists("res/tex/tilemap_proto.png"))
+    if (!std::filesystem::exists("test_res/tex/tilemap_proto.png"))
     {
         std::cout << "" << std::endl;
     }
     else
     {
-        TextureManager::loadTexture("res/tex/tilemap_proto.png");
-        result = TextureManager::retriveCachedTexture("res/tex/tilemap_proto.png");
-        TextureManager::loadTexture("res/tex/tilemap_proto.png");
+        TextureManager::loadTexture("test_res/tex/tilemap_proto.png");
+        result = TextureManager::retriveCachedTexture("test_res/tex/tilemap_proto.png");
+        TextureManager::loadTexture("test_res/tex/tilemap_proto.png");
         result = result && TextureManager::textureCacheUsed;
     }
     if (result)
@@ -228,7 +228,7 @@ bool testEntityClean()
     bool result = false;
 
     Entity ent = Entity();
-    ent.init(0, 0, TextureManager::loadTexture("res/tex/tilemap_proto.png"));
+    ent.init(0, 0, TextureManager::loadTexture("test_res/tex/tilemap_proto.png"));
     ent.clean();
     SDL_RenderCopy(Game::renderer, ent.getTexture(), nullptr, nullptr);
     const char *err = SDL_GetError();
@@ -252,7 +252,7 @@ bool testPolymorphicDeconstructorClean()
     bool result = false;
 
     AI ai = AI();
-    ai.init(0, 0, TextureManager::loadTexture("res/tex/tilemap_proto.png"));
+    ai.init(0, 0, TextureManager::loadTexture("test_res/tex/tilemap_proto.png"));
     SDL_Texture* tex = ai.getTexture();
     Entity* ai_ptr = &ai;
     ai_ptr->~Entity();
@@ -276,7 +276,24 @@ bool testPolymorphicDeconstructorClean()
 bool testLevelLoading() {
     bool result = false;
 
-    
+    Level::loadLevel("..", "TestPlayer/save_1", "level1");
+
+    if (Level::entities.size()) {
+        if (Level::entities[0]->getStringAttribute("name") == "Anthony") {
+            Tile tile = Level::getTileFromName(Level::getTileNameAt(32, 32));
+            if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == -1) {
+                result = true;
+            }
+            tile = Level::getTileFromName(Level::getTileNameAt(33, 33));
+            if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == 1) {
+                result = result && true;
+            }
+        } else {
+            result = false;
+        }
+    } else {
+        result = false;
+    }
 
     if (result)
     {
@@ -294,7 +311,7 @@ int main()
 {
     auto path = std::filesystem::current_path();
     bool workingDirIsCorrect = std::filesystem::exists(path.string() + "/res") &&
-                               std::filesystem::exists(path.string() + "/res/tex") &&
+                               std::filesystem::exists(path.string() + "/test_res/tex") &&
                                std::filesystem::exists(path.string() + "/saves");
     if (!workingDirIsCorrect)
     {
