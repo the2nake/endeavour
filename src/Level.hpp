@@ -29,17 +29,28 @@ public:
     static void renderBackground();
     static void generatePathfindingGrid();
 
+    static GridLocation getTilePosAt(float x, float y)
+    {
+        return {(int)(std::floor(x / Level::tileW)), (int)(std::floor(y / Level::tileH))};
+    }
+
     static std::string getTileNameAt(float x, float y)
     {
-        if (0 <= std::floor(x / Level::tileW) && std::floor(x / Level::tileW) < Level::levelW)
+        int gridX = std::floor(x / Level::tileW);
+        int gridY = std::floor(y / Level::tileH);
+        if (0 <= gridX && gridX < Level::levelW)
         {
-            if (0 <= std::floor(y / Level::tileH) && std::floor(y / Level::tileH) < Level::levelH)
+            if (0 <= gridY && gridY < Level::levelH)
             {
-                return Level::tiles[std::floor(y / Level::tileH)][std::floor(x / Level::tileW)];
-            } else {
+                return Level::tiles[gridY][gridX];
+            }
+            else
+            {
                 return "";
             }
-        } else {
+        }
+        else
+        {
             return "";
         }
     }
