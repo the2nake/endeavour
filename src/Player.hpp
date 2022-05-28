@@ -9,17 +9,18 @@
 
 #include "Entity.hpp"
 
-class Player
+class Player : public Entity
 {
 public:
     Player() {}
-    void init(float x, float y, std::string name, SDL_Texture *texture);
+    ~Player() override;
+    void init(float x, float y, SDL_Texture *texture);
 
-    void handleEvent(SDL_Event event);
-    void update();
-    void render();
+    void handleEvent(SDL_Event event) override;
+    void update() override;
+    void render() override;
 
-    void clean();
+    void clean() override;
 
     std::unordered_map<int, std::string> keybinds;
     static std::vector<int> registeredKeys;

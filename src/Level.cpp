@@ -47,7 +47,8 @@ void Level::loadPlayerData(std::string playerName, std::string saveName)
             SDL_Texture *playerTexture = TextureManager::loadTexture(firstFrameNode.attribute("texture").as_string(), &cropRect, &outRect);
 
             Game::player = Player();
-            Game::player.init(playerX, playerY, loadedPlayerName, playerTexture);
+            Game::player.init(playerX, playerY, playerTexture);
+            Game::player.setAttribute("name", playerNode.attribute("name").as_string());
             Game::player.setAttribute("speed", playerNode.attribute("speed").as_string() == "" ? (float)(1) : playerNode.attribute("speed").as_float());
         }
         else
@@ -227,7 +228,7 @@ void Level::generatePathfindingGrid()
             }
             else
             {
-                Level::pathfindingGrid.weights.insert_or_assign(GridLocation{colIndex, rowIndex}, currentTile.movementCost);
+                Level::pathfindingGrid.setCost(GridLocation{colIndex, rowIndex}, currentTile.movementCost);
             }
             colIndex++;
         }

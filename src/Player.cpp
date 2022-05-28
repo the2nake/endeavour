@@ -11,12 +11,15 @@
 std::string RESET_ALL_KEYBINDS = "";
 std::vector<int> Player::registeredKeys;
 
-void Player::init(float x, float y, std::string name, SDL_Texture *texture)
+Player::~Player() {
+    clean();
+}
+
+void Player::init(float x, float y, SDL_Texture *texture)
 {
     this->texture = texture;
     this->x = x;
     this->y = y;
-    this->name = name;
 
     SDL_QueryTexture(texture, nullptr, nullptr, &texw, &texh);
 
@@ -238,9 +241,9 @@ void Player::update()
 
     // averaging out movement costs
     float movementCost = (Level::getTileFromName(Level::getTileNameAt(x, y)).movementCost +
-                          Level::getTileFromName(Level::getTileNameAt(x + texw, y)).movementCost +
-                          Level::getTileFromName(Level::getTileNameAt(x, y + texh)).movementCost +
-                          Level::getTileFromName(Level::getTileNameAt(x + texw, y + texh)).movementCost) /
+                          Level::getTileFromName(Level::getTileNameAt(x + texw - 1, y)).movementCost +
+                          Level::getTileFromName(Level::getTileNameAt(x, y + texh - 1)).movementCost +
+                          Level::getTileFromName(Level::getTileNameAt(x + texw - 1, y + texh - 1)).movementCost) /
                          4.0f;
     float calculatedSpeed = getFloatAttribute("speed") / std::max(movementCost, 1.0f);
 

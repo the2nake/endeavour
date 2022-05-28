@@ -28,6 +28,8 @@ void AI::update()
     // drawing coords
     drawX = std::round(x);
     drawY = std::round(y);
+
+    // 
 }
 
 void AI::render()

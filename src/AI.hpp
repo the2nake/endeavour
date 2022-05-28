@@ -66,6 +66,8 @@ private:
     int drawX = 0, drawY = 0;
     int texw = 0, texh = 0;
 
+    Entity* target = nullptr;
+
     AttributeMap<int> int_attrs;
     AttributeMap<float> flt_attrs;
     AttributeMap<std::string> str_attrs;

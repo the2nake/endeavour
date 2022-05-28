@@ -154,6 +154,11 @@ inline double heuristic(GridLocation a, GridLocation b)
     }
 }
 
+/* a star requires: double Graph::cost(Location, Location), from neighbouring nodes
+                    std::vector<Location> Graph::neighbours(Location)
+                    heuristic(Location, Location)
+                    */
+
 template <typename Location, typename Graph>
 void a_star_search(Graph graph,
                    Location start,
@@ -181,6 +186,7 @@ void a_star_search(Graph graph,
             double new_cost = cost_so_far[current] + graph.cost(current, next);
             if (cost_so_far.find(next) == cost_so_far.end() || new_cost < cost_so_far[next])
             {
+                // if the current path is more efficient or there is no score, update the score for that Location
                 cost_so_far[next] = new_cost;
                 double priority = new_cost + heuristic(next, goal);
                 frontier.put(next, priority);
@@ -194,9 +200,6 @@ template <typename Location>
 std::vector<Location> getPathToLocation(std::unordered_map<Location, Location> trace, Location location)
 {
     Location currentCheck = location;
-    // for (std::pair<Location, Location> some_pair : trace) {
-    //     std::cout << some_pair.first << " " << some_pair.second << std::endl;
-    // }
     std::vector<Location> checked;
     for (int i = 0; i < 10000; i++)
     {
