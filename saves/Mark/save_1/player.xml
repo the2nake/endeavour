@@ -1,5 +1,5 @@
 <player name="Mark" x="512" y="128" speed="1">
     <animation name="idle">
-        <frame texture="res/tex/tilemap_proto.png" crop="32 0 8 8" outRect="0 0 32 32"/>
+        <frame texture="res/tex/tilemap_proto.png" crop="36 0 8 8" outRect="0 0 32 32"/>
     </animation>
 </player>
