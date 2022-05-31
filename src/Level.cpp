@@ -89,7 +89,7 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
             SDL_Rect dst = stringToSDLRect(tileEl.attribute("outRect").as_string());
             tempTile.texture = TextureManager::loadTexture(tileEl.attribute("src").as_string(), &src, &dst); // this should point to the same texture pointed to in TextureManager::loadedTextures
                                                                                                              // if there are duplcicates
-            tempTile.movementCost = tileEl.attribute("movementCost").as_int(1);
+            tempTile.movementCost = tileEl.attribute("movementCost").as_float(1.0f);
             tempTile.isNatural = tileEl.attribute("isNatural").as_bool(false);
             Level::tileDataLookup.insert_or_assign(tileEl.attribute("name").as_string(), tempTile);
         }
@@ -219,10 +219,11 @@ void Level::generatePathfindingGrid()
     int rowIndex = 0, colIndex = 0;
     for (std::vector<std::string> tileRow : Level::tiles)
     {
+        colIndex = 0;
         for (std::string tileName : tileRow)
         {
             currentTile = Level::getTileFromName(tileName);
-            if (currentTile.movementCost < 0)
+            if (currentTile.movementCost <= 0)
             {
                 Level::pathfindingGrid.walls.insert(GridLocation{colIndex, rowIndex});
             }

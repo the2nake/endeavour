@@ -19,6 +19,8 @@ public:
     SDL_Texture *getTexture() override { return texture; }
     float getX() override { return x; }
     float getY() override { return y; }
+    int getTextureW() override { return texw; }
+    int getTextureH() override { return texh; }
 
     int getIntAttribute(std::string name) override
     {

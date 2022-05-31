@@ -26,9 +26,10 @@ public:
     static std::vector<int> registeredKeys;
     void resetDefaultKeybind(std::string alias = "");
     int getDefaultKey(std::string alias);
-    using playerAction = void (Player::*)();
-    playerAction getFunctionOf(std::string alias);
 
+    using playerAction = void (Player::*)();
+
+    playerAction getFunctionOf(std::string alias);
     std::unordered_map<std::string, void (Player::*)()> aliasFunctionMap;
     void initAliasMap();
 
@@ -43,10 +44,11 @@ public:
     void moveX(float mx);
     void moveY(float my);
 
-    SDL_Texture *getTexture() { return texture; }
-    float getX() { return x; }
-    float getY() { return y; }
-    std::string getName() { return name; }
+    SDL_Texture *getTexture() override { return texture; }
+    float getX() override { return x; }
+    float getY() override { return y; }
+    int getTextureW() override { return texw; }
+    int getTextureH() override { return texh; }
 
     int getIntAttribute(std::string name)
     {
@@ -93,7 +95,6 @@ private:
     float x = 0, y = 0, dx = 0, dy = 0;
     int drawX = 0, drawY = 0;
     int texw = 0, texh = 0;
-    std::string name;
 
     AttributeMap<int> int_attrs;
     AttributeMap<float> flt_attrs;

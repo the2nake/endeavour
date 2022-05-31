@@ -10,7 +10,7 @@
 struct Tile
 {
     SDL_Texture *texture = nullptr;
-    int movementCost = 1;
+    float movementCost = 1.0f;
     bool isNatural = false;
 };
 
@@ -31,7 +31,10 @@ public:
 
     static GridLocation getTilePosAt(float x, float y)
     {
-        return {(int)(std::floor(x / Level::tileW)), (int)(std::floor(y / Level::tileH))};
+        GridLocation tempLoc;
+        tempLoc.x = std::floor(x / Level::tileW);
+        tempLoc.y = std::floor(y / Level::tileH);
+        return tempLoc;
     }
 
     static std::string getTileNameAt(float x, float y)
@@ -65,6 +68,15 @@ public:
         {
             return Tile{nullptr, 1, false};
         }
+    }
+
+    static float getMovementCostInArea(float x, float y, int w, int h)
+    {
+        return (Level::getTileFromName(Level::getTileNameAt(x, y)).movementCost +
+                Level::getTileFromName(Level::getTileNameAt(x + w - 1, y)).movementCost +
+                Level::getTileFromName(Level::getTileNameAt(x, y + h - 1)).movementCost +
+                Level::getTileFromName(Level::getTileNameAt(x + w - 1, y + h - 1)).movementCost) /
+                4.0f;
     }
 
     static void clean();

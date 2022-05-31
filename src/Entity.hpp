@@ -23,6 +23,8 @@ public:
     virtual SDL_Texture *getTexture() { return texture; }
     virtual float getX() { return x; }
     virtual float getY() { return y; }
+    virtual int getTextureW() { return texw; }
+    virtual int getTextureH() { return texh; }
 
     virtual int getIntAttribute(std::string name)
     {

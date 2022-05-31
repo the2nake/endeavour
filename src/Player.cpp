@@ -111,8 +111,6 @@ void Player::moveX(float mx)
     }
     else
     {
-        // get the bounding rectangle of the tile that it is bumping into
-        SDL_Rect bounding;
         if (movingLeft)
         {
             x = Level::tileW * std::floor(newx / Level::tileW) + Level::tileW;
@@ -152,8 +150,6 @@ void Player::moveY(float my)
     }
     else
     {
-        // get the bounding rectangle of the tile that it is bumping into
-        SDL_Rect bounding;
         if (movingUp)
         {
             y = Level::tileH * std::floor(newy / Level::tileH) + Level::tileH;
@@ -239,12 +235,8 @@ void Player::update()
         }
     }
 
-    // averaging out movement costs
-    float movementCost = (Level::getTileFromName(Level::getTileNameAt(x, y)).movementCost +
-                          Level::getTileFromName(Level::getTileNameAt(x + texw - 1, y)).movementCost +
-                          Level::getTileFromName(Level::getTileNameAt(x, y + texh - 1)).movementCost +
-                          Level::getTileFromName(Level::getTileNameAt(x + texw - 1, y + texh - 1)).movementCost) /
-                         4.0f;
+    // averaging out movement costs at the four corners
+    float movementCost = Level::getMovementCostInArea(x, y, texw, texh);
     float calculatedSpeed = getFloatAttribute("speed") / std::max(movementCost, 1.0f);
 
     // update the player's position

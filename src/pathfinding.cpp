@@ -21,6 +21,10 @@ std::basic_iostream<char>::basic_ostream &operator<<(std::basic_iostream<char>::
     return out;
 }
 
+std::string std::to_string(GridLocation loc) {
+    return (std::string)("(") + std::to_string(loc.x) + ", " + std::to_string(loc.y) + ")";
+}
+
 std::array<GridLocation, 8> SquareGrid::DIRS = {
     /* East, West, North, South */
     GridLocation{1, 0}, GridLocation{-1, 0},
