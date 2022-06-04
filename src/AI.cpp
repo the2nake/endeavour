@@ -46,10 +46,6 @@ void AI::update()
     GridLocation targetLocation = Level::getTilePosAt(goalCenterX, goalCenterY);
     GridLocation currentLocation = Level::getTilePosAt(x + texw / 2.0f, y + texh / 2.0f);
     GridLocation nextLocation = currentLocation;
-    // std::cout << x + texw / 2.0f << " " << y + texh / 2.0f << std::endl;
-    // std::cout << Level::pathfindingGrid.in_bounds(currentLocation) << std::endl;
-    // std::cout << Level::pathfindingGrid.in_bounds(targetLocation) << std::endl;
-
     a_star_search(Level::pathfindingGrid, currentLocation, targetLocation, pathfindingTrace, pathfindingCosts);
 
     auto path = getPathToLocation(pathfindingTrace, targetLocation);
@@ -77,17 +73,17 @@ void AI::update()
             int xDirMult = isPositive(dX) ? 1 : -1;
             int yDirMult = isPositive(dY) ? 1 : -1;
 
-            if (std::abs(dX) <= diagStep && std::abs(dY) <= diagStep)
+            if (std::abs(dX) <= diagStep / 2.0f && std::abs(dY) <= diagStep / 2.0f)
             {
                 x = nextCoordX;
                 y = nextCoordY;
             }
-            else if (std::abs(dX) <= diagStep)
+            else if (std::abs(dX) <= diagStep / 2.0f)
             {
                 x = nextCoordX;
                 y += yDirMult * calculatedSpeed;
             }
-            else if (std::abs(dY) <= diagStep)
+            else if (std::abs(dY) <= diagStep / 2.0f)
             {
                 y = nextCoordY;
                 x += xDirMult * calculatedSpeed;
