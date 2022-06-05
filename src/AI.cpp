@@ -93,7 +93,6 @@ void AI::update()
                 x += xDirMult * diagStep;
                 y += yDirMult * diagStep;
             }
-            draw_grid(Level::pathfindingGrid, &pathfindingCosts, &pathfindingTrace, &path, &currentLocation, &targetLocation);
         }
     }
 }
