@@ -73,7 +73,7 @@ struct SquareGrid
     SquareGrid(int width_, int height_)
         : width(width_), height(height_) {}
 
-    bool in_bounds(GridLocation id) const
+    bool inBounds(GridLocation id) const
     {
         return 0 <= id.x && id.x < width && 0 <= id.y && id.y < height;
     }
@@ -90,7 +90,7 @@ struct SquareGrid
         for (GridLocation dir : DIRS)
         {
             GridLocation next{id.x + dir.x, id.y + dir.y};
-            if (in_bounds(next) && traversable(next))
+            if (inBounds(next) && traversable(next))
             {
                 if (traversable({id.x + dir.x, id.y}) && traversable({id.x, id.y + dir.y}))
                 {
