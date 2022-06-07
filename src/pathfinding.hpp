@@ -9,7 +9,6 @@
 #include <iostream>
 #include <bits/stdc++.h>
 #include <string>
-#include "Game.hpp"
 
 template <typename T, typename priority_t>
 struct PriorityQueue
@@ -196,6 +195,8 @@ void a_star_search(Graph graph,
     }
 }
 
+void addInvalidQueryToGameErrors();
+
 template <typename Location>
 std::vector<Location> getPathToLocation(std::unordered_map<Location, Location> trace, Location location)
 {
@@ -203,7 +204,7 @@ std::vector<Location> getPathToLocation(std::unordered_map<Location, Location> t
     std::vector<Location> checked = {};
 
     if (trace.find(location) == trace.end()) {
-        Game::add_error("Invalid query: location is not accessible.");
+        addInvalidQueryToGameErrors();
         return checked;
     }
 

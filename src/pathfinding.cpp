@@ -1,4 +1,5 @@
 #include "pathfinding.hpp"
+#include "Game.hpp"
 
 bool operator==(GridLocation a, GridLocation b)
 {
@@ -33,3 +34,7 @@ std::array<GridLocation, 8> SquareGrid::DIRS = {
     GridLocation{1, 1}, GridLocation{1, -1},
     GridLocation{-1, 1}, GridLocation{-1, -1}
 };
+
+void addInvalidQueryToErrors() {
+    Game::add_error("Invalid query: location is not accessible.");
+}
