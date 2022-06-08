@@ -8,6 +8,7 @@
 #include <vector>
 #include <iostream>
 #include <bits/stdc++.h>
+#include <string>
 
 template <typename T, typename priority_t>
 struct PriorityQueue
@@ -38,6 +39,8 @@ struct GridLocation
     int x, y;
 };
 
+const GridLocation initLocation{-1, -1};
+
 bool operator==(GridLocation a, GridLocation b);
 
 bool operator!=(GridLocation a, GridLocation b);
@@ -58,6 +61,8 @@ namespace std
             return std::hash<int>()(id.x ^ (id.y << 16));
         }
     };
+
+    std::string to_string(GridLocation location);
 }
 
 struct SquareGrid
@@ -70,7 +75,7 @@ struct SquareGrid
     SquareGrid(int width_, int height_)
         : width(width_), height(height_) {}
 
-    bool in_bounds(GridLocation id) const
+    bool inBounds(GridLocation id) const
     {
         return 0 <= id.x && id.x < width && 0 <= id.y && id.y < height;
     }
@@ -87,17 +92,12 @@ struct SquareGrid
         for (GridLocation dir : DIRS)
         {
             GridLocation next{id.x + dir.x, id.y + dir.y};
-            if (in_bounds(next) && traversable(next))
+            if (inBounds(next) && traversable(next))
             {
-                bool isDiagonal = std::abs(dir.x) + std::abs(dir.y) == 2;
-                if (isDiagonal)
+                if (traversable({id.x + dir.x, id.y}) && traversable({id.x, id.y + dir.y}))
                 {
-                    if (in_bounds({id.x + dir.x, id.y}) && in_bounds({id.x, id.y + dir.y}))
-                    {
-                        results.push_back(next);
-                    }
+                    results.push_back(next);
                 }
-                results.push_back(next);
             }
         }
 
@@ -107,8 +107,22 @@ struct SquareGrid
 
 struct GridWithWeights : SquareGrid
 {
-    std::unordered_map<GridLocation, int> weights;
+    std::unordered_map<GridLocation, float> weights;
     GridWithWeights(int w, int h) : SquareGrid(w, h) {}
+
+    void clear()
+    {
+        weights.clear();
+        walls.clear();
+        width = 0;
+        height = 0;
+    }
+
+    void setCost(GridLocation node, float cost)
+    {
+        weights.insert_or_assign(node, cost);
+    }
+
     double cost(GridLocation from_node, GridLocation to_node) const
     {
         // may only be called on nodes accessible via movements in DIRS
@@ -122,7 +136,7 @@ struct GridWithWeights : SquareGrid
         {
             weight = weights.at(to_node);
         }
-        return weight * (isDiagonal ? 14 : 10);
+        return (isDiagonal ? 1.4 * weight : weight);
     }
 };
 
@@ -130,15 +144,21 @@ inline double heuristic(GridLocation a, GridLocation b)
 {
     int dX = std::abs(a.x - b.x);
     int dY = std::abs(a.y - b.y);
+    //return dX+dY;
     if (dX > dY)
     {
-        return 14 * dY + 10 * (dX - dY);
+        return 0.4 * dY + dX;
     }
     else
     {
-        return 14 * dX + 10 * (dY - dX);
+        return 0.4 * dX + dY ;
     }
 }
+
+/* a star requires: double Graph::cost(Location, Location), from neighbouring nodes
+                    std::vector<Location> Graph::neighbours(Location)
+                    heuristic(Location, Location)
+                    */
 
 template <typename Location, typename Graph>
 void a_star_search(Graph graph,
@@ -167,6 +187,7 @@ void a_star_search(Graph graph,
             double new_cost = cost_so_far[current] + graph.cost(current, next);
             if (cost_so_far.find(next) == cost_so_far.end() || new_cost < cost_so_far[next])
             {
+                // if the current path is more efficient or there is no score, update the score for that Location
                 cost_so_far[next] = new_cost;
                 double priority = new_cost + heuristic(next, goal);
                 frontier.put(next, priority);
@@ -176,21 +197,28 @@ void a_star_search(Graph graph,
     }
 }
 
+void addInvalidQueryToGameErrors();
+
 template <typename Location>
 std::vector<Location> getPathToLocation(std::unordered_map<Location, Location> trace, Location location)
 {
     Location currentCheck = location;
-    // for (std::pair<Location, Location> some_pair : trace) {
-    //     std::cout << some_pair.first << " " << some_pair.second << std::endl;
-    // }
-    std::vector<Location> checked;
+    std::vector<Location> checked = {};
+
+    if (trace.find(location) == trace.end()) {
+        addInvalidQueryToGameErrors();
+        return checked;
+    }
+
     for (int i = 0; i < 10000; i++)
     {
         if (trace.find(currentCheck) != trace.end() && std::find(checked.begin(), checked.end(), currentCheck) == checked.end())
         {
             checked.push_back(currentCheck);
             currentCheck = trace[currentCheck];
-        } else {
+        }
+        else
+        {
             break;
         }
     }
@@ -232,8 +260,23 @@ void draw_grid(const Graph &graph,
             else if (point_to != nullptr && point_to->count(id))
             {
                 GridLocation next = (*point_to)[id];
-                if (next.x == x + 1)
+                if (next == GridLocation{x + 1, y + 1})
                 {
+                    std::cout << " \\ ";
+                }
+                else if (next == GridLocation{x - 1, y - 1})
+                {
+                    std::cout << " \\ ";
+                }
+                else if (next == GridLocation{x + 1, y - 1})
+                {
+                    std::cout << " / ";
+                }
+                else if (next == GridLocation{x - 1, y + 1})
+                {
+                    std::cout << " / ";
+                }
+                else if (next.x == x + 1) {
                     std::cout << " > ";
                 }
                 else if (next.x == x - 1)

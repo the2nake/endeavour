@@ -6,16 +6,20 @@
 
 #include "TextureManager.hpp"
 #include "Game.hpp"
+#include "Level.hpp"
 
 std::string RESET_ALL_KEYBINDS = "";
 std::vector<int> Player::registeredKeys;
 
-void Player::init(int x, int y, std::string name, SDL_Texture *texture)
+Player::~Player() {
+    clean();
+}
+
+void Player::init(float x, float y, SDL_Texture *texture)
 {
     this->texture = texture;
     this->x = x;
     this->y = y;
-    this->name = name;
 
     SDL_QueryTexture(texture, nullptr, nullptr, &texw, &texh);
 
@@ -26,10 +30,10 @@ void Player::init(int x, int y, std::string name, SDL_Texture *texture)
 void Player::initAliasMap()
 {
     aliasFunctionMap.clear();
-    aliasFunctionMap.insert_or_assign("moveUp", &Player::moveUp);
-    aliasFunctionMap.insert_or_assign("moveDown", &Player::moveDown);
-    aliasFunctionMap.insert_or_assign("moveRight", &Player::moveRight);
-    aliasFunctionMap.insert_or_assign("moveLeft", &Player::moveLeft);
+    aliasFunctionMap.insert_or_assign("callbackMoveUp", &Player::callbackMoveUp);
+    aliasFunctionMap.insert_or_assign("callbackMoveDown", &Player::callbackMoveDown);
+    aliasFunctionMap.insert_or_assign("callbackMoveRight", &Player::callbackMoveRight);
+    aliasFunctionMap.insert_or_assign("callbackMoveLeft", &Player::callbackMoveLeft);
 }
 
 void Player::resetDefaultKeybind(std::string alias)
@@ -46,15 +50,15 @@ void Player::resetDefaultKeybind(std::string alias)
     {
         keybinds.clear();
         // set the default keybinds for ALL of the keys
-        keybinds.insert_or_assign(SDLK_w, "moveUp");
-        keybinds.insert_or_assign(SDLK_s, "moveDown");
-        keybinds.insert_or_assign(SDLK_a, "moveLeft");
-        keybinds.insert_or_assign(SDLK_d, "moveRight");
+        keybinds.insert_or_assign(SDLK_w, "callbackMoveUp");
+        keybinds.insert_or_assign(SDLK_s, "callbackMoveDown");
+        keybinds.insert_or_assign(SDLK_a, "callbackMoveLeft");
+        keybinds.insert_or_assign(SDLK_d, "callbackMoveRight");
 
-        keybinds.insert_or_assign(SDLK_UP, "moveUp");
-        keybinds.insert_or_assign(SDLK_DOWN, "moveDown");
-        keybinds.insert_or_assign(SDLK_LEFT, "moveLeft");
-        keybinds.insert_or_assign(SDLK_RIGHT, "moveRight");
+        keybinds.insert_or_assign(SDLK_UP, "callbackMoveUp");
+        keybinds.insert_or_assign(SDLK_DOWN, "callbackMoveDown");
+        keybinds.insert_or_assign(SDLK_LEFT, "callbackMoveLeft");
+        keybinds.insert_or_assign(SDLK_RIGHT, "callbackMoveRight");
     }
 }
 
@@ -74,10 +78,88 @@ Player::playerAction Player::getFunctionOf(std::string alias)
     return nullptr;
 }
 
-void Player::moveRight() { x += 1; }
-void Player::moveLeft() { x -= 1; }
-void Player::moveDown() { y += 1; }
-void Player::moveUp() { y -= 1; }
+void Player::callbackMoveRight() { dx += 1; }
+void Player::callbackMoveLeft() { dx -= 1; }
+void Player::callbackMoveDown() { dy += 1; }
+void Player::callbackMoveUp() { dy -= 1; }
+
+void Player::moveX(float mx)
+{
+    if (mx == 0)
+    {
+        return;
+    }
+
+    bool movingLeft = mx < 0;
+    int newx;
+    if (movingLeft)
+    {
+        newx = std::floor(x + mx);
+    }
+    else
+    {
+        newx = std::ceil(x + mx);
+    }
+
+    int mcnw = Level::getTileFromName(Level::getTileNameAt(newx, y)).movementCost;
+    int mcne = Level::getTileFromName(Level::getTileNameAt(newx + texw - 1, y)).movementCost;
+    int mcse = Level::getTileFromName(Level::getTileNameAt(newx + texw - 1, y + texh - 1)).movementCost;
+    int mcsw = Level::getTileFromName(Level::getTileNameAt(newx, y + texh - 1)).movementCost;
+    if (!(mcnw == -1 || mcne == -1 || mcse == -1 || mcsw == -1))
+    {
+        x += mx;
+    }
+    else
+    {
+        if (movingLeft)
+        {
+            x = Level::tileW * std::floor(newx / Level::tileW) + Level::tileW;
+        }
+        else
+        {
+            x = Level::tileW * std::floor((newx + texw - 1) / Level::tileW) - texw;
+        }
+    }
+}
+
+void Player::moveY(float my)
+{
+    if (my == 0)
+    {
+        return;
+    }
+
+    bool movingUp = my < 0;
+    int newy;
+    if (movingUp)
+    {
+        newy = std::floor(y + my);
+    }
+    else
+    {
+        newy = std::ceil(y + my);
+    }
+
+    int mcnw = Level::getTileFromName(Level::getTileNameAt(x, newy)).movementCost;
+    int mcne = Level::getTileFromName(Level::getTileNameAt(x + texw - 1, newy)).movementCost;
+    int mcse = Level::getTileFromName(Level::getTileNameAt(x + texw - 1, newy + texh - 1)).movementCost;
+    int mcsw = Level::getTileFromName(Level::getTileNameAt(x, newy + texh - 1)).movementCost;
+    if (!(mcnw == -1 || mcne == -1 || mcse == -1 || mcsw == -1))
+    {
+        y += my;
+    }
+    else
+    {
+        if (movingUp)
+        {
+            y = Level::tileH * std::floor(newy / Level::tileH) + Level::tileH;
+        }
+        else
+        {
+            y = Level::tileH * std::floor((newy + texh - 1) / Level::tileH) - texh;
+        }
+    }
+}
 
 void Player::handleEvent(SDL_Event event)
 {
@@ -90,6 +172,10 @@ void Player::handleEvent(SDL_Event event)
 
 void Player::update()
 {
+    drawX = std::floor(x);
+    drawY = std::floor(y);
+    dx = 0;
+    dy = 0;
     registeredKeys.clear();
     for (std::unordered_map<int, std::string>::iterator it = Game::player.keybinds.begin(); it != Game::player.keybinds.end(); it++)
     {
@@ -107,7 +193,7 @@ void Player::update()
     {
         it.second -= Game::targetFrameTime;
     }
-
+    // executing the right function and handling the cooldowns
     for (int i = 0; i < registeredKeys.size(); i++)
     {
         auto checkPressIter = Game::keyIsDownMap.find(registeredKeys[i]);
@@ -148,13 +234,29 @@ void Player::update()
             }
         }
     }
+
+    // averaging out movement costs at the four corners
+    float movementCost = Level::getMovementCostInArea(x, y, texw, texh);
+    float calculatedSpeed = getFloatAttribute("speed") / std::max(movementCost, 1.0f);
+
+    // update the player's position
+    if (std::abs(dx) + std::abs(dy) == 2)
+    {
+        moveX(dx * 0.70710678118 * calculatedSpeed);
+        moveY(dy * 0.70710678118 * calculatedSpeed);
+    }
+    else
+    {
+        moveX(dx * calculatedSpeed);
+        moveY(dy * calculatedSpeed);
+    }
 }
 
 void Player::render()
 {
     if (texture != nullptr)
     {
-        SDL_Rect dst{x, y, texw, texh};
+        SDL_Rect dst{drawX, drawY, texw, texh};
         SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
         SDL_RenderCopy(Game::renderer, texture, nullptr, &dst);
     }

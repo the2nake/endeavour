@@ -12,8 +12,13 @@
 #include <iostream>
 #include <filesystem>
 
-int Level::gridW = 0;
-int Level::gridH = 0;
+int Level::tileW = 0;
+int Level::tileH = 0;
+int Level::levelW = 0;
+int Level::levelH = 0;
+
+GridWithWeights Level::pathfindingGrid{0, 0};
+
 std::vector<Entity *> Level::entities;
 std::unordered_map<std::string, Tile> Level::tileDataLookup;
 std::vector<std::vector<std::string>> Level::tiles;
@@ -33,8 +38,8 @@ void Level::loadPlayerData(std::string playerName, std::string saveName)
             xml_node playerNode = playerFile.child("player");
 
             std::string loadedPlayerName = playerNode.attribute("name").as_string();
-            int playerX = playerNode.attribute("x").as_int();
-            int playerY = playerNode.attribute("y").as_int();
+            int playerX = playerNode.attribute("x").as_float();
+            int playerY = playerNode.attribute("y").as_float();
             xml_node firstFrameNode = playerNode.child("animation").child("frame");
 
             SDL_Rect cropRect = stringToSDLRect(firstFrameNode.attribute("crop").as_string());
@@ -42,7 +47,9 @@ void Level::loadPlayerData(std::string playerName, std::string saveName)
             SDL_Texture *playerTexture = TextureManager::loadTexture(firstFrameNode.attribute("texture").as_string(), &cropRect, &outRect);
 
             Game::player = Player();
-            Game::player.init(playerX, playerY, loadedPlayerName, playerTexture);
+            Game::player.init(playerX, playerY, playerTexture);
+            Game::player.setAttribute("name", playerNode.attribute("name").as_string());
+            Game::player.setAttribute("speed", playerNode.attribute("speed").as_string() == "" ? (float)(1) : playerNode.attribute("speed").as_float());
         }
         else
         {
@@ -51,7 +58,7 @@ void Level::loadPlayerData(std::string playerName, std::string saveName)
     }
     else
     {
-        std::cout << "Save file at " + pathToSave + " could not be found." << std::endl;
+        Game::add_error("Save file at " + pathToSave + " could not be found.");
     }
 }
 
@@ -73,8 +80,8 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
         levelEl = saveFile.child("level");
         backgroundEl = levelEl.child("background");
 
-        Level::gridW = levelEl.attribute("gridW").as_int();
-        Level::gridH = levelEl.attribute("gridH").as_int();
+        Level::tileW = levelEl.attribute("tileW").as_int();
+        Level::tileH = levelEl.attribute("tileH").as_int();
 
         for (xml_node tileEl : tileIndexEl.children("tile"))
         {
@@ -82,8 +89,8 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
             SDL_Rect dst = stringToSDLRect(tileEl.attribute("outRect").as_string());
             tempTile.texture = TextureManager::loadTexture(tileEl.attribute("src").as_string(), &src, &dst); // this should point to the same texture pointed to in TextureManager::loadedTextures
                                                                                                              // if there are duplcicates
-            tempTile.movementCost = tileEl.attribute("movementCost").as_int(1);
-            tempTile.naturalTexture = tileEl.attribute("naturalTexture").as_bool();
+            tempTile.movementCost = tileEl.attribute("movementCost").as_float(1.0f);
+            tempTile.isNatural = tileEl.attribute("isNatural").as_bool(false);
             Level::tileDataLookup.insert_or_assign(tileEl.attribute("name").as_string(), tempTile);
         }
 
@@ -94,14 +101,17 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
             std::string rowText = row.text().as_string();
             std::vector<std::string> rowSplit = {};
             splitString(rowSplit, rowText, ",");
+            Level::levelW = 0;
             for (std::string tileName : rowSplit)
             {
                 Level::tiles[rowNum].push_back(trimWhitespace(tileName));
+                Level::levelW += 1;
             }
             rowNum++;
         }
-        // TODO: create a graph for A*
+        Level::levelH = rowNum;
         Level::loadNPCs(playerName, saveName, levelName);
+        Level::generatePathfindingGrid();
     }
     else
     {
@@ -132,14 +142,13 @@ void Level::loadNPCs(std::string playerName, std::string saveName, std::string l
         xml_parse_result result = npcFile.load_file(pathToSave.c_str());
         // Valid npc files are: adjacent to this level, have proper format, and contain at least one npc
         xml_node npcEl = npcFile.child("npc");
-        // TODO: write unit test for level loading functions
-        // TODO: Make load surrounding levels (low-priority, requires level exits)
         xml_node textureEl = npcEl.child("animation").child("frame");
         if (textureEl.attribute("src").as_string() != "")
         {
             SDL_Rect *cropRect, *outDim;
             SDL_Rect tmpCrop, tmpOut;
             std::string pathToNPCTexture = textureEl.attribute("src").as_string();
+
             if (textureEl.attribute("cropRect").as_string() != "")
             {
                 tmpCrop = stringToSDLRect(textureEl.attribute("cropRect").as_string());
@@ -149,6 +158,7 @@ void Level::loadNPCs(std::string playerName, std::string saveName, std::string l
             {
                 cropRect = nullptr;
             }
+
             if (textureEl.attribute("outRect").as_string() != "")
             {
                 tmpOut = stringToSDLRect(textureEl.attribute("outRect").as_string());
@@ -158,9 +168,12 @@ void Level::loadNPCs(std::string playerName, std::string saveName, std::string l
             {
                 outDim = nullptr;
             }
+            
             AI *npc = new AI();
             SDL_Texture *npcTexture = TextureManager::loadTexture(pathToNPCTexture, cropRect, outDim);
-            npc->init(npcEl.attribute("x").as_int(), npcEl.attribute("y").as_int(), npcTexture);
+            npc->init(npcEl.attribute("x").as_float(), npcEl.attribute("y").as_float(), npcTexture);
+            npc->setAttribute("name", npcEl.attribute("name").as_string());
+            npc->setAttribute("speed", npcEl.attribute("speed").as_float());
             Level::entities.push_back(npc);
         }
     }
@@ -170,7 +183,7 @@ void Level::renderBackground()
 {
     if (Level::tiles.empty() || !isRectangularVector(Level::tiles))
     {
-        std::cout << "Level::tiles is empty or invalid. Check if level was loaded properly." << std::endl;
+        Game::add_error("Level::tiles is empty or invalid. Check if level was loaded properly.");
         return;
     }
 
@@ -182,15 +195,45 @@ void Level::renderBackground()
             std::string tileName = Level::tiles[y][x];
             if (Level::tileDataLookup.find(tileName) != tileDataLookup.end())
             {
-                SDL_Rect dst{x * Level::gridW, y * Level::gridH, gridW, gridH};
+                SDL_Rect dst{x * Level::tileW, y * Level::tileH, tileW, tileH};
                 Tile tileData = Level::tileDataLookup.at(tileName);
-                SDL_RenderCopyEx(Game::renderer, tileData.texture, nullptr, &dst, tileData.naturalTexture ? 90 * ((x * y) % 3) : 0, nullptr, SDL_FLIP_NONE);
+                SDL_RenderCopyEx(Game::renderer, tileData.texture, nullptr, &dst, tileData.isNatural ? 90 * ((x * y) % 3) : 0, nullptr, SDL_FLIP_NONE);
             }
             else
             {
                 // error; tile does not exist
             }
         }
+    }
+}
+
+void Level::generatePathfindingGrid()
+{
+    /*
+    This function converts the data to a format that the pathfinding function uses.
+    This should be called when switching to a new level, or anytime the available paths in the level changes.
+    */
+    Level::pathfindingGrid.clear();
+    Level::pathfindingGrid = GridWithWeights{levelW, levelH};
+    Tile currentTile;
+    int rowIndex = 0, colIndex = 0;
+    for (std::vector<std::string> tileRow : Level::tiles)
+    {
+        colIndex = 0;
+        for (std::string tileName : tileRow)
+        {
+            currentTile = Level::getTileFromName(tileName);
+            if (currentTile.movementCost <= 0)
+            {
+                Level::pathfindingGrid.walls.insert(GridLocation{colIndex, rowIndex});
+            }
+            else
+            {
+                Level::pathfindingGrid.setCost(GridLocation{colIndex, rowIndex}, currentTile.movementCost);
+            }
+            colIndex++;
+        }
+        rowIndex++;
     }
 }
 

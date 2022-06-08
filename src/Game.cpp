@@ -16,6 +16,8 @@ SDL_Window *Game::window = nullptr;
 SDL_Renderer *Game::renderer = nullptr;
 double Game::targetFrameTime = 1000.0 / 60.0;
 
+std::unordered_map<std::string, int> Game::errors;
+
 std::unordered_map<int, bool> Game::keyIsDownMap;
 
 Player Game::player;
@@ -40,7 +42,7 @@ void initSDLImage(int flags)
 
 void createWindow(std::string windowTitle, int w, int h, bool fullscreen, bool shown)
 {
-    Game::window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | (shown ? SDL_WINDOW_SHOWN : 0));
+    Game::window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, (shown ? SDL_WINDOW_OPENGL : 0) | (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | (shown ? SDL_WINDOW_SHOWN : 0));
     if (Game::window == nullptr)
     {
         Game::running = false;
@@ -104,8 +106,24 @@ void Game::update()
 {
     player.update();
 
-    for (Entity *entity : Level::entities) {
+    for (Entity *entity : Level::entities)
+    {
         entity->update();
+    }
+
+    // errors
+    std::vector<std::string> endedErrorCooldowns = {};
+    for (auto errorCooldownPair : Game::errors)
+    {
+        Game::errors.insert_or_assign(errorCooldownPair.first, errorCooldownPair.second - 1);
+        if (errorCooldownPair.second <= 0)
+        {
+            endedErrorCooldowns.push_back(errorCooldownPair.first);
+        }
+    }
+    for (std::string s : endedErrorCooldowns)
+    {
+        Game::errors.erase(s);
     }
 }
 
@@ -121,12 +139,23 @@ void Game::render()
 
     player.render();
 
-    for (Entity *entity : Level::entities) {
+    for (Entity *entity : Level::entities)
+    {
         entity->render();
     }
 
     SDL_RenderPresent(Game::renderer);
 }
+
+void Game::add_error(std::string msg)
+{
+    if (Game::errors.find(msg) == Game::errors.end())
+    {
+        std::cout << msg << std::endl;
+        Game::errors.insert_or_assign(msg, 60);
+    }
+}
+
 void Game::clean()
 {
     SDL_DestroyWindow(Game::window);
