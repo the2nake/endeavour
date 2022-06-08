@@ -172,8 +172,8 @@ void Player::handleEvent(SDL_Event event)
 
 void Player::update()
 {
-    drawX = std::round(x);
-    drawY = std::round(y);
+    drawX = std::floor(x);
+    drawY = std::floor(y);
     dx = 0;
     dy = 0;
     registeredKeys.clear();

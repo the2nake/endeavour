@@ -26,8 +26,8 @@ void Entity::handleEvent(SDL_Event event)
 
 void Entity::update()
 {
-    drawX = std::round(x);
-    drawY = std::round(y);
+    drawX = std::floor(x);
+    drawY = std::floor(y);
 }
 
 void Entity::render()

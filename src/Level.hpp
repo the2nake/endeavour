@@ -17,7 +17,8 @@ struct Tile
 class Level
 {
 public:
-    static int tileW, tileH, levelW, levelH;
+    static int tileW, tileH; // in pixels
+    static int levelW, levelH; // in tiles
 
     static std::vector<Entity *> entities;
     static GridWithWeights pathfindingGrid;

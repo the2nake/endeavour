@@ -24,3 +24,9 @@ bool isRectangularVector(std::vector<std::vector<T>> &v)
     }
     return true;
 }
+
+template <typename Iter, typename Cont>
+bool isLast(Iter iter, const Cont& cont)
+{
+    return (iter != cont.end()) && (cont.end() - iter == 1);
+}

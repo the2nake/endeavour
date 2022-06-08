@@ -39,6 +39,8 @@ struct GridLocation
     int x, y;
 };
 
+const GridLocation initLocation{-1, -1};
+
 bool operator==(GridLocation a, GridLocation b);
 
 bool operator!=(GridLocation a, GridLocation b);

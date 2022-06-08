@@ -35,6 +35,6 @@ std::array<GridLocation, 8> SquareGrid::DIRS = {
     GridLocation{-1, 1}, GridLocation{-1, -1}
 };
 
-void addInvalidQueryToErrors() {
+void addInvalidQueryToGameErrors() {
     Game::add_error("Invalid query: location is not accessible.");
 }

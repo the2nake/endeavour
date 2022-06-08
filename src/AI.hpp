@@ -74,7 +74,13 @@ private:
     AttributeMap<float> flt_attrs;
     AttributeMap<std::string> str_attrs;
 
+    void pathfindToTarget();
+    void moveTowardsLocation(GridLocation loc);
+    void correctPositioning();
     std::unordered_map<GridLocation, GridLocation> pathfindingTrace;
     std::unordered_map<GridLocation, double> pathfindingCosts;
     std::vector<GridLocation> pathToGoal;
+    GridLocation pathTarget = initLocation;
+    GridLocation nextLocation = initLocation;
+    int pathIndex = -1;
 };
