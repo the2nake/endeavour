@@ -1,4 +1,4 @@
-<player name="Mark" x="512" y="128" speed="4">
+<player name="Mark" x="992" y="480" speed="3">
     <animation name="idle">
         <frame texture="res/tex/tilemap_proto.png" crop="36 0 8 8" outRect="0 0 32 32"/>
     </animation>
