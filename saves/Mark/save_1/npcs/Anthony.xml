@@ -1,4 +1,4 @@
-<npc name="Anthony" x="32" y="32" speed="1">
+<npc name="Anthony" x="256" y="256" speed="1">
 	<animation name="idle">
 		<frame src="res/tex/tilemap_proto.png" cropRect="54 0 8 8" outRect="0 0 32 32" />
 	</animation>
