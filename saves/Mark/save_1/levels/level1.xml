@@ -8,16 +8,15 @@
 
 	<tile name="wall1right" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="27 9 8 8" outRect="0 0 32 32" isNatural="0" />
 	<tile name="wall1topright" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="27 0 8 8" outRect="0 0 32 32" isNatural="0"/>
-	<tile name="wall1bottomright" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="27 27 8 8" outRect="0 0 32 32" isNatural="0"/>
+	<tile name="wall1bottomright" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="27 18 8 8" outRect="0 0 32 32" isNatural="0"/>
 
 	<tile name="wall1midleft" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 36 8 8" outRect="0 0 32 32" isNatural="0"/>
+	<tile name="wall1midupendleft" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="27 27 8 8" outRect="0 0 32 32" isNatural="0"/>
 	<tile name="wall1middownendleft" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="9 27 8 8" outRect="0 0 32 32" isNatural="0"/>
 
 	<tile name="wall1midright" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="9 36 8 8" outRect="0 0 32 32" isNatural="0"/>
-	<tile name="wall1middownendright" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 27 8 8" outRect="0 0 32 32" isNatural="0"/>
-
-	<tile name="wall1midupendleft" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="27 27 8 8" outRect="0 0 32 32" isNatural="0"/>
 	<tile name="wall1midupendright" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="18 27 8 8" outRect="0 0 32 32" isNatural="0"/>
+	<tile name="wall1middownendright" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 27 8 8" outRect="0 0 32 32" isNatural="0"/>
 
 	<tile name="wall1top" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="9 0 8 8" outRect="0 0 32 32" isNatural="0" />
 	<tile name="wall1bottom" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="9 0 8 8" outRect="0 0 32 32" isNatural="0" />
@@ -38,9 +37,6 @@
 			wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
-		</row>
-		<row>
 			wall1left, floor, wall1midupendright, wall1midupendleft, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
@@ -56,19 +52,25 @@
 			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+		</row>
+		<row>
+			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+		</row>
+		<row>
+			wall1bottomleft, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottom, wall1bottomright
 		</row>
 	</background>
 </level>
