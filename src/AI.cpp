@@ -92,7 +92,7 @@ void AI::moveTowardsLocation(GridLocation location)
     float calculatedSpeed = getFloatAttribute("speed") / std::max(cost, 1.0f);
     float rootTwoOverTwo = 0.707106f;
     float diagStep = calculatedSpeed * rootTwoOverTwo;
-    if (std::abs(dX) <= diagStep / 2.0f && std::abs(dY) <= diagStep / 2.0f)
+    if (std::abs(dX) <= diagStep && std::abs(dY) <= diagStep)
     {
         x = nextCoordX;
         y = nextCoordY;
@@ -104,15 +104,15 @@ void AI::moveTowardsLocation(GridLocation location)
 
     // snap to grid lines
 
-    if (std::abs(dX) <= diagStep / 2.0f)
+    if (std::abs(dX) <= diagStep)
     {
         x = nextCoordX;
-        y += yDirMult * calculatedSpeed;
+        y += yDirMult * calculatedSpeed - std::abs(dX);
     }
-    else if (std::abs(dY) <= diagStep / 2.0f)
+    else if (std::abs(dY) <= diagStep)
     {
         y = nextCoordY;
-        x += xDirMult * calculatedSpeed;
+        x += xDirMult * calculatedSpeed - std::abs(dY);
     }
     else
     {
@@ -171,7 +171,7 @@ void AI::update()
         float rootTwoOverTwo = 0.707106f;
         float diagStep = calculatedSpeed * rootTwoOverTwo;
 
-        if (std::abs(dX) <= diagStep / 2.0f && std::abs(dY) <= diagStep / 2.0f)
+        if (std::abs(dX) <= diagStep && std::abs(dY) <= diagStep)
         {
             x = nextCoordX;
             y = nextCoordY;
