@@ -85,6 +85,10 @@ void Player::callbackMoveUp() { dy -= 1; }
 
 void Player::moveX(float mx)
 {
+    // TODO: add a check to see if there is a collision rectangle
+    // if there is, check if the movement will actually conflict with any movement rectangles
+    // if there isn't, use the current logic (for just that tile)
+    // do the same for the y axis
     if (mx == 0)
     {
         return;
@@ -101,11 +105,13 @@ void Player::moveX(float mx)
         newx = std::ceil(x + mx);
     }
 
-    int mcnw = Level::getTileFromName(Level::getTileNameAt(newx, y)).movementCost;
-    int mcne = Level::getTileFromName(Level::getTileNameAt(newx + texw - 1, y)).movementCost;
-    int mcse = Level::getTileFromName(Level::getTileNameAt(newx + texw - 1, y + texh - 1)).movementCost;
-    int mcsw = Level::getTileFromName(Level::getTileNameAt(newx, y + texh - 1)).movementCost;
-    if (!(mcnw == -1 || mcne == -1 || mcse == -1 || mcsw == -1))
+    int mcnw = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, newx, y)).movementCost;
+    int mcne = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, newx + texw - 1, y)).movementCost;
+    int mcse = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, newx + texw - 1, y + texh - 1)).movementCost;
+    int mcsw = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, newx, y + texh - 1)).movementCost;
+    
+    bool nothingBlocking = mcnw > 0 && mcne > 0 && mcse > 0 && mcsw > 0;
+    if (nothingBlocking)
     {
         x += mx;
     }
@@ -124,6 +130,7 @@ void Player::moveX(float mx)
 
 void Player::moveY(float my)
 {
+    // TODO: add a check to see if there is a collision rectangle
     if (my == 0)
     {
         return;
@@ -140,11 +147,13 @@ void Player::moveY(float my)
         newy = std::ceil(y + my);
     }
 
-    int mcnw = Level::getTileFromName(Level::getTileNameAt(x, newy)).movementCost;
-    int mcne = Level::getTileFromName(Level::getTileNameAt(x + texw - 1, newy)).movementCost;
-    int mcse = Level::getTileFromName(Level::getTileNameAt(x + texw - 1, newy + texh - 1)).movementCost;
-    int mcsw = Level::getTileFromName(Level::getTileNameAt(x, newy + texh - 1)).movementCost;
-    if (!(mcnw == -1 || mcne == -1 || mcse == -1 || mcsw == -1))
+    int mcnw = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, newy)).movementCost;
+    int mcne = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + texw - 1, newy)).movementCost;
+    int mcse = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + texw - 1, newy + texh - 1)).movementCost;
+    int mcsw = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, newy + texh - 1)).movementCost;
+    
+    bool nothingBlocking = mcnw > 0 && mcne > 0 && mcse > 0 && mcsw > 0;
+    if (nothingBlocking)
     {
         y += my;
     }

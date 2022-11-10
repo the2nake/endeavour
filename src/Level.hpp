@@ -12,6 +12,8 @@ struct Tile
     SDL_Texture *texture = nullptr;
     float movementCost = 1.0f;
     bool isNatural = false;
+    SDL_Rect collisionRect1;
+    SDL_Rect collisionRect2;
 };
 
 class Level
@@ -28,6 +30,7 @@ public:
     static void loadNPCs(std::string playerName, std::string saveName, std::string levelName);
 
     static void renderBackground();
+    static void renderForeground();
     static void generatePathfindingGrid();
 
     static GridLocation getTilePosAt(float x, float y)
@@ -38,7 +41,7 @@ public:
         return tempLoc;
     }
 
-    static std::string getTileNameAt(float x, float y)
+    static std::string getTileNameAtPosition(std::string layer, int layerNum, float x, float y)
     {
         int gridX = std::floor(x / Level::tileW);
         int gridY = std::floor(y / Level::tileH);
@@ -46,7 +49,7 @@ public:
         {
             if (0 <= gridY && gridY < Level::levelH)
             {
-                return Level::tiles[gridY][gridX];
+                return layer == "foreground" ? Level::foreground[layerNum][gridY][gridX] : Level::background[layerNum][gridY][gridX];
             }
             else
             {
@@ -73,16 +76,18 @@ public:
 
     static float getMovementCostInArea(float x, float y, int w, int h)
     {
-        return (Level::getTileFromName(Level::getTileNameAt(x, y)).movementCost +
-                Level::getTileFromName(Level::getTileNameAt(x + w - 1, y)).movementCost +
-                Level::getTileFromName(Level::getTileNameAt(x, y + h - 1)).movementCost +
-                Level::getTileFromName(Level::getTileNameAt(x + w - 1, y + h - 1)).movementCost) /
+        return (Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, y)).movementCost +
+                Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + w - 1, y)).movementCost +
+                Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, y + h - 1)).movementCost +
+                Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + w - 1, y + h - 1)).movementCost) /
                 4.0f;
     }
 
     static void clean();
 
+    static std::vector<std::vector<std::vector<std::string>>> background;
 private:
-    static std::vector<std::vector<std::string>> tiles;
+    static void renderLayer(std::string layer);
+    static std::vector<std::vector<std::vector<std::string>>> foreground;
     static std::unordered_map<std::string, Tile> tileDataLookup; // note that unordered_map does not require the data to have a hash function, only the key
 };

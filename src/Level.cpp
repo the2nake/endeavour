@@ -21,7 +21,8 @@ GridWithWeights Level::pathfindingGrid{0, 0};
 
 std::vector<Entity *> Level::entities;
 std::unordered_map<std::string, Tile> Level::tileDataLookup;
-std::vector<std::vector<std::string>> Level::tiles;
+std::vector<std::vector<std::vector<std::string>>> Level::background;
+std::vector<std::vector<std::vector<std::string>>> Level::foreground;
 
 void Level::loadPlayerData(std::string playerName, std::string saveName)
 {
@@ -73,41 +74,65 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
     Tile tempTile;
     if (result)
     {
-        Level::tiles.clear();
+        // if the xml file is valid, do some setup
 
+        // make sure the tiles are empty
+        Level::background.clear();
+        Level::foreground.clear();
+        
         tileIndexEl = saveFile.child("tiles");
-
         levelEl = saveFile.child("level");
         backgroundEl = levelEl.child("background");
 
+        // record the width and height of each tile
         Level::tileW = levelEl.attribute("tileW").as_int();
         Level::tileH = levelEl.attribute("tileH").as_int();
 
+        // load the tile data
         for (xml_node tileEl : tileIndexEl.children("tile"))
         {
+            // for each tile, deserialise the data
+
+            // get the rectangles
             SDL_Rect src = stringToSDLRect(tileEl.attribute("cropRect").as_string());
             SDL_Rect dst = stringToSDLRect(tileEl.attribute("outRect").as_string());
+            // get the texture pointer
             tempTile.texture = TextureManager::loadTexture(tileEl.attribute("src").as_string(), &src, &dst); // this should point to the same texture pointed to in TextureManager::loadedTextures
-                                                                                                             // if there are duplcicates
+                                                                                                             // if there are duplcicate references
+            // get movement cost
             tempTile.movementCost = tileEl.attribute("movementCost").as_float(1.0f);
+            
+            // get the natural flag
             tempTile.isNatural = tileEl.attribute("isNatural").as_bool(false);
+
+            // collision rectangles
+            tempTile.collisionRect1 = stringToSDLRect(tileEl.attribute("collisionRect").as_string());
+            tempTile.collisionRect2 = stringToSDLRect(tileEl.attribute("collisionRect2").as_string());
+
+            // store the data into the lookup table
             Level::tileDataLookup.insert_or_assign(tileEl.attribute("name").as_string(), tempTile);
         }
 
+        // load the actual tile locations
         int rowNum = 0;
-        for (xml_node row : backgroundEl.children("row"))
-        {
-            tiles.push_back({});
-            std::string rowText = row.text().as_string();
-            std::vector<std::string> rowSplit = {};
-            splitString(rowSplit, rowText, ",");
-            Level::levelW = 0;
-            for (std::string tileName : rowSplit)
+        int backgroundLayerNum = 0;
+        for (xml_node backgroundEl : levelEl.children("background")) {
+            background.push_back({});
+            for (xml_node row : backgroundEl.children("row"))
             {
-                Level::tiles[rowNum].push_back(trimWhitespace(tileName));
-                Level::levelW += 1;
+                background[backgroundLayerNum].push_back({});
+                std::string rowText = row.text().as_string();
+                std::vector<std::string> rowSplit = {};
+                splitString(rowSplit, rowText, ",");
+                Level::levelW = 0;
+                for (std::string tileName : rowSplit)
+                {
+                    Level::background[backgroundLayerNum][rowNum].push_back(trimWhitespace(tileName));
+                    Level::levelW += 1;
+                }
+                rowNum++;
             }
-            rowNum++;
+            backgroundLayerNum++;
         }
         Level::levelH = rowNum;
         Level::loadNPCs(playerName, saveName, levelName);
@@ -179,32 +204,50 @@ void Level::loadNPCs(std::string playerName, std::string saveName, std::string l
     }
 }
 
-void Level::renderBackground()
-{
-    if (Level::tiles.empty() || !isRectangularVector(Level::tiles))
-    {
-        Game::add_error("Level::tiles is empty or invalid. Check if level was loaded properly.");
-        return;
+void Level::renderLayer(std::string layer) {
+    std::vector<std::vector<std::vector<std::string>>> *layerDataRef;
+    if (layer == "foreground") {
+        layerDataRef = &foreground;
+    } else { // background
+        layerDataRef = &background;
     }
 
-    // following code assumes that tiles are squares
-    for (int y = 0; y < Level::tiles.size(); y++)
-    {
-        for (int x = 0; x < Level::tiles[0].size(); x++)
+    for (auto layer : *layerDataRef) {
+        if (layerDataRef->empty() || !isRectangularVector(layer))
         {
-            std::string tileName = Level::tiles[y][x];
-            if (Level::tileDataLookup.find(tileName) != tileDataLookup.end())
+            Game::add_error("Tile data is empty or invalid.");
+            return;
+        }
+
+        // following code assumes that tiles are squares
+        for (int y = 0; y < layer.size(); y++)
+        {
+            for (int x = 0; x < layer[0].size(); x++)
             {
-                SDL_Rect dst{x * Level::tileW, y * Level::tileH, tileW, tileH};
-                Tile tileData = Level::tileDataLookup.at(tileName);
-                SDL_RenderCopyEx(Game::renderer, tileData.texture, nullptr, &dst, tileData.isNatural ? 90 * ((x * y) % 3) : 0, nullptr, SDL_FLIP_NONE);
-            }
-            else
-            {
-                // error; tile does not exist
+                std::string tileName = layer[y][x];
+                if (Level::tileDataLookup.find(tileName) != tileDataLookup.end())
+                {
+                    SDL_Rect dst{x * Level::tileW, y * Level::tileH, tileW, tileH};
+                    Tile tileData = Level::tileDataLookup.at(tileName);
+                    SDL_RenderCopyEx(Game::renderer, tileData.texture, nullptr, &dst, tileData.isNatural ? 90 * ((x * y) % 3) : 0, nullptr, SDL_FLIP_NONE);
+                }
+                else
+                {
+                    // error; tile does not exist
+                }
             }
         }
     }
+}
+
+void Level::renderBackground()
+{
+    renderLayer("background");
+}
+
+void Level::renderForeground()
+{
+    renderLayer("foreground");
 }
 
 void Level::generatePathfindingGrid()
@@ -217,19 +260,21 @@ void Level::generatePathfindingGrid()
     Level::pathfindingGrid = GridWithWeights{levelW, levelH};
     Tile currentTile;
     int rowIndex = 0, colIndex = 0;
-    for (std::vector<std::string> tileRow : Level::tiles)
+    for (std::vector<std::string> tileRow : Level::background[0])
     {
         colIndex = 0;
         for (std::string tileName : tileRow)
         {
+            GridLocation loc{colIndex, rowIndex};
             currentTile = Level::getTileFromName(tileName);
             if (currentTile.movementCost <= 0)
             {
-                Level::pathfindingGrid.walls.insert(GridLocation{colIndex, rowIndex});
+                Level::pathfindingGrid.walls.insert(loc);
+                Level::pathfindingGrid.setCost(loc, 0);
             }
-            else
+            else if (pathfindingGrid.walls.find(loc) != pathfindingGrid.walls.end())
             {
-                Level::pathfindingGrid.setCost(GridLocation{colIndex, rowIndex}, currentTile.movementCost);
+                Level::pathfindingGrid.setCost(loc, currentTile.movementCost);
             }
             colIndex++;
         }

@@ -120,6 +120,9 @@ struct GridWithWeights : SquareGrid
 
     void setCost(GridLocation node, float cost)
     {
+        if (cost <= 0 && weights.find(node) != weights.end()) {
+            weights.erase(node);
+        }
         weights.insert_or_assign(node, cost);
     }
 

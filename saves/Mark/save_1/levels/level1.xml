@@ -2,9 +2,9 @@
 	<tile name="grass1" src="res/tex/tilemap_proto.png" movementCost="1" cropRect="36 36 8 8" outRect="0 0 32 32" isNatural="1" />
 	<tile name="floor" src="res/tex/tilemap_proto.png" movementCost="1" cropRect="9 9 8 8" outRect="0 0 32 32" isNatural="0" />
 
-	<tile name="wall1left" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 9 8 8" outRect="0 0 32 32" isNatural="0" />
-	<tile name="wall1topleft" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 0 8 8" outRect="0 0 32 32" isNatural="0" />
-	<tile name="wall1bottomleft" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 18 8 8" outRect="0 0 32 32" isNatural="0" />
+	<tile name="wall1left" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 9 8 8" outRect="0 0 32 32" collisionRect="0 0 2 8" isNatural="0" />
+	<tile name="wall1topleft" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 0 8 8" outRect="0 0 32 32" collisionRect="0 0 2 8" collisionRect2="0 0 8 4" isNatural="0" />
+	<tile name="wall1bottomleft" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 18 8 8" outRect="0 0 32 32" collisionRect="0 0 2 8" collisionRect2="0 4 8 4" isNatural="0" />
 
 	<tile name="wall1right" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="27 9 8 8" outRect="0 0 32 32" isNatural="0" />
 	<tile name="wall1topright" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="27 0 8 8" outRect="0 0 32 32" isNatural="0"/>
@@ -20,7 +20,7 @@
 
 	<tile name="wall1top" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="9 0 8 8" outRect="0 0 32 32" isNatural="0" />
 	<tile name="wall1bottom" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="9 0 8 8" outRect="0 0 32 32" isNatural="0" />
-	<!-- Natural textures rotate modularly. Do not use them for plants, furniture, housing, ... as a default, they are off. -->
+
 </tiles>
 <level width="1024" height="512" tileW="32" tileH="32">
 	<background>

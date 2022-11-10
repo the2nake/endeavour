@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cctype>
 #include <locale>
+#include <iostream>
 
 void splitString(std::vector<std::string> &container, std::string s, std::string delim)
 {
@@ -35,6 +36,11 @@ std::string trimWhitespace(std::string s)
 SDL_Rect stringToSDLRect(std::string s, std::string delim)
 {
     SDL_Rect rect;
+
+    if (s == "") {
+        return rect; // empty rect
+    }
+
     std::vector<std::string> temp;
     splitString(temp, s, delim);
     if (temp.size() >= 1)

@@ -144,6 +144,8 @@ void Game::render()
         entity->render();
     }
 
+    Level::renderForeground();
+
     SDL_RenderPresent(Game::renderer);
 }
 

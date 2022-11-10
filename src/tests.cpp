@@ -276,18 +276,20 @@ bool testPolymorphicDeconstructorClean()
 bool testLevelLoading() {
     bool result = false;
 
-    Level::loadLevel("..", "TestPlayer/save_1", "level1");
+    Level::loadPlayerData("../test_res/saves/TestPlayer", "save_1");
+    Level::loadLevel("../test_res/saves/TestPlayer", "save_1", "level1");
 
     if (Level::entities.size()) {
         if (Level::entities[0]->getStringAttribute("name") == "Anthony") {
-            Tile tile = Level::getTileFromName(Level::getTileNameAt(32, 32));
-            if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == -1) {
+            Tile tile = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, 31, 31));
+            if (tile.texture != nullptr && tile.isNatural && tile.movementCost == 1) {
                 result = true;
             }
-            tile = Level::getTileFromName(Level::getTileNameAt(33, 33));
-            if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == 1) {
+            tile = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, 32, 32));
+            if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == -1) {
                 result = result && true;
             }
+            // TODO: add foreground test
         } else {
             result = false;
         }
@@ -312,6 +314,7 @@ int main()
     auto path = std::filesystem::current_path();
     bool workingDirIsCorrect = std::filesystem::exists(path.string() + "/res") &&
                                std::filesystem::exists(path.string() + "/test_res/tex") &&
+                               std::filesystem::exists(path.string() + "/test_res/saves") &&
                                std::filesystem::exists(path.string() + "/saves");
     if (!workingDirIsCorrect)
     {
