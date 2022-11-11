@@ -30,12 +30,26 @@ The level data that contains the player will be loaded
 
 ### Implementation
 
-Starts with tiles section:
+#### Tiles
 
 - Includes all the tiles, their source files, and various attributes.
-  - These are movementCost, cropRect, outRect, isNatural, collisionRect, overlay and name
+  - These are movementCost, cropRect, outRect, isNatural, collisionRect, collisionRect2, and name
     - The collisionRect is a relative rectangle based on the top left of the tile
       - This attribute only applies to tiles with negative movementCost
       - collisionRect2 can be used for compound boxes
-    - The overlay attribute is to used to draw things above the player (for organisational purposes, the order is background, player, background#overlay, foreground)
+
+#### Layers
+
+- There are overlay and background layers
+- Background layers are drawn before the player
+- Foreground layers are drawn after the player
+
+- TODO: Implement overlay handling
+  - Separate from the normal foreground/background
+  - Not affected by screen scrolling
+  - Handlers for mouse/keyboard events?
+
+#### NPCs
+
+- This does not include the player
   
