@@ -328,7 +328,7 @@ int main()
     std::vector<testFunction> tests;
 
     // necessary to test texture loading
-    Game game = Game("Some", 0, 0, false, false);
+    Game game = Game("Test Window", 0, 0, false, false);
 
     // --- add more tests in this section ---
     tests = {&testKeyBindMapExecution,
