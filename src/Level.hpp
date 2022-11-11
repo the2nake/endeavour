@@ -19,7 +19,7 @@ struct Tile
 class Level
 {
 public:
-    static int tileW, tileH; // in pixels
+    static int tileW, tileH;   // in pixels
     static int levelW, levelH; // in tiles
 
     static std::vector<Entity *> entities;
@@ -49,7 +49,14 @@ public:
         {
             if (0 <= gridY && gridY < Level::levelH)
             {
-                return layer == "foreground" ? Level::foreground[layerNum][gridY][gridX] : Level::background[layerNum][gridY][gridX];
+                if (layer == "foreground")
+                {
+                    return Level::foreground[layerNum][gridY][gridX];
+                }
+                else
+                {
+                    return Level::background[layerNum][gridY][gridX];
+                }
             }
             else
             {
@@ -76,18 +83,19 @@ public:
 
     static float getMovementCostInArea(float x, float y, int w, int h)
     {
+        // IMPORTANT: only the bottom background layer counts when using movementCost
         return (Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, y)).movementCost +
                 Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + w - 1, y)).movementCost +
                 Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, y + h - 1)).movementCost +
                 Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + w - 1, y + h - 1)).movementCost) /
-                4.0f;
+               4.0f;
     }
 
     static void clean();
 
-    static std::vector<std::vector<std::vector<std::string>>> background;
 private:
     static void renderLayer(std::string layer);
+    static std::vector<std::vector<std::vector<std::string>>> background;
     static std::vector<std::vector<std::vector<std::string>>> foreground;
     static std::unordered_map<std::string, Tile> tileDataLookup; // note that unordered_map does not require the data to have a hash function, only the key
 };

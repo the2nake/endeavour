@@ -28,7 +28,7 @@ The level data that contains the player will be loaded
    * The check to go to another level is decided in the movement update code, and thus should _not_ be triggered by level entry.
 3. Levels adjacent to the current level are simulated as well
 
-### Implementation
+### Implementation of level
 
 #### Tiles
 
@@ -43,6 +43,7 @@ The level data that contains the player will be loaded
 - There are overlay and background layers
 - Background layers are drawn before the player
 - Foreground layers are drawn after the player
+- **only** the bottom background layer's movementCost matters
 
 - TODO: Implement overlay handling
   - Separate from the normal foreground/background

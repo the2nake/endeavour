@@ -61,6 +61,106 @@
 			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
 		</row>
 	</background>
+	<foreground>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, floor, wall1top, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, wall1left, floor, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, wall1left, floor, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, wall1left, floor, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, wall1bottomleft, wall1bottom, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+	</foreground>
+	<foreground>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, wall1topleft, wall1top, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, wall1left, floor, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, wall1left, floor, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, wall1left, floor, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, wall1bottomleft, wall1bottom, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+		<row>
+			grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1, grass1
+		</row>
+	</foreground>
 </level>
 <npcs>
 	<npc id-name="Anthony"/>

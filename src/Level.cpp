@@ -70,19 +70,13 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
     xml_document saveFile;
     std::string pathToSave = "saves/" + playerName + "/" + saveName + "/levels/" + levelName + ".xml";
     xml_parse_result result = saveFile.load_file(pathToSave.c_str());
-    xml_node levelEl, tileIndexEl, backgroundEl;
+    xml_node levelEl, tileIndexEl;
     Tile tempTile;
     if (result)
     {
         // if the xml file is valid, do some setup
-
-        // make sure the tiles are empty
-        Level::background.clear();
-        Level::foreground.clear();
-        
         tileIndexEl = saveFile.child("tiles");
         levelEl = saveFile.child("level");
-        backgroundEl = levelEl.child("background");
 
         // record the width and height of each tile
         Level::tileW = levelEl.attribute("tileW").as_int();
@@ -101,7 +95,7 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
                                                                                                              // if there are duplcicate references
             // get movement cost
             tempTile.movementCost = tileEl.attribute("movementCost").as_float(1.0f);
-            
+
             // get the natural flag
             tempTile.isNatural = tileEl.attribute("isNatural").as_bool(false);
 
@@ -113,28 +107,55 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
             Level::tileDataLookup.insert_or_assign(tileEl.attribute("name").as_string(), tempTile);
         }
 
+        // make sure the tiles are empty
+        Level::background.clear();
+        Level::foreground.clear();
+
         // load the actual tile locations
-        int rowNum = 0;
-        int backgroundLayerNum = 0;
-        for (xml_node backgroundEl : levelEl.children("background")) {
-            background.push_back({});
+        int rowNum;
+        int backgroundLayerIndex = 0;
+        for (xml_node backgroundEl : levelEl.children("background"))
+        {
+            Level::background.push_back({});
+            rowNum = 0;
             for (xml_node row : backgroundEl.children("row"))
             {
-                background[backgroundLayerNum].push_back({});
+                Level::background[backgroundLayerIndex].push_back({});
                 std::string rowText = row.text().as_string();
-                std::vector<std::string> rowSplit = {};
+                std::vector<std::string> rowSplit;
                 splitString(rowSplit, rowText, ",");
                 Level::levelW = 0;
                 for (std::string tileName : rowSplit)
                 {
-                    Level::background[backgroundLayerNum][rowNum].push_back(trimWhitespace(tileName));
+                    Level::background[backgroundLayerIndex][rowNum].push_back(trimWhitespace(tileName));
                     Level::levelW += 1;
                 }
                 rowNum++;
             }
-            backgroundLayerNum++;
+            backgroundLayerIndex++;
         }
         Level::levelH = rowNum;
+
+        int foregroundLayerIndex = 0;
+        for (xml_node foregroundEl : levelEl.children("foreground"))
+        {
+            Level::foreground.push_back({});
+            rowNum = 0;
+            for (xml_node row : foregroundEl.children("row"))
+            {
+                Level::foreground[foregroundLayerIndex].push_back({});
+                std::string rowText = row.text().as_string();
+                std::vector<std::string> rowSplit;
+                splitString(rowSplit, rowText, ",");
+                for (std::string tileName : rowSplit)
+                {
+                    Level::foreground[foregroundLayerIndex][rowNum].push_back(trimWhitespace(tileName));
+                }
+                rowNum++;
+            }
+            foregroundLayerIndex++;
+        }
+
         Level::loadNPCs(playerName, saveName, levelName);
         Level::generatePathfindingGrid();
     }
@@ -193,7 +214,7 @@ void Level::loadNPCs(std::string playerName, std::string saveName, std::string l
             {
                 outDim = nullptr;
             }
-            
+
             AI *npc = new AI();
             SDL_Texture *npcTexture = TextureManager::loadTexture(pathToNPCTexture, cropRect, outDim);
             npc->init(npcEl.attribute("x").as_float(), npcEl.attribute("y").as_float(), npcTexture);
@@ -204,15 +225,20 @@ void Level::loadNPCs(std::string playerName, std::string saveName, std::string l
     }
 }
 
-void Level::renderLayer(std::string layer) {
+void Level::renderLayer(std::string layer)
+{
     std::vector<std::vector<std::vector<std::string>>> *layerDataRef;
-    if (layer == "foreground") {
+    if (layer == "foreground")
+    {
         layerDataRef = &foreground;
-    } else { // background
+    }
+    else
+    { // background
         layerDataRef = &background;
     }
 
-    for (auto layer : *layerDataRef) {
+    for (auto layer : *layerDataRef)
+    {
         if (layerDataRef->empty() || !isRectangularVector(layer))
         {
             Game::add_error("Tile data is empty or invalid.");
