@@ -42,7 +42,12 @@ void initSDLImage(int flags)
 
 void createWindow(std::string windowTitle, int w, int h, bool fullscreen, bool shown)
 {
-    Game::window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, (shown ? SDL_WINDOW_OPENGL : 0) | (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | (shown ? SDL_WINDOW_SHOWN : 0));
+    Game::window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | (shown ? SDL_WINDOW_SHOWN : 0));
+    if (!shown)
+    {
+        SDL_HideWindow(Game::window);
+    }
+
     if (Game::window == nullptr)
     {
         Game::running = false;
