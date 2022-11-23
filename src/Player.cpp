@@ -259,6 +259,11 @@ void Player::update()
         dx /= diagScaleFactor; // scaling horizontally
         dy /= diagScaleFactor; // scaling vertically
         // update the player's position
+        // TODO: [urgent] unify moveX and moveY in a new algorithm
+        // new algorithm should calculated maximal horizontal and vertical bounds passed through raytracing
+        // - trace rays from old corner to corner
+        // - check which boundaries are crossed
+        // - get the first boundary hit and align along that bound
         moveX(dx * calculatedSpeed);
         moveY(dy * calculatedSpeed);
     }
