@@ -11,7 +11,8 @@
 std::string RESET_ALL_KEYBINDS = "";
 std::vector<int> Player::registeredKeys;
 
-Player::~Player() {
+Player::~Player()
+{
     clean();
 }
 
@@ -25,6 +26,16 @@ void Player::init(float x, float y, SDL_Texture *texture)
 
     resetDefaultKeybind(RESET_ALL_KEYBINDS); // should replace with reading from text file and if file doesn't exist resetting the keybinds and saving them
     initAliasMap();
+    initActionCooldowns();
+}
+
+void Player::initActionCooldowns()
+{
+    // NOTE: cooldowns under the targetFrameTime will not be noticeable
+    defaultCooldowns.insert_or_assign("moveUp", 10.0);
+    defaultCooldowns.insert_or_assign("moveDown", 10.0);
+    defaultCooldowns.insert_or_assign("moveLeft", 10.0);
+    defaultCooldowns.insert_or_assign("moveRight", 10.0);
 }
 
 void Player::initAliasMap()
@@ -87,6 +98,8 @@ void Player::moveX(float mx)
 {
     // TODO: add a check to see if there is a collision rectangle
     // if there is, check if the movement will actually conflict with any movement rectangles
+    // - if it does conflict, move as close as possible to the left
+    // - if it does not conflict, move normally
     // if there isn't, use the current logic (for just that tile)
     // do the same for the y axis
     if (mx == 0)
@@ -109,7 +122,7 @@ void Player::moveX(float mx)
     int mcne = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, newx + texw - 1, y)).movementCost;
     int mcse = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, newx + texw - 1, y + texh - 1)).movementCost;
     int mcsw = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, newx, y + texh - 1)).movementCost;
-    
+
     bool nothingBlocking = mcnw > 0 && mcne > 0 && mcse > 0 && mcsw > 0;
     if (nothingBlocking)
     {
@@ -151,7 +164,7 @@ void Player::moveY(float my)
     int mcne = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + texw - 1, newy)).movementCost;
     int mcse = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + texw - 1, newy + texh - 1)).movementCost;
     int mcsw = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, newy + texh - 1)).movementCost;
-    
+
     bool nothingBlocking = mcnw > 0 && mcne > 0 && mcse > 0 && mcsw > 0;
     if (nothingBlocking)
     {
@@ -191,55 +204,46 @@ void Player::update()
         registeredKeys.push_back(it->first);
     }
 
-    // cooldowns under the targetFrameTime will not be noticeable
-    std::unordered_map<std::string, double>::iterator defaultCooldownIter;
-    defaultCooldowns.insert_or_assign("moveUp", 10.0);
-    defaultCooldowns.insert_or_assign("moveDown", 10.0);
-    defaultCooldowns.insert_or_assign("moveLeft", 10.0);
-    defaultCooldowns.insert_or_assign("moveRight", 10.0);
-
+    // update cooldowns
     for (auto &it : currentCooldowns)
     {
         it.second -= Game::targetFrameTime;
     }
+
     // executing the right function and handling the cooldowns
+    std::unordered_map<std::string, double>::iterator defaultCooldownIter;
     for (int i = 0; i < registeredKeys.size(); i++)
     {
         auto checkPressIter = Game::keyIsDownMap.find(registeredKeys[i]);
+        // check if the key has ever been pressed to prevent segmentation fault
         if (checkPressIter == Game::keyIsDownMap.end())
-        {
             continue;
-        }
 
         bool keyIsDown = checkPressIter->second;
-        if (!keyIsDown)
+        if (keyIsDown)
         {
-            continue;
-        }
+            auto boundActionIter = keybinds.find(registeredKeys[i]);
+            if (boundActionIter == keybinds.end())
+                continue;
 
-        auto boundActionIter = keybinds.find(registeredKeys[i]);
-        if (boundActionIter == keybinds.end())
-        {
-            continue;
-        }
-
-        auto currentCooldownIter = currentCooldowns.find(boundActionIter->second);
-        if (currentCooldownIter == currentCooldowns.end() || (currentCooldownIter != currentCooldowns.end() && currentCooldownIter->second <= 0.0))
-        {
-            // execute
-            if (getFunctionOf(boundActionIter->second) != nullptr)
+            auto currentCooldownIter = currentCooldowns.find(boundActionIter->second);
+            if (currentCooldownIter == currentCooldowns.end() || (currentCooldownIter != currentCooldowns.end() && currentCooldownIter->second <= 0.0))
             {
-                (this->*(getFunctionOf(boundActionIter->second)))();
-            }
-            // deal with cooldown
-            auto defaultCooldownIter = defaultCooldowns.find(boundActionIter->second);
-            if (defaultCooldownIter != defaultCooldowns.end())
-            {
-                currentCooldowns.insert_or_assign(boundActionIter->second, defaultCooldownIter->second);
-            }
-            else
-            {
-                currentCooldowns.insert_or_assign(boundActionIter->second, 1.0);
+                // execute the callback
+                if (getFunctionOf(boundActionIter->second) != nullptr)
+                {
+                    (this->*(getFunctionOf(boundActionIter->second)))();
+                }
+                // deal with cooldown
+                auto defaultCooldownIter = defaultCooldowns.find(boundActionIter->second);
+                if (defaultCooldownIter != defaultCooldowns.end())
+                {
+                    currentCooldowns.insert_or_assign(boundActionIter->second, defaultCooldownIter->second);
+                }
+                else
+                {
+                    currentCooldowns.insert_or_assign(boundActionIter->second, 1.0);
+                }
             }
         }
     }

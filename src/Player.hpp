@@ -38,6 +38,7 @@ public:
     void callbackMoveDown();
     void callbackMoveUp();
 
+    void initActionCooldowns();
     std::unordered_map<std::string, double> defaultCooldowns; // in milliseconds
     std::unordered_map<std::string, double> currentCooldowns; // in milliseconds
 
