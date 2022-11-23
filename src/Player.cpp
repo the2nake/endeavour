@@ -194,12 +194,13 @@ void Player::handleEvent(SDL_Event event)
 
 void Player::update()
 {
-    drawX = std::floor(x);
+    drawX = std::floor(x); // make sure the thing draws on a pixel
     drawY = std::floor(y);
-    dx = 0;
+    dx = 0; // reset movement velocities
     dy = 0;
-    registeredKeys.clear();
-    for (std::unordered_map<int, std::string>::iterator it = Game::player.keybinds.begin(); it != Game::player.keybinds.end(); it++)
+    // TODO: [low priority] only update registered keybinds when the controls are changed
+    registeredKeys.clear(); // recheck which keys are registered
+    for (auto it = Game::player.keybinds.begin(); it != Game::player.keybinds.end(); it++)
     {
         registeredKeys.push_back(it->first);
     }
@@ -252,14 +253,12 @@ void Player::update()
     float movementCost = Level::getMovementCostInArea(x, y, texw, texh);
     float calculatedSpeed = getFloatAttribute("speed") / std::max(movementCost, 1.0f);
 
-    // update the player's position
-    if (std::abs(dx) + std::abs(dy) == 2)
+    if (dx != 0 || dy != 0)
     {
-        moveX(dx * 0.70710678118 * calculatedSpeed);
-        moveY(dy * 0.70710678118 * calculatedSpeed);
-    }
-    else
-    {
+        float diagScaleFactor = sqrt(dx * dx + dy * dy);
+        dx /= diagScaleFactor; // scaling horizontally
+        dy /= diagScaleFactor; // scaling vertically
+        // update the player's position
         moveX(dx * calculatedSpeed);
         moveY(dy * calculatedSpeed);
     }
