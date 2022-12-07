@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 template <typename DataType>
-using AttributeMap = std::unordered_map<std::string, DataType>;  // use attributes when change names is necessary, and performance is not critical
+using AttributeMap = std::unordered_map<std::string, DataType>;
 
 class Entity
 {
