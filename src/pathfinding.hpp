@@ -10,6 +10,7 @@
 #include <bits/stdc++.h>
 #include <string>
 
+// priority queue, with lowest weight first
 template <typename T, typename priority_t>
 struct PriorityQueue
 {
