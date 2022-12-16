@@ -260,10 +260,20 @@ void Player::update()
         dy /= diagScaleFactor; // scaling vertically
         // update the player's position
         // TODO: [urgent] unify moveX and moveY in a new algorithm
-        // new algorithm should calculated maximal horizontal and vertical bounds passed through raytracing
-        // - trace rays from old corner to corner
-        // - check which boundaries are crossed
-        // - get the first boundary hit and align along that bound
+
+        // new algorithm
+        // draw rays from the 3 corners facing movement direction
+        // for all tiles that the rays cover (using bresenham supercover algorithm),
+        //   check if the any of the rays intersect with the tile's boundaries (staring with the tiles closest to the player)
+        // if there are no intersections
+        //   move normally
+        // else
+        //   get the first intersection, then move there
+        //   traverse along the boundary in the direction of motion until
+        //      perpendicular displacement vector is completed
+        //   or
+        //      boundary is hit (check with 2 rays drawn from relevant corners)
+
         moveX(dx * calculatedSpeed);
         moveY(dy * calculatedSpeed);
     }
