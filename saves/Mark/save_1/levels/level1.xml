@@ -25,34 +25,34 @@
 <level width="1024" height="512" tileW="32" tileH="32">
 	<background>
 		<row>
-			wall1topleft, wall1top, wall1midright, wall1midleft, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1topright
+			wall1topleft, wall1top, wall1midright, wall1midleft, wall1top, wall1top, wall1midright, wall1midleft, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1top, wall1topright
 		</row>
 		<row>
-			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, wall1right, wall1left, floor, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, wall1middownendright, wall1middownendleft, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, wall1middownendright, wall1middownendleft, floor, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, floor, floor, floor, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, wall1midupendright, wall1midupendleft, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, floor, floor, floor, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, wall1midupendright, wall1midupendleft, floor, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, wall1right, wall1left, floor, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, wall1right, wall1left, floor, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, wall1right, wall1left, floor, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
-			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
+			wall1left, floor, wall1right, wall1left, floor, floor, wall1middownendright, wall1middownendleft, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
 		</row>
 		<row>
 			wall1left, floor, wall1right, wall1left, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, floor, wall1right
@@ -76,4 +76,5 @@
 </level>
 <npcs>
 	<npc id-name="Anthony"/>
+	<npc id-name="Adam"/>
 </npcs>
