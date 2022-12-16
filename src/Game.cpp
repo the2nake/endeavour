@@ -20,6 +20,8 @@ std::unordered_map<std::string, int> Game::errors;
 
 std::unordered_map<int, bool> Game::keyIsDownMap;
 
+std::vector<GridLocation> Game::tilesToHighlight = {};
+
 Player Game::player;
 
 void initSDL()
@@ -107,6 +109,11 @@ void Game::handleEvents()
     }
 }
 
+void Game::highlightTile(GridLocation tile)
+{
+    tilesToHighlight.push_back(tile);
+}
+
 void Game::update()
 {
     player.update();
@@ -150,6 +157,19 @@ void Game::render()
     }
 
     Level::renderForeground();
+
+    SDL_Rect crop{0, 0, 16, 16};
+    SDL_Rect size{0, 0, Level::tileW, Level::tileH};
+    SDL_Texture *highlightTexture = TextureManager::loadTexture("res/proposed/MiniWorldSprites/User Interface/BoxSelector.png", &crop, &size);
+
+    for (auto tile : tilesToHighlight)
+    {
+        SDL_Rect dst{tile.x * Level::tileW, tile.y * Level::tileH, Level::tileW, Level::tileH};
+        SDL_RenderCopy(Game::renderer, highlightTexture, nullptr, &dst);
+        // std::cout << tile << std::endl;
+    }
+
+    tilesToHighlight.clear();
 
     SDL_RenderPresent(Game::renderer);
 }
