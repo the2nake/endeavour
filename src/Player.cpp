@@ -192,18 +192,23 @@ void Player::handleEvent(SDL_Event event)
     }
 }
 
+void Player::refreshRegisteredKeys() {
+    registeredKeys.clear(); // recheck which keys are registered
+    for (auto it = Game::player.keybinds.begin(); it != Game::player.keybinds.end(); it++)
+    {
+        registeredKeys.push_back(it->first);
+    }
+}
+
 void Player::update()
 {
     drawX = std::floor(x); // make sure the thing draws on a pixel
     drawY = std::floor(y);
     dx = 0; // reset movement velocities
     dy = 0;
+
     // TODO: [low priority] only update registered keybinds when the controls are changed
-    registeredKeys.clear(); // recheck which keys are registered
-    for (auto it = Game::player.keybinds.begin(); it != Game::player.keybinds.end(); it++)
-    {
-        registeredKeys.push_back(it->first);
-    }
+    refreshRegisteredKeys();
 
     // update cooldowns
     for (auto &it : currentCooldowns)

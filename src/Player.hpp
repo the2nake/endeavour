@@ -25,6 +25,7 @@ public:
     static std::unordered_map<int, std::string> keybinds;
     static std::vector<int> registeredKeys;
     void resetDefaultKeybind(std::string alias = "");
+    void refreshRegisteredKeys();
     int getDefaultKey(std::string alias);
 
     using playerAction = void (Player::*)();
