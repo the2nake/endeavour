@@ -32,6 +32,7 @@ void Player::init(float x, float y, SDL_Texture *texture)
 void Player::initActionCooldowns()
 {
     // NOTE: cooldowns under the targetFrameTime will not be noticeable
+    defaultCooldowns.clear();
     defaultCooldowns.insert_or_assign("moveUp", 10.0);
     defaultCooldowns.insert_or_assign("moveDown", 10.0);
     defaultCooldowns.insert_or_assign("moveLeft", 10.0);
@@ -192,7 +193,8 @@ void Player::handleEvent(SDL_Event event)
     }
 }
 
-void Player::refreshRegisteredKeys() {
+void Player::refreshRegisteredKeys()
+{
     registeredKeys.clear(); // recheck which keys are registered
     for (auto it = Game::player.keybinds.begin(); it != Game::player.keybinds.end(); it++)
     {

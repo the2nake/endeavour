@@ -22,7 +22,7 @@ public:
 
     void clean() override;
 
-    static std::unordered_map<int, std::string> keybinds;
+    std::unordered_map<int, std::string> keybinds;
     static std::vector<int> registeredKeys;
     void resetDefaultKeybind(std::string alias = "");
     void refreshRegisteredKeys();
@@ -40,8 +40,8 @@ public:
     void callbackMoveUp();
 
     void initActionCooldowns();
-    static std::unordered_map<std::string, double> defaultCooldowns; // in milliseconds
-    static std::unordered_map<std::string, double> currentCooldowns; // in milliseconds
+    std::unordered_map<std::string, double> defaultCooldowns; // in milliseconds
+    std::unordered_map<std::string, double> currentCooldowns; // in milliseconds
 
     void moveX(float mx);
     void moveY(float my);
