@@ -10,6 +10,6 @@ public:
     bool intersectsLine(Line *line);
 
 private:
-    int x1, y1;
-    int x2, y2;
+    float x1, y1;
+    float x2, y2;
 };
