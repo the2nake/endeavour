@@ -33,6 +33,8 @@ public:
     static void renderForeground();
     static void generatePathfindingGrid();
 
+    static void clean();
+
     static GridLocation getTilePosAt(float x, float y)
     {
         GridLocation tempLoc;
@@ -83,7 +85,7 @@ public:
 
     static float getMovementCostInArea(float x, float y, int w, int h)
     {
-        // IMPORTANT: only the bottom background layer counts when using movementCost
+        // INFO: only the bottom background layer counts when using movementCost
         return (Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, y)).movementCost +
                 Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + w - 1, y)).movementCost +
                 Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, y + h - 1)).movementCost +
@@ -91,7 +93,10 @@ public:
                4.0f;
     }
 
-    static void clean();
+    static int getLayerCount(bool checkForeground) {
+        if (checkForeground) return Level::foreground.size();
+        else return Level::background.size();
+    }
 
 private:
     static void renderLayer(std::string layer);
