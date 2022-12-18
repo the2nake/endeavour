@@ -9,3 +9,4 @@
 (D) Make traversing between level portion
 (D) Make loadLevel load simulate surrounding levels as well
 (E) Pathfind with limited range
+(E) Make an easier way to have a wall overlap a player than having to make a foreground layer
