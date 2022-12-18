@@ -7,6 +7,7 @@
 #include "Player.hpp"
 #include "TextureManager.hpp"
 #include "common.hpp"
+#include "Line.hpp"
 #include "pathfinding.hpp"
 #include "Game.hpp"
 #include "AI.hpp"
@@ -43,24 +44,10 @@ bool test___() {
 }
 */
 
-int isEqual(double a, double b)
+bool isEqual(double a, double b)
 {
-    double epsilon = 0.001;
+    double epsilon = 0.0001;
     return std::abs(a - b) < epsilon;
-}
-
-int testTrue(bool a)
-{
-    if (a)
-    {
-        return 1;
-        std::cout << "Test succeeded." << std::endl;
-    }
-    else
-    {
-        return 0;
-        std::cout << "Test failed; " << a << " is not true." << std::endl;
-    }
 }
 
 typedef bool (*testFunction)();
@@ -338,9 +325,27 @@ bool testLevelLoading() {
 }
 
 bool testFloatingPointModulo() {
-    bool result = false;
+    bool result = true;
 
+    if (!isEqual(floatingPointModulo(1.0, 180.0), 1.0)) {
+        result = false;
+    }
 
+    if (!isEqual(floatingPointModulo(-192.0, 20.0), 8.0)) {
+        result = false;
+    }
+
+    if (!isEqual(floatingPointModulo(10.34, 1.53), 1.16)) {
+        result = false;
+    }
+
+    if (!isEqual(floatingPointModulo(2.0, 2.0), 0.0)) {
+        result = false;
+    }
+
+    if (!isEqual(floatingPointModulo(4.5, 2.25), 0.0)) {
+        result = false;
+    }
 
     if (result)
     {
