@@ -61,3 +61,18 @@ SDL_Rect stringToSDLRect(std::string s, std::string delim)
     }
     return rect;
 }
+
+float floatingPointModulo(float a, float modB) {
+    float modulo = a;
+    if (a < 0) {
+        while (modulo < 0) {
+            modulo += modB;
+        }
+    } else {
+        while (modulo - modB >= 0) {
+            modulo -= modB;
+        }
+    }
+
+    return modulo;
+}

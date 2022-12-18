@@ -30,3 +30,6 @@ bool isLast(Iter iter, const Cont& cont)
 {
     return (iter != cont.end()) && (cont.end() - iter == 1);
 }
+
+// custom definition for floating point modulo that always returns a positive number
+float floatingPointModulo(float a, float modB);

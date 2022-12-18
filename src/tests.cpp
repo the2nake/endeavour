@@ -340,7 +340,7 @@ bool testLevelLoading() {
 bool testFloatingPointModulo() {
     bool result = false;
 
-    
+
 
     if (result)
     {
