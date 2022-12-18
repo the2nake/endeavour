@@ -2,11 +2,14 @@
 
 #include <iostream>
 #include <string>
+#include <cmath>
+#include <chrono>
 #include "SDL.h"
 
 #include "TextureManager.hpp"
 #include "Game.hpp"
 #include "Level.hpp"
+#include "Line.hpp"
 
 std::string RESET_ALL_KEYBINDS = "";
 std::vector<int> Player::registeredKeys;
@@ -184,6 +187,125 @@ void Player::moveY(float my)
     }
 }
 
+// this returns the grid coordinates of the tiles, 0-indexed
+std::vector<GridLocation> getGridsOverlappedByLine(float x1, float y1, float x2, float y2)
+{
+
+    std::vector<GridLocation> tilesCovered;
+    tilesCovered.push_back(Level::getTilePosAt(x1, y1));
+
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+
+    if (dx == 0 && dy == 0)
+    {
+        return tilesCovered;
+    }
+
+    float x = x1;
+    float y = y1;
+
+    bool steep = std::abs(dy) > std::abs(dx);
+
+    float epsilon = 0.001f;
+
+    while (std::abs(x2 - x) > epsilon || std::abs(y2 - y) > epsilon)
+    {
+        // check if line is steep to make sure the steps cover everything
+        if (steep)
+        {
+            // if steep, step y by 1*Level::tileH and x by dx*Level::tileH/dy (which should be smaller than Level::tileH)
+            // if y = 0, slope is not steep, so no need to check
+            if (std::abs(y2 - y) < Level::tileH)
+            {
+                // if the distance between the target and the searched position is smaller than 1 tile
+                x = x2;
+                y = y2;
+            }
+            else
+            {
+                y += Level::tileH * dy / std::abs(dy); // dy / std::abs(dy) is the sign of dy (if it's decreasing, it's -1)
+                x += dx * Level::tileH / std::abs(dy); // std::abs(dy) is just the scale factor, sign of dx determines direction. |dy| > |dx|.
+            }
+        }
+        else
+        {
+            // if not steep, step x by 1*Level::tileW and y by dy*Level::tileW/dx (which should be smaller than Level::tileW)
+            // if x = 0, then we use steep branch, so no need to check
+            if (std::abs(x2 - x) < Level::tileW)
+            {
+                x = x2;
+                y = y2;
+            }
+            else
+            {
+                x += Level::tileW * dx / std::abs(dx);
+                y += dy * Level::tileW / std::abs(dx);
+            }
+        }
+
+        tilesCovered.push_back(Level::getTilePosAt(x, y));
+    }
+
+    return tilesCovered;
+
+    // INFO: loop: check if there should be an change in the slower changing direction (x if steep, y if not)
+    //       if there is, check if the line also passes through the non-changing tile
+    //       if there isn't, check if the square next to the current one should be returned
+
+    //  ---------
+    //  | t | x | c is current location
+    //  |---|---| t is the changed tile coordinate
+    //  | x | c | x are tiles need to be checked as well
+    //  ---------
+}
+
+void Player::move(float mx, float my)
+{
+    // TODO: [urgent] unify moveX and moveY in a new algorithm
+
+    // INFO: new algorithm
+    // draw rays from the corners to their new positions <done>
+    // for all tiles that the rays cover (using bresenham supercover algorithm), <done>
+    //   check if the any of the rays intersect with the tile's boundaries (staring with the tiles closest to the player)
+    // if there are no intersections
+    //   move normally
+    // else
+    //   get the first intersection, then move there
+    //   traverse along the boundary in the direction of motion until
+    //      perpendicular displacement vector is completed
+    //   or
+    //      boundary is hit (check with 2 rays drawn from relevant corners)
+
+    if (mx == 0 && my == 0)
+    {
+        return;
+    }
+
+    std::set<GridLocation> gridLocationsCovered;
+    std::vector<Line> boundariesToCheck;
+
+    // create a set of all the tiles covered
+    for (auto location : getGridsOverlappedByLine(x, y, x + mx, y + my))
+        gridLocationsCovered.insert(location);
+    for (auto location : getGridsOverlappedByLine(x + texw - 1, y, x + texw + mx - 1, y + my))
+        gridLocationsCovered.insert(location);
+    for (auto location : getGridsOverlappedByLine(x, y + texh - 1, x + mx, y + texh + my - 1))
+        gridLocationsCovered.insert(location);
+    for (auto location : getGridsOverlappedByLine(x + texw - 1, y + texh - 1, x + texw + mx - 1, y + texh + my - 1))
+        gridLocationsCovered.insert(location);
+
+    for (auto location : gridLocationsCovered)
+    {
+        Game::highlightTile(location);
+        // 1. add all of the boundaries for the tiles into boundaries to check
+        //    make sure to check every layer in background AND foreground
+    }
+
+    moveX(mx);
+    moveY(my);
+}
+
 void Player::handleEvent(SDL_Event event)
 {
     switch (event.type)
@@ -266,23 +388,7 @@ void Player::update()
         dx /= diagScaleFactor; // scaling horizontally
         dy /= diagScaleFactor; // scaling vertically
         // update the player's position
-        // TODO: [urgent] unify moveX and moveY in a new algorithm
-
-        // new algorithm
-        // draw rays from the 3 corners facing movement direction
-        // for all tiles that the rays cover (using bresenham supercover algorithm),
-        //   check if the any of the rays intersect with the tile's boundaries (staring with the tiles closest to the player)
-        // if there are no intersections
-        //   move normally
-        // else
-        //   get the first intersection, then move there
-        //   traverse along the boundary in the direction of motion until
-        //      perpendicular displacement vector is completed
-        //   or
-        //      boundary is hit (check with 2 rays drawn from relevant corners)
-
-        moveX(dx * calculatedSpeed);
-        moveY(dy * calculatedSpeed);
+        move(dx * calculatedSpeed, dy * calculatedSpeed);
     }
 }
 

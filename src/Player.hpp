@@ -43,6 +43,7 @@ public:
     std::unordered_map<std::string, double> defaultCooldowns; // in milliseconds
     std::unordered_map<std::string, double> currentCooldowns; // in milliseconds
 
+    void move(float mx, float my);
     void moveX(float mx);
     void moveY(float my);
 
