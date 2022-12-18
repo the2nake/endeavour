@@ -24,6 +24,25 @@
 #define TEST_TEXTURE_CACHE
 // Tells TextureManager to report when the texture cache has been accessed
 
+/*
+test template:
+
+bool test___() {
+    bool result = false;
+
+    if (result)
+    {
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
+    }
+    else
+    {
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
+    }
+
+    return result;
+}
+*/
+
 int isEqual(double a, double b)
 {
     double epsilon = 0.001;
@@ -101,11 +120,11 @@ bool testKeyBindMapExecution()
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -126,11 +145,11 @@ bool testKeyBindReset()
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -159,11 +178,11 @@ bool testStringSplit()
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -184,11 +203,11 @@ bool testStringToRect()
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -213,11 +232,11 @@ bool testTextureCache()
     }
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -236,11 +255,11 @@ bool testEntityClean()
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -263,11 +282,11 @@ bool testPolymorphicDeconstructorClean()
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -308,11 +327,28 @@ bool testLevelLoading() {
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
+    }
+
+    return result;
+}
+
+bool testFloatingPointModulo() {
+    bool result = false;
+
+    
+
+    if (result)
+    {
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
+    }
+    else
+    {
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -347,7 +383,8 @@ int main()
              &testTextureCache,
              &testEntityClean,
              &testPolymorphicDeconstructorClean,
-             &testLevelLoading};
+             &testLevelLoading,
+             &testFloatingPointModulo};
     // ---
     for (int i = 0; i < tests.size(); i++)
     {
