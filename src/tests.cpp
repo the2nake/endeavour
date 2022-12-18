@@ -359,6 +359,104 @@ bool testFloatingPointModulo() {
     return result;
 }
 
+bool testLineSlope() {
+    bool result = true;
+
+    Line line = Line(0, 0, 1, 1);
+
+    if (!isEqual(line.getSlope(), 1.0)) {
+        result = false;
+    }
+
+    line = Line(0, 0, 0, 1);
+
+    if (line.getSlope() < 10000) {
+        result = false;
+    }
+
+    line = Line(-1.0f, 1.0f, 2.0f, 3.5f);
+
+    if (!isEqual(line.getSlope(), 5.0f/6.0f)) {
+        result = false;
+    }
+
+    line = Line(2.3f, 10.3f, -12.0f, 3.42f);
+
+    if (!isEqual(line.getSlope(), 0.48111888)) {
+        result = false;
+    }
+
+    line = Line(-2.55f, -0.37f, 2.6f, -1.69f);
+
+    if (!isEqual(line.getSlope(), -0.25631068)) {
+        result = false;
+    }
+
+    if (result)
+    {
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
+    }
+    else
+    {
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
+    }
+
+    return result;
+}
+
+bool testLineAngle() {
+    bool result = true;
+
+    Line line = Line(-1, 1, 1, 1);
+
+    if (!isEqual(line.getAngleFromPosXAxis(false), 0)) {
+        result = false;
+    }
+
+    if (!isEqual(line.getAngleFromPosXAxis(true), 0)) {
+        result = false;
+    }
+
+    line = Line(0, 0, 0, 1);
+
+    if (!isEqual(line.getAngleFromPosXAxis(false), 90)) {
+        result = false;
+    }
+
+    line = Line(-0.02f, 1.1f, 2.3f, -3.9f);
+
+    if (!isEqual(line.getAngleFromPosXAxis(false), 114.891300125)) {
+        result = false;
+    }
+
+    if (!isEqual(line.getAngleFromPosXAxis(true), 2.00523146908)) {
+        result = false;
+    }
+
+    line = Line(-8.1f, 1.1f, 3.7f, -3.9f);
+
+
+    if (!isEqual(line.getAngleFromPosXAxis(false), 157.03622694)) {
+        result = false;
+    }
+
+    if (!isEqual(line.getAngleFromPosXAxis(true), 2.740799205)) {
+        result = false;
+    }
+
+
+    if (result)
+    {
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
+    }
+    else
+    {
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
+    }
+
+    return result;
+}
+
 int main()
 {
     auto path = std::filesystem::current_path();
@@ -389,7 +487,10 @@ int main()
              &testEntityClean,
              &testPolymorphicDeconstructorClean,
              &testLevelLoading,
-             &testFloatingPointModulo};
+             &testFloatingPointModulo,
+             &testLineSlope,
+             &testLineAngle,
+             };
     // ---
     for (int i = 0; i < tests.size(); i++)
     {
@@ -400,6 +501,6 @@ int main()
     }
     testTotal = tests.size();
 
-    std::cout << passedTotal << " out of " << testTotal << " tests passed. (" << (passedTotal / (double)(testTotal)) * 100.0 << "%)" << std::endl;
+    std::cout << passedTotal << " out of " << testTotal << " tests passed." << std::endl;
     game.clean();
 }
