@@ -133,6 +133,7 @@ void Game::update()
             endedErrorCooldowns.push_back(errorCooldownPair.first);
         }
     }
+
     for (std::string s : endedErrorCooldowns)
     {
         Game::errors.erase(s);
@@ -178,7 +179,7 @@ void Game::add_error(std::string msg)
 {
     if (Game::errors.find(msg) == Game::errors.end())
     {
-        std::cout << msg << std::endl;
+        std::cout << "\033[1;31mError:\033[0m " << msg << std::endl;
         Game::errors.insert_or_assign(msg, 60);
     }
 }
