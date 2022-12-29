@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+bool approxEquals(double a, double b);
+
 void splitString(std::vector<std::string> &container, std::string toSplit, std::string delim = " ");
 
 std::string trimWhitespace(std::string s);
@@ -33,3 +35,6 @@ bool isLast(Iter iter, const Cont& cont)
 
 // custom definition for floating point modulo that always returns a positive number
 float floatingPointModulo(float a, float modB);
+
+int orientation(float ax, float ay, float bx, float by, float cx, float cy);
+bool onSegment(float ax, float ay, float bx, float by, float cx, float cy);

@@ -8,6 +8,10 @@
 #include <locale>
 #include <iostream>
 
+bool approxEquals(double a, double b) {
+    return std::abs(a - b) < 0.000001;
+}
+
 void splitString(std::vector<std::string> &container, std::string s, std::string delim)
 {
     container.clear();
@@ -37,7 +41,8 @@ SDL_Rect stringToSDLRect(std::string s, std::string delim)
 {
     SDL_Rect rect;
 
-    if (s == "") {
+    if (s == "")
+    {
         return rect; // empty rect
     }
 
@@ -62,17 +67,48 @@ SDL_Rect stringToSDLRect(std::string s, std::string delim)
     return rect;
 }
 
-float floatingPointModulo(float a, float modB) {
+float floatingPointModulo(float a, float modB)
+{
     float modulo = a;
-    if (a < 0) {
-        while (modulo < 0) {
+    if (a < 0)
+    {
+        while (modulo < 0)
+        {
             modulo += modB;
         }
-    } else {
-        while (modulo - modB >= 0) {
+    }
+    else
+    {
+        while (modulo - modB >= 0)
+        {
             modulo -= modB;
         }
     }
 
     return modulo;
+}
+
+/*
+Returns the orientation of the points A(ax, ay), B(bx, by), C(cx, cy)
+
+0 means they are colinear
+1 means they are clockwise
+2 means they are anticlockwise
+*/
+
+int orientation(float ax, float ay, float bx, float by, float cx, float cy)
+{
+    float z = (ay - by) * (bx - cx) - (ax - bx) * (by - cy);
+    if (z == 0)
+        return 0;
+
+    return (z > 0) ? 1 : 2;
+}
+
+bool onSegment(float ax, float ay, float bx, float by, float cx, float cy)
+{
+    if (bx <= std::max(ax, cx) && bx >= std::min(ax, cx) && by <= std::max(ay, cy) && by >= std::min(ay, cy))
+        return true;
+
+    return false;
 }
