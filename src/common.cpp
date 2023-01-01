@@ -8,7 +8,10 @@
 #include <locale>
 #include <iostream>
 
-bool approxEquals(double a, double b) {
+#include "Line.hpp"
+
+bool approxEquals(double a, double b)
+{
     return std::abs(a - b) < 0.000001;
 }
 
@@ -111,4 +114,52 @@ bool onSegment(float ax, float ay, float bx, float by, float cx, float cy)
         return true;
 
     return false;
+}
+
+/*
+    Checks if r1 is contained in r2.
+    r1 and r2 are represented with x and y anchors at the top-left
+*/
+bool rectContainedInRect(SDL_Rect *r1, SDL_Rect *r2)
+{
+    return r2->x < r1->x && r2->y < r1->y && r2->x + r2->w > r1->x + r1->w && r2->y + r2->h > r1->y + r1->h;
+}
+
+bool rectIntersect(SDL_Rect *r1, SDL_Rect *r2)
+{
+    // check if lines intersect
+    // check if r1 is contained in r2, vice versa
+
+    // lined n e s w
+    std::vector<Line> r1lines = {Line(r1->x, r1->y, r1->x + r1->w, r1->y),
+                                 Line(r1->x + r1->w - 1, r1->y, r1->x + r1->w - 1, r1->y + r1->h - 1),
+                                 Line(r1->x, r1->y + r1->h - 1, r1->x + r1->w - 1, r1->y + r1->h - 1),
+                                 Line(r1->x, r1->y, r1->x, r1->y + r1->h - 1)};
+
+    // lined n e s w
+    std::vector<Line> r2lines = {Line(r2->x, r2->y, r2->x + r2->w - 1, r2->y),
+                                 Line(r2->x + r2->w - 1, r2->y, r2->x + r2->w - 1, r2->y + r2->h - 1),
+                                 Line(r2->x, r2->y + r2->h - 1, r2->x + r2->w - 1, r2->y + r2->h - 1),
+                                 Line(r2->x, r2->y, r2->x, r2->y + r2->h - 1)};
+
+    for (Line line : r1lines)
+    {
+        for (Line line2 : r2lines)
+        {
+            if (line.intersectsLine(&line2))
+                return true;
+        }
+    }
+
+    if (rectContainedInRect(r1, r2))
+        return true;
+    if (rectContainedInRect(r2, r1))
+        return true;
+
+    return false;
+}
+
+bool operator==(SDL_Rect rect, SDL_Rect rect2)
+{
+    return rect.x == rect2.x && rect.y == rect2.y && rect.w == rect2.w && rect.h == rect2.h;
 }

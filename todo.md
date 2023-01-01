@@ -8,6 +8,7 @@
 (A) Finish movement system revamp
 (B) Add unit tests for line intersection and three points being clockwise or anticlockwise {cm:2022-12-29}
 (B) Modify AI pathfinding to travel on diagonals where the sprite would not intersect with the custom hitboxes
+(B) Modify AI pathfinding to pathfind towards the last known position of the player
 (C) Implement system to record where the entity saw something last
 (D) Make traversing between level portion
 (D) Make loadLevel load simulate surrounding levels as well

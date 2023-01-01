@@ -35,7 +35,7 @@ public:
 
     static void clean();
 
-    static GridLocation getTilePosAt(float x, float y)
+    static GridLocation getPosAt(float x, float y)
     {
         GridLocation tempLoc;
         tempLoc.x = std::floor(x / Level::tileW);
@@ -43,21 +43,23 @@ public:
         return tempLoc;
     }
 
-    static std::string getTileNameAtPosition(std::string layer, int layerNum, float x, float y)
+    static std::string getTileNameAtGridPos(std::string layer = "background", int layerNum = 0, GridLocation gridLoc = {0, 0})
     {
-        int gridX = std::floor(x / Level::tileW);
-        int gridY = std::floor(y / Level::tileH);
-        if (0 <= gridX && gridX < Level::levelW)
+        if (0 <= gridLoc.x && gridLoc.x < Level::levelW)
         {
-            if (0 <= gridY && gridY < Level::levelH)
+            if (0 <= gridLoc.y && gridLoc.y < Level::levelH)
             {
                 if (layer == "foreground")
                 {
-                    return Level::foreground[layerNum][gridY][gridX];
+                    if (Level::foreground.size() < 1)
+                        return "";
+                    return Level::foreground[layerNum][gridLoc.y][gridLoc.x];
                 }
                 else
                 {
-                    return Level::background[layerNum][gridY][gridX];
+                    if (Level::background.size() < 1)
+                        return "";
+                    return Level::background[layerNum][gridLoc.y][gridLoc.x];
                 }
             }
             else
@@ -69,6 +71,13 @@ public:
         {
             return "";
         }
+    }
+
+    static std::string getTileNameAtPos(std::string layer = "background", int layerNum = 0, float x = 0, float y = 0)
+    {
+        int gridX = std::floor(x / Level::tileW);
+        int gridY = std::floor(y / Level::tileH);
+        return getTileNameAtGridPos(layer, layerNum, GridLocation{gridX, gridY});
     }
 
     static Tile getTileFromName(std::string name)
@@ -86,16 +95,19 @@ public:
     static float getMovementCostInArea(float x, float y, int w, int h)
     {
         // INFO: only the bottom background layer counts when using movementCost
-        return (Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, y)).movementCost +
-                Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + w - 1, y)).movementCost +
-                Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, y + h - 1)).movementCost +
-                Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + w - 1, y + h - 1)).movementCost) /
+        return (Level::getTileFromName(Level::getTileNameAtPos("background", 0, x, y)).movementCost +
+                Level::getTileFromName(Level::getTileNameAtPos("background", 0, x + w - 1, y)).movementCost +
+                Level::getTileFromName(Level::getTileNameAtPos("background", 0, x, y + h - 1)).movementCost +
+                Level::getTileFromName(Level::getTileNameAtPos("background", 0, x + w - 1, y + h - 1)).movementCost) /
                4.0f;
     }
 
-    static int getLayerCount(bool checkForeground) {
-        if (checkForeground) return Level::foreground.size();
-        else return Level::background.size();
+    static int getLayerCount(bool checkForeground)
+    {
+        if (checkForeground)
+            return Level::foreground.size();
+        else
+            return Level::background.size();
     }
 
 private:

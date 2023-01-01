@@ -103,6 +103,10 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
             tempTile.collisionRect1 = stringToSDLRect(tileEl.attribute("collisionRect").as_string());
             tempTile.collisionRect2 = stringToSDLRect(tileEl.attribute("collisionRect2").as_string());
 
+            SDL_Rect defaultRect;
+            if (tileEl.attribute("collisionRect").as_string() == "" && tileEl.attribute("collisionRect2").as_string() == "")
+                tempTile.collisionRect1 = {0, 0, Level::tileW, Level::tileH};
+
             // store the data into the lookup table
             Level::tileDataLookup.insert_or_assign(tileEl.attribute("name").as_string(), tempTile);
         }

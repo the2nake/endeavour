@@ -291,23 +291,23 @@ bool testLevelLoading()
         if (Level::entities[0]->getStringAttribute("name") == "Anthony")
         {
             // background layer 0
-            Tile tile = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, 31, 31));
+            Tile tile = Level::getTileFromName(Level::getTileNameAtPos("background", 0, 31, 31));
             if (tile.texture != nullptr && tile.isNatural && tile.movementCost == 1)
             {
                 result = true;
             }
-            tile = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, 32, 32));
+            tile = Level::getTileFromName(Level::getTileNameAtPos("background", 0, 32, 32));
             if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == -1)
             {
                 result = result && true;
             }
             // foreground tests (different layers)
-            tile = Level::getTileFromName(Level::getTileNameAtPosition("foreground", 0, 45, 36));
+            tile = Level::getTileFromName(Level::getTileNameAtPos("foreground", 0, 45, 36));
             if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == 1)
             {
                 result = result && true;
             }
-            tile = Level::getTileFromName(Level::getTileNameAtPosition("foreground", 1, 32, 32));
+            tile = Level::getTileFromName(Level::getTileNameAtPos("foreground", 1, 32, 32));
             if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == -1)
             {
                 result = result && true;

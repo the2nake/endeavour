@@ -45,8 +45,8 @@ void AI::pathfindToTarget()
     }
     float goalCenterX = target->getX() + target->getTextureW() / 2.0f;
     float goalCenterY = target->getY() + target->getTextureH() / 2.0f;
-    GridLocation targetLocation = Level::getTilePosAt(goalCenterX, goalCenterY);
-    GridLocation currentLocation = Level::getTilePosAt(x + texw / 2.0f, y + texh / 2.0f);
+    GridLocation targetLocation = Level::getPosAt(goalCenterX, goalCenterY);
+    GridLocation currentLocation = Level::getPosAt(x + texw / 2.0f, y + texh / 2.0f);
     auto currentLocationInPathIt = std::find(pathToGoal.begin(), pathToGoal.end(), currentLocation);
     if (pathTarget == initLocation || targetLocation != pathTarget || currentLocationInPathIt == pathToGoal.end())
     {
@@ -152,7 +152,7 @@ void AI::update()
     {
         correctPositioning();
 
-        bool nextLocationIsCurrentLocation = nextLocation == Level::getTilePosAt(x + texw / 2.0f, x + texh / 2.0f);
+        bool nextLocationIsCurrentLocation = nextLocation == Level::getPosAt(x + texw / 2.0f, x + texh / 2.0f);
         bool nextLocationOutOfBounds = !Level::pathfindingGrid.inBounds(nextLocation);
         bool nextLocationHasNotBeenInit = nextLocation == initLocation;
 
