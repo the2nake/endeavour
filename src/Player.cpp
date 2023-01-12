@@ -4,11 +4,13 @@
 #include <string>
 #include <cmath>
 #include <chrono>
+
 #include "SDL.h"
 
 #include "TextureManager.hpp"
 #include "Game.hpp"
 #include "Level.hpp"
+#include "common.hpp"
 #include "Line.hpp"
 
 std::string RESET_ALL_KEYBINDS = "";
@@ -122,10 +124,10 @@ void Player::moveX(float mx)
         newx = std::ceil(x + mx);
     }
 
-    int mcnw = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, newx, y)).movementCost;
-    int mcne = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, newx + texw - 1, y)).movementCost;
-    int mcse = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, newx + texw - 1, y + texh - 1)).movementCost;
-    int mcsw = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, newx, y + texh - 1)).movementCost;
+    int mcnw = Level::getTileFromName(Level::getTileNameAtPos("background", 0, newx, y)).movementCost;
+    int mcne = Level::getTileFromName(Level::getTileNameAtPos("background", 0, newx + texw - 1, y)).movementCost;
+    int mcse = Level::getTileFromName(Level::getTileNameAtPos("background", 0, newx + texw - 1, y + texh - 1)).movementCost;
+    int mcsw = Level::getTileFromName(Level::getTileNameAtPos("background", 0, newx, y + texh - 1)).movementCost;
 
     bool nothingBlocking = mcnw > 0 && mcne > 0 && mcse > 0 && mcsw > 0;
     if (nothingBlocking)
@@ -164,10 +166,10 @@ void Player::moveY(float my)
         newy = std::ceil(y + my);
     }
 
-    int mcnw = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, newy)).movementCost;
-    int mcne = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + texw - 1, newy)).movementCost;
-    int mcse = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x + texw - 1, newy + texh - 1)).movementCost;
-    int mcsw = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, x, newy + texh - 1)).movementCost;
+    int mcnw = Level::getTileFromName(Level::getTileNameAtPos("background", 0, x, newy)).movementCost;
+    int mcne = Level::getTileFromName(Level::getTileNameAtPos("background", 0, x + texw - 1, newy)).movementCost;
+    int mcse = Level::getTileFromName(Level::getTileNameAtPos("background", 0, x + texw - 1, newy + texh - 1)).movementCost;
+    int mcsw = Level::getTileFromName(Level::getTileNameAtPos("background", 0, x, newy + texh - 1)).movementCost;
 
     bool nothingBlocking = mcnw > 0 && mcne > 0 && mcse > 0 && mcsw > 0;
     if (nothingBlocking)
@@ -192,15 +194,13 @@ std::vector<GridLocation> getGridsOverlappedByLine(float x1, float y1, float x2,
 {
 
     std::vector<GridLocation> tilesCovered;
-    tilesCovered.push_back(Level::getTilePosAt(x1, y1));
+    tilesCovered.push_back(Level::getPosAt(x1, y1));
 
     float dx = x2 - x1;
     float dy = y2 - y1;
 
     if (dx == 0 && dy == 0)
-    {
         return tilesCovered;
-    }
 
     float x = x1;
     float y = y1;
@@ -244,7 +244,7 @@ std::vector<GridLocation> getGridsOverlappedByLine(float x1, float y1, float x2,
             }
         }
 
-        tilesCovered.push_back(Level::getTilePosAt(x, y));
+        tilesCovered.push_back(Level::getPosAt(x, y));
     }
 
     return tilesCovered;
@@ -259,6 +259,64 @@ std::vector<GridLocation> getGridsOverlappedByLine(float x1, float y1, float x2,
     //  | x | c | x are tiles need to be checked as well
     //  ---------
 }
+
+/*
+    checks if the player will collided with something, given its future position
+*/
+
+bool Player::willBeColliding(float newx, float newy)
+{
+    SDL_Rect newPlayerRect{(int)(std::floor(newx)), (int)(std::floor(newy)), texw, texh};
+    GridLocation newPlayerLoc = Level::getPosAt(newx, newy);
+    std::queue<SDL_Rect> collisionRectangles;
+
+    //auto start = std::chrono::high_resolution_clock::now();
+    for (int j = newPlayerLoc.x; j <= newPlayerLoc.x + (int)std::floor(texw / Level::tileW); j++)
+    {
+        for (int k = newPlayerLoc.y; k <= newPlayerLoc.y + (int)std::floor(texh / Level::tileH); k++)
+        {
+            GridLocation loc{j, k};
+            for (int layerCounter = 0; layerCounter < Level::getLayerCount(false); layerCounter++)
+            {
+                Tile tileAtLoc = Level::getTileFromName(Level::getTileNameAtGridPos("background", layerCounter, loc));
+                if (tileAtLoc.movementCost <= 0)
+                {
+                    SDL_Rect collisionRect1 = tileAtLoc.collisionRect1;
+                    collisionRect1.x += Level::tileW * loc.x;
+                    collisionRect1.y += Level::tileH * loc.y;
+                    SDL_Rect collisionRect2 = tileAtLoc.collisionRect2;
+                    collisionRect2.x += Level::tileW * loc.x;
+                    collisionRect2.y += Level::tileH * loc.y;
+                    collisionRectangles.push(collisionRect1);
+                    collisionRectangles.push(collisionRect2);
+                }
+            }
+        }
+    }
+    //std::cout << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
+    while (!collisionRectangles.empty())
+    {
+        if (rectIntersect(&newPlayerRect, &collisionRectangles.front()))
+            return true;
+        collisionRectangles.pop();
+    }
+    return false;
+}
+
+/*
+    checks if the player is colliding with something
+*/
+
+bool Player::isColliding()
+{
+    return willBeColliding(this->x, this->y);
+}
+
+/*
+Moves the player in a straight line mx units to the right and my units down.
+
+This function implements collision detection.
+*/
 
 void Player::move(float mx, float my)
 {
@@ -276,34 +334,70 @@ void Player::move(float mx, float my)
     //      perpendicular displacement vector is completed
     //   or
     //      boundary is hit (check with 2 rays drawn from relevant corners)
-
     if (mx == 0 && my == 0)
-    {
         return;
-    }
 
-    std::set<GridLocation> gridLocationsCovered;
-    std::vector<Line> boundariesToCheck;
+    int stepNum = std::ceil(std::max(std::abs(mx), std::abs(my)) / 8); // to prevent inefficiency, do large steps, then step backwards slowly once you hit something
+    float xStep = mx / stepNum;
+    float yStep = my / stepNum;
 
-    // create a set of all the tiles covered
-    for (auto location : getGridsOverlappedByLine(x, y, x + mx, y + my))
-        gridLocationsCovered.insert(location);
-    for (auto location : getGridsOverlappedByLine(x + texw - 1, y, x + texw + mx - 1, y + my))
-        gridLocationsCovered.insert(location);
-    for (auto location : getGridsOverlappedByLine(x, y + texh - 1, x + mx, y + texh + my - 1))
-        gridLocationsCovered.insert(location);
-    for (auto location : getGridsOverlappedByLine(x + texw - 1, y + texh - 1, x + texw + mx - 1, y + texh + my - 1))
-        gridLocationsCovered.insert(location);
+    float newx = this->x;
+    float newy = this->y;
+    int xDir = std::signbit(mx) ? -1 : 1;
+    int yDir = std::signbit(my) ? -1 : 1;
 
-    for (auto location : gridLocationsCovered)
+    bool xStopped = false, yStopped = false;
+    for (int i = 0; i < stepNum; i++)
     {
-        Game::highlightTile(location);
-        // 1. add all of the boundaries for the tiles into boundaries to check
-        //    make sure to check every layer in background AND foreground
+        // get all tiles covered by the character
+
+        // if intersecting boundary
+        //     move x -xStep units
+        //     if intersecting boundary
+        //         move x xStep units
+        //         move y -yStep units
+        //         if intersecting boundary
+        //             move x -xStep units
+        //             continue
+        //     else continue
+        // else continue
+        //
+        // assuming starting from a non-intersecting position
+
+        // check the boundaries at (j, k) grid location
+        // move *backwards* to accomodate for them
+        // stop moving in the x/y direction
+
+        if (!xStopped && xStep != 0)
+        {
+            newx += xStep;
+            if (willBeColliding(newx, newy))
+            {
+                do newx -= xDir;
+                while (willBeColliding(newx, newy));
+                xStopped = true;
+            }
+        }
+
+        if (!yStopped && yStep != 0)
+        {
+            newy += yStep;
+            if (willBeColliding(newx, newy))
+            {   do newy -= yDir;
+                while (willBeColliding(newx, newy));
+                yStopped = true;
+            }
+        }
+
+        if (xStopped && yStopped)
+            break;
     }
 
-    moveX(mx);
-    moveY(my);
+    x = newx;
+    y = newy;
+
+    // moveX(mx);
+    // moveY(my);
 }
 
 void Player::handleEvent(SDL_Event event)

@@ -39,21 +39,28 @@ void AI::pathfindToTarget()
 {
     pathfindingTrace.clear();
     pathfindingCosts.clear();
+
     if (target == nullptr)
     {
         return;
     }
+
     float goalCenterX = target->getX() + target->getTextureW() / 2.0f;
     float goalCenterY = target->getY() + target->getTextureH() / 2.0f;
     GridLocation targetLocation = Level::getPosAt(goalCenterX, goalCenterY);
     GridLocation currentLocation = Level::getPosAt(x + texw / 2.0f, y + texh / 2.0f);
     auto currentLocationInPathIt = std::find(pathToGoal.begin(), pathToGoal.end(), currentLocation);
+
     if (pathTarget == initLocation || targetLocation != pathTarget || currentLocationInPathIt == pathToGoal.end())
     {
         // INCOMPLETE: Need to travel along the path to the AI if the AI is already at a certain point
         // --> if current position is in the list, check the item after
         // --> if not, go to pathToGoal[0]
-        a_star_search(Level::pathfindingGrid, currentLocation, targetLocation, pathfindingTrace, pathfindingCosts);
+        if (!a_star_search(Level::pathfindingGrid, currentLocation, targetLocation, pathfindingTrace, pathfindingCosts))
+        {
+            // the target is unreachable
+            return;
+        }
         pathToGoal = getPathToLocation(pathfindingTrace, targetLocation);
         pathTarget = targetLocation;
         if (pathToGoal.size() > 1)
@@ -69,9 +76,12 @@ void AI::pathfindToTarget()
     {
         if (targetLocation == pathTarget && currentLocationInPathIt != pathToGoal.end())
         {
-            if (isLast(currentLocationInPathIt, pathToGoal)) {
+            if (isLast(currentLocationInPathIt, pathToGoal))
+            {
                 return;
-            } else {
+            }
+            else
+            {
                 nextLocation = *std::next(currentLocationInPathIt);
             }
         }
@@ -171,6 +181,7 @@ void AI::update()
         float rootTwoOverTwo = 0.707106f;
         float diagStep = calculatedSpeed * rootTwoOverTwo;
 
+        // snap to a position and move
         if (std::abs(dX) <= diagStep && std::abs(dY) <= diagStep)
         {
             x = nextCoordX;

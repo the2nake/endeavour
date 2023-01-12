@@ -84,6 +84,9 @@ private:
     AttributeMap<int> int_attrs;
     AttributeMap<float> flt_attrs;
     AttributeMap<std::string> str_attrs;
+
+    bool isColliding();
+    bool willBeColliding(float x, float y);
 };
 
 typedef void (Player::*playerAction)();

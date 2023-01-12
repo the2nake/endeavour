@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <filesystem>
+#include <algorithm>
 
 int Level::tileW = 0;
 int Level::tileH = 0;
@@ -20,9 +21,11 @@ int Level::levelH = 0;
 GridWithWeights Level::pathfindingGrid{0, 0};
 
 std::vector<Entity *> Level::entities;
-std::unordered_map<std::string, Tile> Level::tileDataLookup;
 std::vector<std::vector<std::vector<std::string>>> Level::background;
 std::vector<std::vector<std::vector<std::string>>> Level::foreground;
+
+std::unordered_map<std::string, Tile> Level::tileDataLookup;
+std::vector<std::string> Level::transparentTiles;
 
 void Level::loadPlayerData(std::string playerName, std::string saveName)
 {
@@ -90,9 +93,14 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
             // get the rectangles
             SDL_Rect src = stringToSDLRect(tileEl.attribute("cropRect").as_string());
             SDL_Rect dst = stringToSDLRect(tileEl.attribute("outRect").as_string());
+
             // get the texture pointer
             tempTile.texture = TextureManager::loadTexture(tileEl.attribute("src").as_string(), &src, &dst); // this should point to the same texture pointed to in TextureManager::loadedTextures
                                                                                                              // if there are duplcicate references
+
+            if (tileEl.attribute("transparent").as_bool())
+                Level::transparentTiles.push_back(tileEl.attribute("name").as_string());
+
             // get movement cost
             tempTile.movementCost = tileEl.attribute("movementCost").as_float(1.0f);
 
@@ -103,9 +111,9 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
             tempTile.collisionRect1 = stringToSDLRect(tileEl.attribute("collisionRect").as_string());
             tempTile.collisionRect2 = stringToSDLRect(tileEl.attribute("collisionRect2").as_string());
 
-            SDL_Rect defaultRect;
-            if (tileEl.attribute("collisionRect").as_string() == "" && tileEl.attribute("collisionRect2").as_string() == "")
-                tempTile.collisionRect1 = {0, 0, Level::tileW, Level::tileH};
+            if (tempTile.movementCost <= 0)
+                if (tileEl.attribute("collisionRect").as_string() == "" && tileEl.attribute("collisionRect2").as_string() == "")
+                    tempTile.collisionRect1 = {0, 0, Level::tileW, Level::tileH};
 
             // store the data into the lookup table
             Level::tileDataLookup.insert_or_assign(tileEl.attribute("name").as_string(), tempTile);
@@ -231,41 +239,56 @@ void Level::loadNPCs(std::string playerName, std::string saveName, std::string l
 
 void Level::renderLayer(std::string layer)
 {
-    std::vector<std::vector<std::vector<std::string>>> *layerDataRef;
+    auto layerDataRef = &background;
     if (layer == "foreground")
-    {
         layerDataRef = &foreground;
+
+    if (layerDataRef->empty())
+    {
+        Game::add_error("Tile data is empty or invalid.");
+        return;
     }
-    else
-    { // background
-        layerDataRef = &background;
-    }
+
+    // TODO: cache the frames for each layer
 
     for (auto layer : *layerDataRef)
     {
-        if (layerDataRef->empty() || !isRectangularVector(layer))
+        if (!isRectangularVector(layer))
         {
             Game::add_error("Tile data is empty or invalid.");
             return;
         }
 
         // following code assumes that tiles are squares
-        for (int y = 0; y < layer.size(); y++)
+        int tileX = 0;
+        int tileY = 0;
+        for (auto row : layer)
         {
-            for (int x = 0; x < layer[0].size(); x++)
+            for (auto tileName : row)
             {
-                std::string tileName = layer[y][x];
+                if (std::find(Level::transparentTiles.begin(), Level::transparentTiles.end(), tileName) != transparentTiles.end())
+                {
+                    tileX++;
+                    continue;
+                }
+
                 if (Level::tileDataLookup.find(tileName) != tileDataLookup.end())
                 {
-                    SDL_Rect dst{x * Level::tileW, y * Level::tileH, tileW, tileH};
-                    Tile tileData = Level::tileDataLookup.at(tileName);
-                    SDL_RenderCopyEx(Game::renderer, tileData.texture, nullptr, &dst, tileData.isNatural ? 90 * ((x * y) % 3) : 0, nullptr, SDL_FLIP_NONE);
+                    SDL_Rect dst{tileX * Level::tileW, tileY * Level::tileH, Level::tileW, Level::tileH};
+                    Tile tileData = Level::tileDataLookup[tileName];
+                    if (tileData.isNatural)
+                        SDL_RenderCopyEx(Game::renderer, tileData.texture, nullptr, &dst, tileData.isNatural ? 90 * ((tileX * tileY) % 3) : 0, nullptr, SDL_FLIP_NONE);
+                    else
+                        SDL_RenderCopy(Game::renderer, tileData.texture, nullptr, &dst);
                 }
                 else
                 {
-                    // error; tile does not exist
+                    Game::add_error("Tile with name " + (std::string) tileName + " is undefined.");
                 }
+                tileX++;
             }
+            tileY++;
+            tileX = 0;
         }
     }
 }
@@ -290,10 +313,10 @@ void Level::generatePathfindingGrid()
     Level::pathfindingGrid = GridWithWeights{levelW, levelH};
     Tile currentTile;
     int rowIndex = 0, colIndex = 0;
-    for (std::vector<std::string> tileRow : Level::background[0])
+    for (auto tileRow : Level::background[0])
     {
         colIndex = 0;
-        for (std::string tileName : tileRow)
+        for (auto tileName : tileRow)
         {
             GridLocation loc{colIndex, rowIndex};
             currentTile = Level::getTileFromName(tileName);
@@ -304,6 +327,7 @@ void Level::generatePathfindingGrid()
             }
             else if (pathfindingGrid.walls.find(loc) != pathfindingGrid.walls.end())
             {
+                pathfindingGrid.walls.extract(loc);
                 Level::pathfindingGrid.setCost(loc, currentTile.movementCost);
             }
             colIndex++;

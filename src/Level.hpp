@@ -19,8 +19,10 @@ struct Tile
 class Level
 {
 public:
-    static int tileW, tileH;   // in pixels
-    static int levelW, levelH; // in tiles
+    static int tileW;  // in pixels
+    static int tileH;  // in pixels
+    static int levelW; // in tiles
+    static int levelH; // in tiles
 
     static std::vector<Entity *> entities;
     static GridWithWeights pathfindingGrid;
@@ -115,4 +117,5 @@ private:
     static std::vector<std::vector<std::vector<std::string>>> background;
     static std::vector<std::vector<std::vector<std::string>>> foreground;
     static std::unordered_map<std::string, Tile> tileDataLookup; // note that unordered_map does not require the data to have a hash function, only the key
+    static std::vector<std::string> transparentTiles;
 };

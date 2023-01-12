@@ -42,7 +42,7 @@ std::string trimWhitespace(std::string s)
 
 SDL_Rect stringToSDLRect(std::string s, std::string delim)
 {
-    SDL_Rect rect;
+    SDL_Rect rect{0, 0, 0, 0};
 
     if (s == "")
     {
@@ -102,7 +102,7 @@ Returns the orientation of the points A(ax, ay), B(bx, by), C(cx, cy)
 int orientation(float ax, float ay, float bx, float by, float cx, float cy)
 {
     float z = (ay - by) * (bx - cx) - (ax - bx) * (by - cy);
-    if (z == 0)
+    if (std::abs(z) < 0.001)
         return 0;
 
     return (z > 0) ? 1 : 2;
@@ -122,34 +122,46 @@ bool onSegment(float ax, float ay, float bx, float by, float cx, float cy)
 */
 bool rectContainedInRect(SDL_Rect *r1, SDL_Rect *r2)
 {
-    return r2->x < r1->x && r2->y < r1->y && r2->x + r2->w > r1->x + r1->w && r2->y + r2->h > r1->y + r1->h;
+    return (r2->x <= r1->x) && (r2->y <= r1->y) && (r2->x + r2->w >= r1->x + r1->w) && (r2->y + r2->h >= r1->y + r1->h);
+}
+
+bool pointInRect(int x, int y, SDL_Rect *r)
+{
+    return (r->x <= x && x <= r->x + r->w - 1) && (r->y <= y && y <= r->y + r->h - 1);
 }
 
 bool rectIntersect(SDL_Rect *r1, SDL_Rect *r2)
 {
-    // check if lines intersect
-    // check if r1 is contained in r2, vice versa
+    // check if a point in r1 is contained in r2, vice versa
 
-    // lined n e s w
-    std::vector<Line> r1lines = {Line(r1->x, r1->y, r1->x + r1->w, r1->y),
-                                 Line(r1->x + r1->w - 1, r1->y, r1->x + r1->w - 1, r1->y + r1->h - 1),
-                                 Line(r1->x, r1->y + r1->h - 1, r1->x + r1->w - 1, r1->y + r1->h - 1),
-                                 Line(r1->x, r1->y, r1->x, r1->y + r1->h - 1)};
+    if ((r2->w == 0 || r2->h == 0) || (r1->w == 0 || r1->h == 0))
+        return false;
 
-    // lined n e s w
-    std::vector<Line> r2lines = {Line(r2->x, r2->y, r2->x + r2->w - 1, r2->y),
-                                 Line(r2->x + r2->w - 1, r2->y, r2->x + r2->w - 1, r2->y + r2->h - 1),
-                                 Line(r2->x, r2->y + r2->h - 1, r2->x + r2->w - 1, r2->y + r2->h - 1),
-                                 Line(r2->x, r2->y, r2->x, r2->y + r2->h - 1)};
-
-    for (Line line : r1lines)
+    struct Point
     {
-        for (Line line2 : r2lines)
-        {
-            if (line.intersectsLine(&line2))
-                return true;
-        }
-    }
+        int x;
+        int y;
+    };
+
+    Point r1a{r1->x, r1->y};
+    Point r1b{r1->x + r1->w - 1, r1->y};
+    Point r1c{r1->x, r1->y + r1->h - 1};
+    Point r1d{r1->x + r1->w - 1, r1->y + r1->h - 1};
+
+    Point r2a{r2->x, r2->y};
+    Point r2b{r2->x + r2->w - 1, r2->y};
+    Point r2c{r2->x, r2->y + r2->h - 1};
+    Point r2d{r2->x + r2->w - 1, r2->y + r2->h - 1};
+
+    if (pointInRect(r1a.x, r1a.y, r2)) return true;
+    if (pointInRect(r1b.x, r1b.y, r2)) return true;
+    if (pointInRect(r1c.x, r1c.y, r2)) return true;
+    if (pointInRect(r1d.x, r1d.y, r2)) return true;
+
+    if (pointInRect(r2a.x, r2a.y, r1)) return true;
+    if (pointInRect(r2b.x, r2b.y, r1)) return true;
+    if (pointInRect(r2c.x, r2c.y, r1)) return true;
+    if (pointInRect(r2d.x, r2d.y, r1)) return true;
 
     if (rectContainedInRect(r1, r2))
         return true;

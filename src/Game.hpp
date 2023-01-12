@@ -6,6 +6,7 @@
 #include "SDL.h"
 
 #include <string>
+#include <queue>
 #include <unordered_map>
 // Game should only be initialised once
 
@@ -33,7 +34,10 @@ public:
     static SDL_Renderer *renderer;
     static bool running;
     static double targetFrameTime;
+    static int frameTime;
 
 private:
-    static std::vector<GridLocation> tilesToHighlight;
+    static std::queue<GridLocation> tilesToHighlight;
+    static SDL_Texture* highlightTexture;
+    static int numTilesToHighlight;
 };

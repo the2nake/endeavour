@@ -47,7 +47,7 @@ SDL_Texture *TextureManager::loadTexture(std::string pathToTexture, SDL_Rect *cr
             croppedTexture = SDL_CreateTexture(Game::renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, srcw, srch);
         }
 
-        SDL_SetTextureBlendMode(sourceTexture, SDL_BLENDMODE_BLEND);
+        //SDL_SetTextureBlendMode(sourceTexture, SDL_BLENDMODE_BLEND);
         SDL_SetTextureBlendMode(croppedTexture, SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(Game::renderer, croppedTexture);
         SDL_SetRenderDrawColor(Game::renderer, 0x00, 0x00, 0x00, SDL_ALPHA_TRANSPARENT);
