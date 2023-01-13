@@ -14,7 +14,8 @@ int main(int argc, char *argv[])
                                std::filesystem::exists(path.string() + "/saves");
     if (!workingDirIsCorrect)
     {
-        std::cout << "The game has started in the wrong working directory. Attempting to correct working directory." << std::endl;
+        std::cout << "The game has started in the wrong working directory. "
+                  << "Attempting to correct working directory." << std::endl;
         std::filesystem::current_path(path.string() + "/..");
     }
 
