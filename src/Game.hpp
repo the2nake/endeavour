@@ -8,6 +8,7 @@
 #include <string>
 #include <queue>
 #include <unordered_map>
+
 // Game should only be initialised once
 
 class Game
@@ -33,7 +34,7 @@ public:
     static SDL_Window *window;
     static SDL_Renderer *renderer;
     static bool running;
-    static double targetFrameTime;
+    static int targetFrameTime;
     static int frameTime;
 
 private:
