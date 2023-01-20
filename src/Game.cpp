@@ -14,7 +14,7 @@
 bool Game::running = true;
 SDL_Window *Game::window = nullptr;
 SDL_Renderer *Game::renderer = nullptr;
-double Game::targetFrameTime = 1000.0 / 60.0;
+int Game::targetFrameTime = std::floor(1000.0 / 60.0);
 int Game::frameTime = 0;
 
 std::unordered_map<std::string, int> Game::errors;
