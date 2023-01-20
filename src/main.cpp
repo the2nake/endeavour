@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     }
 
     double execTime = 9;
-    Game game = Game("Endeavour: game with a stupid title", 1024, 512, false, true);
+    Game game = Game("Endeavour (pre-alpha)", 1024, 512, false, true);
     while (Game::running)
     {
         auto start = std::chrono::high_resolution_clock::now();
