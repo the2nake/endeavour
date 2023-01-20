@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
         std::filesystem::current_path(path.string() + "/..");
     }
 
-    Game game = Game("Endeavour: game with a stupid title", 1024, 512, false, true);
+    Game game = Game("Endeavour (pre-alpha)", 1024, 512, false, true);
     while (game.running)
     {
         auto start = std::chrono::high_resolution_clock::now();
