@@ -14,11 +14,16 @@
 bool Game::running = true;
 SDL_Window *Game::window = nullptr;
 SDL_Renderer *Game::renderer = nullptr;
-double Game::targetFrameTime = 1000.0 / 60.0;
+int Game::targetFrameTime = std::floor(1000.0 / 60.0);
+int Game::frameTime = 0;
 
 std::unordered_map<std::string, int> Game::errors;
 
 std::unordered_map<int, bool> Game::keyIsDownMap;
+
+std::queue<GridLocation> Game::tilesToHighlight = {};
+SDL_Texture *Game::highlightTexture = nullptr;
+int Game::numTilesToHighlight = 0;
 
 Player Game::player;
 
@@ -76,6 +81,11 @@ Game::Game(std::string windowTitle, int w, int h, bool fullscreen, bool shown)
     initSDLImage(IMG_INIT_PNG | IMG_INIT_JPG);
     createWindow(windowTitle, w, h, fullscreen, shown);
     createRendererForWindow(Game::window);
+
+    SDL_Rect crop{0, 0, 16, 16};
+    SDL_Rect size{0, 0, Level::tileW, Level::tileH};
+    SDL_Texture *highlightTexture = TextureManager::loadTexture("res/proposed/MiniWorldSprites/User Interface/BoxSelector.png", &crop, &size);
+
     Level::loadPlayerData("Mark", "save_1");
     Level::loadLevel("Mark", "save_1", "level1");
 }
@@ -83,8 +93,6 @@ Game::Game(std::string windowTitle, int w, int h, bool fullscreen, bool shown)
 void Game::handleEvents()
 {
     SDL_Event event;
-    std::vector<int> registeredKeys;
-    bool keyIsRegistered = false;
 
     while (SDL_PollEvent(&event))
     {
@@ -105,6 +113,22 @@ void Game::handleEvents()
 
         player.handleEvent(event);
     }
+
+    // errors
+    for (auto errorCooldownPair : Game::errors)
+    {
+        Game::errors.insert_or_assign(errorCooldownPair.first, errorCooldownPair.second - 1);
+        if (errorCooldownPair.second <= 0)
+        {
+            Game::errors.erase(errorCooldownPair.first);
+        }
+    }
+}
+
+void Game::highlightTile(GridLocation tile)
+{
+    tilesToHighlight.push(tile);
+    Game::numTilesToHighlight++;
 }
 
 void Game::update()
@@ -115,32 +139,13 @@ void Game::update()
     {
         entity->update();
     }
-
-    // errors
-    std::vector<std::string> endedErrorCooldowns = {};
-    for (auto errorCooldownPair : Game::errors)
-    {
-        Game::errors.insert_or_assign(errorCooldownPair.first, errorCooldownPair.second - 1);
-        if (errorCooldownPair.second <= 0)
-        {
-            endedErrorCooldowns.push_back(errorCooldownPair.first);
-        }
-    }
-    for (std::string s : endedErrorCooldowns)
-    {
-        Game::errors.erase(s);
-    }
 }
 
 void Game::render()
 {
     SDL_RenderClear(Game::renderer);
 
-    // render the background
-
     Level::renderBackground();
-
-    // other renders
 
     player.render();
 
@@ -151,6 +156,15 @@ void Game::render()
 
     Level::renderForeground();
 
+    while (Game::numTilesToHighlight > 0)
+    {
+        GridLocation tile = tilesToHighlight.front();
+        SDL_Rect dst{tile.x * Level::tileW, tile.y * Level::tileH, Level::tileW, Level::tileH};
+        SDL_RenderCopy(Game::renderer, Game::highlightTexture, nullptr, &dst);
+        Game::tilesToHighlight.pop();
+        Game::numTilesToHighlight--;
+    }
+
     SDL_RenderPresent(Game::renderer);
 }
 
@@ -158,7 +172,7 @@ void Game::add_error(std::string msg)
 {
     if (Game::errors.find(msg) == Game::errors.end())
     {
-        std::cout << msg << std::endl;
+        std::cout << "\033[1;31mError:\033[0m " << msg << std::endl;
         Game::errors.insert_or_assign(msg, 60);
     }
 }

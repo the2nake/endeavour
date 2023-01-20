@@ -121,20 +121,25 @@ struct GridWithWeights : SquareGrid
 
     void setCost(GridLocation node, float cost)
     {
-        if (cost <= 0 && weights.find(node) != weights.end()) {
+        if (cost <= 0 && weights.find(node) != weights.end())
+        {
             weights.erase(node);
         }
         weights.insert_or_assign(node, cost);
     }
 
-    double cost(GridLocation from_node, GridLocation to_node) const
+    double impassable(GridLocation node) {
+        return (walls.find(node) != walls.end());
+    }
+
+    double cost(GridLocation from_node, GridLocation to_node)
     {
         // may only be called on nodes accessible via movements in DIRS
         bool isDiagonal = std::abs(from_node.x - to_node.x) + std::abs(from_node.y - to_node.y) == 2;
         int weight;
         if (weights.find(to_node) == weights.end())
         {
-            weight = 1;
+            return 1;
         }
         else
         {
@@ -148,29 +153,34 @@ inline double heuristic(GridLocation a, GridLocation b)
 {
     int dX = std::abs(a.x - b.x);
     int dY = std::abs(a.y - b.y);
-    //return dX+dY;
+    // return dX+dY;
     if (dX > dY)
     {
         return 0.4 * dY + dX;
     }
     else
     {
-        return 0.4 * dX + dY ;
+        return 0.4 * dX + dY;
     }
 }
 
-/* a star requires: double Graph::cost(Location, Location), from neighbouring nodes
+/*
+    a star requires: double Graph::cost(Location, Location), from neighbouring nodes
                     std::vector<Location> Graph::neighbours(Location)
                     heuristic(Location, Location)
+
+    returns false when the target is impassable
                     */
 
 template <typename Location, typename Graph>
-void a_star_search(Graph graph,
+bool a_star_search(Graph graph,
                    Location start,
                    Location goal,
                    std::unordered_map<Location, Location> &came_from,
                    std::unordered_map<Location, double> &cost_so_far)
 {
+    if (graph.impassable(goal)) return false;
+
     PriorityQueue<Location, double> frontier;
     frontier.put(start, 0);
 
@@ -199,6 +209,8 @@ void a_star_search(Graph graph,
             }
         }
     }
+
+    return true;
 }
 
 void addInvalidQueryToGameErrors();
@@ -209,7 +221,8 @@ std::vector<Location> getPathToLocation(std::unordered_map<Location, Location> t
     Location currentCheck = location;
     std::vector<Location> checked = {};
 
-    if (trace.find(location) == trace.end()) {
+    if (trace.find(location) == trace.end())
+    {
         addInvalidQueryToGameErrors();
         return checked;
     }
@@ -280,7 +293,8 @@ void draw_grid(const Graph &graph,
                 {
                     std::cout << " / ";
                 }
-                else if (next.x == x + 1) {
+                else if (next.x == x + 1)
+                {
                     std::cout << " > ";
                 }
                 else if (next.x == x - 1)

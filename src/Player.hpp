@@ -31,7 +31,7 @@ public:
     using playerAction = void (Player::*)();
 
     playerAction getFunctionOf(std::string alias);
-    std::unordered_map<std::string, void (Player::*)()> aliasFunctionMap;
+    std::unordered_map<std::string, playerAction> aliasFunctionMap;
     void initAliasMap();
 
     void callbackMoveRight();
@@ -43,6 +43,7 @@ public:
     std::unordered_map<std::string, double> defaultCooldowns; // in milliseconds
     std::unordered_map<std::string, double> currentCooldowns; // in milliseconds
 
+    void move(float mx, float my);
     void moveX(float mx);
     void moveY(float my);
 
@@ -54,38 +55,20 @@ public:
 
     int getIntAttribute(std::string name)
     {
-        if (int_attrs.find(name) != int_attrs.end())
-        {
-            return int_attrs.at(name);
-        }
-        else
-        {
-            return -1;
-        }
+        if (int_attrs.find(name) != int_attrs.end()) return int_attrs.at(name);
+        else return -1;
     }
 
     float getFloatAttribute(std::string name)
     {
-        if (flt_attrs.find(name) != flt_attrs.end())
-        {
-            return flt_attrs.at(name);
-        }
-        else
-        {
-            return -1;
-        }
+        if (flt_attrs.find(name) != flt_attrs.end()) return flt_attrs.at(name);
+        else return -1;
     }
 
     std::string getStringAttribute(std::string name)
     {
-        if (str_attrs.find(name) != str_attrs.end())
-        {
-            return str_attrs.at(name);
-        }
-        else
-        {
-            return "";
-        }
+        if (str_attrs.find(name) != str_attrs.end()) return str_attrs.at(name);
+        else return "";
     }
 
     void setAttribute(std::string name, int value) { int_attrs.insert_or_assign(name, value); }
@@ -101,6 +84,9 @@ private:
     AttributeMap<int> int_attrs;
     AttributeMap<float> flt_attrs;
     AttributeMap<std::string> str_attrs;
+
+    bool isColliding();
+    bool willBeColliding(float x, float y);
 };
 
 typedef void (Player::*playerAction)();

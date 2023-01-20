@@ -19,18 +19,25 @@ int main(int argc, char *argv[])
         std::filesystem::current_path(path.string() + "/..");
     }
 
-    double execTime = 9;
     Game game = Game("Endeavour (pre-alpha)", 1024, 512, false, true);
-    while (Game::running)
+    while (game.running)
     {
         auto start = std::chrono::high_resolution_clock::now();
         game.handleEvents();
+        // std::cout << "Handle event time: " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
+        // start = std::chrono::high_resolution_clock::now();
         game.update();
+        // std::cout << "Update event time: " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
+        // start = std::chrono::high_resolution_clock::now();
         game.render();
+        // std::cout << "Render event time: " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
+        // start = std::chrono::high_resolution_clock::now();
         auto end = std::chrono::high_resolution_clock::now();
 
-        execTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        SDL_Delay(std::max<int>(0, Game::targetFrameTime - execTime));
+        game.frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+        //std::cout << game.frameTime << std::endl;
+        SDL_Delay(std::max<int>(0, game.targetFrameTime - game.frameTime));
     }
     game.clean();
     return 0;

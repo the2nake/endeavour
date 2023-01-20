@@ -4,6 +4,9 @@
 
 #include <string>
 #include <vector>
+#include <iosfwd>
+
+bool approxEquals(double a, double b);
 
 void splitString(std::vector<std::string> &container, std::string toSplit, std::string delim = " ");
 
@@ -26,7 +29,18 @@ bool isRectangularVector(std::vector<std::vector<T>> &v)
 }
 
 template <typename Iter, typename Cont>
-bool isLast(Iter iter, const Cont& cont)
+bool isLast(Iter iter, const Cont &cont)
 {
     return (iter != cont.end()) && (cont.end() - iter == 1);
 }
+
+// custom definition for floating point modulo that always returns a positive number
+float floatingPointModulo(float a, float modB);
+
+int orientation(float ax, float ay, float bx, float by, float cx, float cy);
+bool onSegment(float ax, float ay, float bx, float by, float cx, float cy);
+
+bool rectIntersect(SDL_Rect *r1, SDL_Rect *r2);
+bool rectContainedInRect(SDL_Rect *r1, SDL_Rect *r2);
+
+bool operator==(SDL_Rect rect, SDL_Rect rect2);

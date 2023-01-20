@@ -7,6 +7,7 @@
 #include "Player.hpp"
 #include "TextureManager.hpp"
 #include "common.hpp"
+#include "Line.hpp"
 #include "pathfinding.hpp"
 #include "Game.hpp"
 #include "AI.hpp"
@@ -24,24 +25,29 @@
 #define TEST_TEXTURE_CACHE
 // Tells TextureManager to report when the texture cache has been accessed
 
-int isEqual(double a, double b)
-{
-    double epsilon = 0.001;
-    return std::abs(a - b) < epsilon;
-}
+/*
+test template:
 
-int testTrue(bool a)
-{
-    if (a)
+bool test___() {
+    bool result = false;
+
+    if (result)
     {
-        return 1;
-        std::cout << "Test succeeded." << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        return 0;
-        std::cout << "Test failed; " << a << " is not true." << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
+
+    return result;
+}
+*/
+
+bool isEqual(double a, double b)
+{
+    double epsilon = 0.0001;
+    return std::abs(a - b) < epsilon;
 }
 
 typedef bool (*testFunction)();
@@ -101,11 +107,11 @@ bool testKeyBindMapExecution()
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -126,11 +132,11 @@ bool testKeyBindReset()
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -159,11 +165,11 @@ bool testStringSplit()
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -184,11 +190,11 @@ bool testStringToRect()
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -213,11 +219,11 @@ bool testTextureCache()
     }
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -236,11 +242,11 @@ bool testEntityClean()
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -253,66 +259,284 @@ bool testPolymorphicDeconstructorClean()
 
     AI ai = AI();
     ai.init(0, 0, TextureManager::loadTexture("test_res/tex/tilemap_proto.png"));
-    SDL_Texture* tex = ai.getTexture();
-    Entity* ai_ptr = &ai;
+    SDL_Texture *tex = ai.getTexture();
+    Entity *ai_ptr = &ai;
     ai_ptr->~Entity();
-    
+
     SDL_RenderCopy(Game::renderer, tex, nullptr, nullptr);
     const char *err = SDL_GetError();
     result = tex != nullptr && (std::string)(err) == (std::string)("Invalid texture");
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
 }
 
-bool testLevelLoading() {
+bool testLevelLoading()
+{
     bool result = false;
 
     Level::loadPlayerData("../test_res/saves/TestPlayer", "save_1");
     Level::loadLevel("../test_res/saves/TestPlayer", "save_1", "level1");
 
-    if (Level::entities.size()) {
-        if (Level::entities[0]->getStringAttribute("name") == "Anthony") {
+    if (Level::entities.size())
+    {
+        if (Level::entities[0]->getStringAttribute("name") == "Anthony")
+        {
             // background layer 0
-            Tile tile = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, 31, 31));
-            if (tile.texture != nullptr && tile.isNatural && tile.movementCost == 1) {
+            Tile tile = Level::getTileFromName(Level::getTileNameAtPos("background", 0, 31, 31));
+            if (tile.texture != nullptr && tile.isNatural && tile.movementCost == 1)
+            {
                 result = true;
             }
-            tile = Level::getTileFromName(Level::getTileNameAtPosition("background", 0, 32, 32));
-            if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == -1) {
+            tile = Level::getTileFromName(Level::getTileNameAtPos("background", 0, 32, 32));
+            if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == -1)
+            {
                 result = result && true;
             }
             // foreground tests (different layers)
-            tile = Level::getTileFromName(Level::getTileNameAtPosition("foreground", 0, 45, 36));
-            if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == 1) {
+            tile = Level::getTileFromName(Level::getTileNameAtPos("foreground", 0, 45, 36));
+            if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == 1)
+            {
                 result = result && true;
             }
-            tile = Level::getTileFromName(Level::getTileNameAtPosition("foreground", 1, 32, 32));
-            if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == -1) {
+            tile = Level::getTileFromName(Level::getTileNameAtPos("foreground", 1, 32, 32));
+            if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == -1)
+            {
                 result = result && true;
             }
-        } else {
+        }
+        else
+        {
             result = false;
         }
-    } else {
+    }
+    else
+    {
         result = false;
     }
 
     if (result)
     {
-        std::cout << "PASS: " << __func__ << std::endl;
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
     }
     else
     {
-        std::cout << "FAIL: " << __func__ << std::endl;
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
+    }
+
+    return result;
+}
+
+bool testFloatingPointModulo()
+{
+    bool result = true;
+
+    if (!isEqual(floatingPointModulo(1.0, 180.0), 1.0))
+    {
+        result = false;
+    }
+
+    if (!isEqual(floatingPointModulo(-192.0, 20.0), 8.0))
+    {
+        result = false;
+    }
+
+    if (!isEqual(floatingPointModulo(10.34, 1.53), 1.16))
+    {
+        result = false;
+    }
+
+    if (!isEqual(floatingPointModulo(2.0, 2.0), 0.0))
+    {
+        result = false;
+    }
+
+    if (!isEqual(floatingPointModulo(4.5, 2.25), 0.0))
+    {
+        result = false;
+    }
+
+    if (result)
+    {
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
+    }
+    else
+    {
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
+    }
+
+    return result;
+}
+
+bool testLineSlope()
+{
+    bool result = true;
+
+    Line line = Line(0, 0, 1, 1);
+
+    if (!isEqual(line.getSlope(), 1.0))
+    {
+        result = false;
+    }
+
+    line = Line(0, 0, 0, 1);
+
+    if (line.getSlope() < 10000)
+    {
+        result = false;
+    }
+
+    line = Line(-1.0f, 1.0f, 2.0f, 3.5f);
+
+    if (!isEqual(line.getSlope(), 5.0f / 6.0f))
+    {
+        result = false;
+    }
+
+    line = Line(2.3f, 10.3f, -12.0f, 3.42f);
+
+    if (!isEqual(line.getSlope(), 0.48111888))
+    {
+        result = false;
+    }
+
+    line = Line(-2.55f, -0.37f, 2.6f, -1.69f);
+
+    if (!isEqual(line.getSlope(), -0.25631068))
+    {
+        result = false;
+    }
+
+    if (result)
+    {
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
+    }
+    else
+    {
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
+    }
+
+    return result;
+}
+
+bool testLineAngle()
+{
+    bool result = true;
+
+    Line line = Line(-1, 1, 1, 1);
+
+    if (!isEqual(line.getAngleFromPosXAxis(false), 0))
+    {
+        result = false;
+    }
+
+    if (!isEqual(line.getAngleFromPosXAxis(true), 0))
+    {
+        result = false;
+    }
+
+    line = Line(0, 0, 0, 1);
+
+    if (!isEqual(line.getAngleFromPosXAxis(false), 90))
+    {
+        result = false;
+    }
+
+    line = Line(-0.02f, 1.1f, 2.3f, -3.9f);
+
+    if (!isEqual(line.getAngleFromPosXAxis(false), 114.891300125))
+    {
+        result = false;
+    }
+
+    if (!isEqual(line.getAngleFromPosXAxis(true), 2.00523146908))
+    {
+        result = false;
+    }
+
+    line = Line(-8.1f, 1.1f, 3.7f, -3.9f);
+
+    if (!isEqual(line.getAngleFromPosXAxis(false), 157.03622694))
+    {
+        result = false;
+    }
+
+    if (!isEqual(line.getAngleFromPosXAxis(true), 2.740799205))
+    {
+        result = false;
+    }
+
+    if (result)
+    {
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
+    }
+    else
+    {
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
+    }
+
+    return result;
+}
+
+bool testLineIntersection()
+{
+    bool result = true;
+
+    Line line1 = Line(1, 1, 10, 1);
+    Line line2 = Line(1, 2, 10, 2);
+
+    if (line1.intersectsLine(&line2) || line2.intersectsLine(&line1))
+    {
+        result = false;
+    }
+
+    line1 = Line(10, 0, 0, 10);
+    line2 = Line(0, 0, 10, 10);
+
+    if ((!line1.intersectsLine(&line2)) || (!line2.intersectsLine(&line1)))
+    {
+        result = false;
+    }
+
+    line1 = Line(-5, -5, 0, 0);
+    line2 = Line(1, 1, 10, 10);
+
+    if (line1.intersectsLine(&line2) || line2.intersectsLine(&line1))
+    {
+        result = false;
+    }
+
+    line1 = Line(-5.0f, 0.1f, 5.0f, 0.1f);
+    line2 = Line(3.0f, 0.1f, 3.0f, 10.0f);
+
+    if ((!line1.intersectsLine(&line2)) || (!line2.intersectsLine(&line1)))
+    {
+        result = false;
+    }
+
+    line1 = Line(-5.0f, 0.1f, 5.0f, 0.1f);
+    line2 = Line(3.0f, 0.2f, 3.0f, 10.0f);
+
+    if (line1.intersectsLine(&line2) || line2.intersectsLine(&line1))
+    {
+        result = false;
+    }
+
+    if (result)
+    {
+        std::cout << "\033[1;32mPASS:\033[0m " << __func__ << std::endl;
+    }
+    else
+    {
+        std::cout << "\033[1;31mFAIL:\033[0m " << __func__ << std::endl;
     }
 
     return result;
@@ -347,7 +571,11 @@ int main()
              &testTextureCache,
              &testEntityClean,
              &testPolymorphicDeconstructorClean,
-             &testLevelLoading};
+             &testLevelLoading,
+             &testFloatingPointModulo,
+             &testLineSlope,
+             &testLineAngle,
+             &testLineIntersection};
     // ---
     for (int i = 0; i < tests.size(); i++)
     {
@@ -358,6 +586,6 @@ int main()
     }
     testTotal = tests.size();
 
-    std::cout << passedTotal << " out of " << testTotal << " tests passed. (" << (passedTotal / (double)(testTotal)) * 100.0 << "%)" << std::endl;
+    std::cout << passedTotal << " out of " << testTotal << " tests passed." << std::endl;
     game.clean();
 }
