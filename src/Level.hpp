@@ -27,9 +27,9 @@ public:
     static std::vector<Entity *> entities;
     static GridWithWeights pathfindingGrid;
 
-    static void loadPlayerData(std::string playerName, std::string saveName);
-    static void loadLevel(std::string playerName, std::string saveName, std::string levelName);
-    static void loadNPCs(std::string playerName, std::string saveName, std::string levelName);
+    static bool loadSave(std::string playerName, std::string saveName);
+    static bool loadLevel(std::string playerName, std::string saveName, std::string levelName);
+    static bool loadNPCs(std::string playerName, std::string saveName, std::string levelName);
 
     static void renderBackground();
     static void renderForeground();

@@ -27,7 +27,12 @@ std::vector<std::vector<std::vector<std::string>>> Level::foreground;
 std::unordered_map<std::string, Tile> Level::tileDataLookup;
 std::vector<std::string> Level::transparentTiles;
 
-void Level::loadPlayerData(std::string playerName, std::string saveName)
+/**
+ * Loads a save at `saves/playerName/saveName/player.xml`
+ * Returns false if there are issues, else returns true
+*/
+
+bool Level::loadSave(std::string playerName, std::string saveName)
 {
     using namespace pugi;
 
@@ -54,19 +59,38 @@ void Level::loadPlayerData(std::string playerName, std::string saveName)
             Game::player.init(playerX, playerY, playerTexture);
             Game::player.setAttribute("name", playerNode.attribute("name").as_string());
             Game::player.setAttribute("speed", playerNode.attribute("speed").as_string() == "" ? (float)(1) : playerNode.attribute("speed").as_float());
+
+            xml_node levelPointerNode = playerFile.child("level");
+            std::string levelName = levelPointerNode.attribute("name").as_string();
+            if (levelName != "")
+                if (!Level::loadLevel(playerName, saveName, levelName))
+                    return false;
+                else
+                    return false;
+
+            return true;
         }
         else
         {
             // problem loading save
+            Game::add_error("Cannot load save at " + pathToSave + ".");
+            return false;
         }
     }
     else
     {
         Game::add_error("Save file at " + pathToSave + " could not be found.");
+        return false;
     }
 }
 
-void Level::loadLevel(std::string playerName, std::string saveName, std::string levelName)
+/**
+ * Loads a level and generates its pathfinding grid
+ * Usually called from loadSave
+ * Returns false if there's a problem, otherwise returns true
+ */
+
+bool Level::loadLevel(std::string playerName, std::string saveName, std::string levelName)
 {
     using namespace pugi;
 
@@ -168,18 +192,34 @@ void Level::loadLevel(std::string playerName, std::string saveName, std::string 
             foregroundLayerIndex++;
         }
 
-        Level::loadNPCs(playerName, saveName, levelName);
         Level::generatePathfindingGrid();
+
+        if (!levelEl.children("npcs").empty())
+        {
+            if (!Level::loadNPCs(playerName, saveName, levelName))
+                return false;
+        }
+
+        return true;
     }
     else
     {
         // problem loading save
         // check if file exists
         // check if file has proper syntax (single tags need to have </>, etc.)
+
+        Game::add_error("Save file referenced in saves/" + playerName + "/" + saveName + "/player.xml is invalid or does not exist.");
+        return false;
     }
 }
 
-void Level::loadNPCs(std::string playerName, std::string saveName, std::string levelName)
+/**
+ * Loads all the npcs in a level
+ * Usually called from loadLevel
+ * Returns false if loading fails, otherwise returns true
+ */
+
+bool Level::loadNPCs(std::string playerName, std::string saveName, std::string levelName)
 {
     using namespace pugi;
 
@@ -188,52 +228,72 @@ void Level::loadNPCs(std::string playerName, std::string saveName, std::string l
     std::string levelFilePath = "saves/" + playerName + "/" + saveName + "/levels/" + levelName + ".xml";
     xml_parse_result result = levelFile.load_file(levelFilePath.c_str());
 
-    std::vector<std::string> npcsToLoad = {};
-    for (xml_node npcListingEl : levelFile.child("npcs").children("npc"))
+    if (result)
     {
-        npcsToLoad.push_back(npcListingEl.attribute("id-name").as_string());
-    }
-
-    for (std::string npcName : npcsToLoad)
-    {
-        std::string pathToSave = npcFileFolder + npcName + ".xml";
-        xml_parse_result result = npcFile.load_file(pathToSave.c_str());
-        // Valid npc files are: adjacent to this level, have proper format, and contain at least one npc
-        xml_node npcEl = npcFile.child("npc");
-        xml_node textureEl = npcEl.child("animation").child("frame");
-        if (textureEl.attribute("src").as_string() != "")
+        std::vector<std::string> npcsToLoad = {};
+        for (xml_node npcListingEl : levelFile.child("npcs").children("npc"))
         {
-            SDL_Rect *cropRect, *outDim;
-            SDL_Rect tmpCrop, tmpOut;
-            std::string pathToNPCTexture = textureEl.attribute("src").as_string();
-
-            if (textureEl.attribute("cropRect").as_string() != "")
-            {
-                tmpCrop = stringToSDLRect(textureEl.attribute("cropRect").as_string());
-                cropRect = &tmpCrop;
-            }
-            else
-            {
-                cropRect = nullptr;
-            }
-
-            if (textureEl.attribute("outRect").as_string() != "")
-            {
-                tmpOut = stringToSDLRect(textureEl.attribute("outRect").as_string());
-                outDim = &tmpOut;
-            }
-            else
-            {
-                outDim = nullptr;
-            }
-
-            AI *npc = new AI();
-            SDL_Texture *npcTexture = TextureManager::loadTexture(pathToNPCTexture, cropRect, outDim);
-            npc->init(npcEl.attribute("x").as_float(), npcEl.attribute("y").as_float(), npcTexture);
-            npc->setAttribute("name", npcEl.attribute("name").as_string());
-            npc->setAttribute("speed", npcEl.attribute("speed").as_float());
-            Level::entities.push_back(npc);
+            npcsToLoad.push_back(npcListingEl.attribute("id-name").as_string());
         }
+
+        for (std::string npcName : npcsToLoad)
+        {
+            std::string pathToSave = npcFileFolder + npcName + ".xml";
+            xml_parse_result npcFileResult = npcFile.load_file(pathToSave.c_str());
+
+            if (npcFileResult)
+            {
+                // Valid npc files are: adjacent to this level, have proper format, and contain at least one npc
+                xml_node npcEl = npcFile.child("npc");
+                xml_node textureEl = npcEl.child("animation").child("frame");
+                if (textureEl.attribute("src").as_string() != "")
+                {
+                    SDL_Rect *cropRect, *outDim;
+                    SDL_Rect tmpCrop, tmpOut;
+                    std::string pathToNPCTexture = textureEl.attribute("src").as_string();
+
+                    if (textureEl.attribute("cropRect").as_string() != "")
+                    {
+                        tmpCrop = stringToSDLRect(textureEl.attribute("cropRect").as_string());
+                        cropRect = &tmpCrop;
+                    }
+                    else
+                    {
+                        cropRect = nullptr;
+                    }
+
+                    if (textureEl.attribute("outRect").as_string() != "")
+                    {
+                        tmpOut = stringToSDLRect(textureEl.attribute("outRect").as_string());
+                        outDim = &tmpOut;
+                    }
+                    else
+                    {
+                        outDim = nullptr;
+                    }
+
+                    AI *npc = new AI();
+                    SDL_Texture *npcTexture = TextureManager::loadTexture(pathToNPCTexture, cropRect, outDim);
+                    npc->init(npcEl.attribute("x").as_float(), npcEl.attribute("y").as_float(), npcTexture);
+                    npc->setAttribute("name", npcEl.attribute("name").as_string());
+                    npc->setAttribute("speed", npcEl.attribute("speed").as_float());
+                    Level::entities.push_back(npc);
+                }
+            }
+            else
+            {
+                Game::add_error("Npc file at " + pathToSave + " referenced by " + levelFilePath + " is invalid or does not exist.");
+                return false;
+            }
+        }
+
+        return true;
+    }
+    else
+    {
+        // Level file not found
+        Game::add_error("Level file at " + levelFilePath + " is invalid or does not exist.");
+        return false;
     }
 }
 
@@ -283,7 +343,7 @@ void Level::renderLayer(std::string layer)
                 }
                 else
                 {
-                    Game::add_error("Tile with name " + (std::string) tileName + " is undefined.");
+                    Game::add_error("Tile with name " + (std::string)tileName + " is undefined.");
                 }
                 tileX++;
             }

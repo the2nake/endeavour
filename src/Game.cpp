@@ -86,8 +86,8 @@ Game::Game(std::string windowTitle, int w, int h, bool fullscreen, bool shown)
     SDL_Rect size{0, 0, Level::tileW, Level::tileH};
     SDL_Texture *highlightTexture = TextureManager::loadTexture("res/proposed/MiniWorldSprites/User Interface/BoxSelector.png", &crop, &size);
 
-    Level::loadPlayerData("DefaultPlayer", "save_1");
-    Level::loadLevel("DefaultPlayer", "save_1", "level1");
+    if (!Level::loadSave("DefaultPlayer", "save_1"))
+        Game::clean();
 }
 
 void Game::handleEvents()
@@ -179,6 +179,8 @@ void Game::add_error(std::string msg)
 
 void Game::clean()
 {
+    Game::running = false;
+
     SDL_DestroyWindow(Game::window);
     SDL_DestroyRenderer(Game::renderer);
 

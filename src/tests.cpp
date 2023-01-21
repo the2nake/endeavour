@@ -283,7 +283,7 @@ bool testLevelLoading()
 {
     bool result = false;
 
-    Level::loadPlayerData("../test_res/saves/TestPlayer", "save_1");
+    Level::loadSave("../test_res/saves/TestPlayer", "save_1");
     Level::loadLevel("../test_res/saves/TestPlayer", "save_1", "level1");
 
     if (Level::entities.size())
