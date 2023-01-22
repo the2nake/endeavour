@@ -1,7 +1,7 @@
 <level name="level1" />
 <player name="DefaultPlater" x="920" y="408" speed="1">
     <animation name="idle">
-        <frame texture="res/proposed/MiniWorldSprites/Characters/Champions/Börg.png" crop="0 0 16 16" outRect="0 0 32 32"/>
-        <frame texture="res/proposed/MiniWorldSprites/Characters/Champions/Börg.png" crop="0 0 16 16" outRect="16 0 32 32"/>
+        <frame texture="res/tex/characters/champions/borg.png" crop="0 0 16 16" outRect="0 0 32 32"/>
+        <frame texture="res/tex/characters/champions/borg.png" crop="0 0 16 16" outRect="16 0 32 32"/>
     </animation>
 </player>

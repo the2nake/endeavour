@@ -1,5 +1,0 @@
-<npc name="Adam" x="256" y="64" speed="1">
-	<animation name="idle">
-		<frame src="res/tex/tilemap_proto.png" cropRect="63 0 8 8" outRect="0 0 32 32" />
-	</animation>
-</npc>
