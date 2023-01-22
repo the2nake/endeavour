@@ -30,7 +30,7 @@ std::vector<std::string> Level::transparentTiles;
 /**
  * Loads a save at `saves/playerName/saveName/player.xml`
  * Returns false if there are issues, else returns true
-*/
+ */
 
 bool Level::loadSave(std::string playerName, std::string saveName)
 {
@@ -63,10 +63,16 @@ bool Level::loadSave(std::string playerName, std::string saveName)
             xml_node levelPointerNode = playerFile.child("level");
             std::string levelName = levelPointerNode.attribute("name").as_string();
             if (levelName != "")
+            {
                 if (!Level::loadLevel(playerName, saveName, levelName))
+                {
                     return false;
-                else
-                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
 
             return true;
         }
@@ -108,6 +114,12 @@ bool Level::loadLevel(std::string playerName, std::string saveName, std::string 
         // record the width and height of each tile
         Level::tileW = levelEl.attribute("tileW").as_int();
         Level::tileH = levelEl.attribute("tileH").as_int();
+
+        // set the window size
+        SDL_SetWindowSize(Game::window, levelEl.attribute("width").as_int() * Level::tileW, levelEl.attribute("height").as_int() * Level::tileH);
+
+        // recentre the window
+        SDL_SetWindowPosition(Game::window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
         // load the tile data
         for (xml_node tileEl : tileIndexEl.children("tile"))
@@ -355,12 +367,12 @@ void Level::renderLayer(std::string layer)
 
 void Level::renderBackground()
 {
-    renderLayer("background");
+    if (!background.empty()) renderLayer("background");
 }
 
 void Level::renderForeground()
 {
-    renderLayer("foreground");
+    if (!foreground.empty()) renderLayer("foreground");
 }
 
 void Level::generatePathfindingGrid()
