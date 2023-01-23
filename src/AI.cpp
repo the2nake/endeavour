@@ -20,7 +20,7 @@ void AI::init(float x, float y, SDL_Texture *texture)
     SDL_QueryTexture(texture, nullptr, nullptr, &texw, &texh);
 
     // temp
-    this->target = &Game::player;
+    this->target = Game::player;
 }
 
 void AI::handleEvent(SDL_Event event)

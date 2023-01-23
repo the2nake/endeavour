@@ -3,6 +3,7 @@
 #include "SDL.h"
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 template <typename DataType>
 using AttributeMap = std::unordered_map<std::string, DataType>;  // use attributes when change names is necessary, and performance is not critical
@@ -74,4 +75,8 @@ private:
     AttributeMap<int> int_attrs;
     AttributeMap<float> flt_attrs;
     AttributeMap<std::string> str_attrs;
+
+    int currentAnimationFrame;
+    float msecsUntilNextFrame;
+    std::vector<SDL_Texture *> animationFrames;
 };

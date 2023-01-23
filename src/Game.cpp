@@ -25,7 +25,7 @@ std::queue<GridLocation> Game::tilesToHighlight = {};
 SDL_Texture *Game::highlightTexture = nullptr;
 int Game::numTilesToHighlight = 0;
 
-Player Game::player;
+Player* Game::player;
 
 void initSDL()
 {
@@ -111,7 +111,7 @@ void Game::handleEvents()
             break;
         }
 
-        player.handleEvent(event);
+        player->handleEvent(event);
     }
 
     // errors
@@ -133,7 +133,7 @@ void Game::highlightTile(GridLocation tile)
 
 void Game::update()
 {
-    player.update();
+    player->update();
 
     for (Entity *entity : Level::entities)
     {
@@ -147,7 +147,7 @@ void Game::render()
 
     Level::renderBackground();
 
-    player.render();
+    player->render();
 
     for (Entity *entity : Level::entities)
     {
@@ -184,7 +184,7 @@ void Game::clean()
     SDL_DestroyWindow(Game::window);
     SDL_DestroyRenderer(Game::renderer);
 
-    player.clean();
+    player->clean();
     Level::clean();
 
     SDL_Quit();

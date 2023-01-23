@@ -55,10 +55,10 @@ bool Level::loadSave(std::string playerName, std::string saveName)
             SDL_Rect outRect = stringToSDLRect(firstFrameNode.attribute("outRect").as_string());
             SDL_Texture *playerTexture = TextureManager::loadTexture(firstFrameNode.attribute("texture").as_string(), &cropRect, &outRect);
 
-            Game::player = Player();
-            Game::player.init(playerX, playerY, playerTexture);
-            Game::player.setAttribute("name", playerNode.attribute("name").as_string());
-            Game::player.setAttribute("speed", playerNode.attribute("speed").as_string() == "" ? (float)(1) : playerNode.attribute("speed").as_float());
+            Game::player = new Player();
+            Game::player->init(playerX, playerY, playerTexture);
+            Game::player->setAttribute("name", playerNode.attribute("name").as_string());
+            Game::player->setAttribute("speed", playerNode.attribute("speed").as_string() == "" ? (float)(1) : playerNode.attribute("speed").as_float());
 
             xml_node levelPointerNode = playerFile.child("level");
             std::string levelName = levelPointerNode.attribute("name").as_string();

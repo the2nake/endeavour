@@ -85,7 +85,7 @@ int Player::getDefaultKey(std::string alias)
     return -1;
 }
 
-Player::playerAction Player::getFunctionOf(std::string alias)
+playerAction Player::getFunctionOf(std::string alias)
 {
     auto it = aliasFunctionMap.find(alias);
     if (it != aliasFunctionMap.end())
@@ -412,7 +412,7 @@ void Player::handleEvent(SDL_Event event)
 void Player::refreshRegisteredKeys()
 {
     registeredKeys.clear(); // recheck which keys are registered
-    for (auto it = Game::player.keybinds.begin(); it != Game::player.keybinds.end(); it++)
+    for (auto it = Game::player->keybinds.begin(); it != Game::player->keybinds.end(); it++)
     {
         registeredKeys.push_back(it->first);
     }

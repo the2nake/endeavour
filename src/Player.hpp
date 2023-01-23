@@ -1,13 +1,13 @@
 #pragma once
 
-#include <string>
-#include <unordered_map>
-//#include <functional>
-#include <vector>
+#include "Entity.hpp"
 
 #include "SDL.h"
 
-#include "Entity.hpp"
+#include <string>
+#include <unordered_map>
+// #include <functional>
+#include <vector>
 
 class Player : public Entity
 {
@@ -29,7 +29,6 @@ public:
     int getDefaultKey(std::string alias);
 
     using playerAction = void (Player::*)();
-
     playerAction getFunctionOf(std::string alias);
     std::unordered_map<std::string, playerAction> aliasFunctionMap;
     void initAliasMap();
@@ -55,20 +54,26 @@ public:
 
     int getIntAttribute(std::string name)
     {
-        if (int_attrs.find(name) != int_attrs.end()) return int_attrs.at(name);
-        else return -1;
+        if (int_attrs.find(name) != int_attrs.end())
+            return int_attrs.at(name);
+        else
+            return -1;
     }
 
     float getFloatAttribute(std::string name)
     {
-        if (flt_attrs.find(name) != flt_attrs.end()) return flt_attrs.at(name);
-        else return -1;
+        if (flt_attrs.find(name) != flt_attrs.end())
+            return flt_attrs.at(name);
+        else
+            return -1;
     }
 
     std::string getStringAttribute(std::string name)
     {
-        if (str_attrs.find(name) != str_attrs.end()) return str_attrs.at(name);
-        else return "";
+        if (str_attrs.find(name) != str_attrs.end())
+            return str_attrs.at(name);
+        else
+            return "";
     }
 
     void setAttribute(std::string name, int value) { int_attrs.insert_or_assign(name, value); }
@@ -87,6 +92,10 @@ private:
 
     bool isColliding();
     bool willBeColliding(float x, float y);
+
+    int currentAnimationFrame;
+    float msecsUntilNextFrame;
+    std::vector<SDL_Texture *> animationFrames;
 };
 
 typedef void (Player::*playerAction)();

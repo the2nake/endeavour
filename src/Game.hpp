@@ -29,7 +29,7 @@ public:
 
     static std::unordered_map<int, bool> keyIsDownMap;
 
-    static Player player;
+    static Player *player;
 
     static SDL_Window *window;
     static SDL_Renderer *renderer;
@@ -39,6 +39,6 @@ public:
 
 private:
     static std::queue<GridLocation> tilesToHighlight;
-    static SDL_Texture* highlightTexture;
+    static SDL_Texture *highlightTexture;
     static int numTilesToHighlight;
 };
