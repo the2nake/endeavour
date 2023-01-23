@@ -206,13 +206,7 @@ bool Level::loadLevel(std::string playerName, std::string saveName, std::string 
 
         Level::generatePathfindingGrid();
 
-        if (!levelEl.children("npcs").empty())
-        {
-            if (!Level::loadNPCs(playerName, saveName, levelName))
-                return false;
-        }
-
-        return true;
+        return Level::loadNPCs(playerName, saveName, levelName);
     }
     else
     {
@@ -243,9 +237,13 @@ bool Level::loadNPCs(std::string playerName, std::string saveName, std::string l
     if (result)
     {
         std::vector<std::string> npcsToLoad = {};
-        for (xml_node npcListingEl : levelFile.child("npcs").children("npc"))
+        for (auto npcListingEl : levelFile.child("npcs").children("npc"))
         {
             npcsToLoad.push_back(npcListingEl.attribute("id-name").as_string());
+        }
+
+        if (npcsToLoad.empty()) {
+            return true;
         }
 
         for (std::string npcName : npcsToLoad)
@@ -367,12 +365,14 @@ void Level::renderLayer(std::string layer)
 
 void Level::renderBackground()
 {
-    if (!background.empty()) renderLayer("background");
+    if (!background.empty())
+        renderLayer("background");
 }
 
 void Level::renderForeground()
 {
-    if (!foreground.empty()) renderLayer("foreground");
+    if (!foreground.empty())
+        renderLayer("foreground");
 }
 
 void Level::generatePathfindingGrid()

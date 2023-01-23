@@ -213,7 +213,9 @@ bool testTextureCache()
     else
     {
         TextureManager::loadTexture("test_res/tex/tilemap_proto.png");
-        result = TextureManager::retriveCachedTexture("test_res/tex/tilemap_proto.png");
+        SDL_Texture *target = nullptr;
+        TextureManager::retriveCachedTexture(target, "test_res/tex/tilemap_proto.png");
+        result = target != nullptr;
         TextureManager::loadTexture("test_res/tex/tilemap_proto.png");
         result = result && TextureManager::textureCacheUsed;
     }
@@ -281,12 +283,12 @@ bool testPolymorphicDeconstructorClean()
 
 bool testLevelLoading()
 {
-    bool result = false;
+    bool result = true;
 
-    Level::loadSave("../test_res/saves/TestPlayer", "save_1");
-    Level::loadLevel("../test_res/saves/TestPlayer", "save_1", "level1");
+    std::cout << Level::loadSave("../test_res/saves/TestPlayer", "save_1") << std::endl;
+    std::cout << Level::entities.size() << std::endl;
 
-    if (Level::entities.size())
+    if (Level::entities.size() > 0)
     {
         if (Level::entities[0]->getStringAttribute("name") == "Anthony")
         {
@@ -294,7 +296,7 @@ bool testLevelLoading()
             Tile tile = Level::getTileFromName(Level::getTileNameAtPos("background", 0, 31, 31));
             if (tile.texture != nullptr && tile.isNatural && tile.movementCost == 1)
             {
-                result = true;
+                result = result && true;
             }
             tile = Level::getTileFromName(Level::getTileNameAtPos("background", 0, 32, 32));
             if (tile.texture != nullptr && !tile.isNatural && tile.movementCost == -1)

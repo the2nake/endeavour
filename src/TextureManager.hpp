@@ -3,14 +3,14 @@
 #include "SDL.h"
 
 #include <string>
-#include <map>
+#include <unordered_map>
 
 class TextureManager
 {
 public:
-    static SDL_Texture *loadTexture(std::string pathToTexture, SDL_Rect *cropRect = nullptr, SDL_Rect *outDim = nullptr);
-    static SDL_Texture *retriveCachedTexture(std::string pathToTexture);
+    static SDL_Texture *loadTexture(std::string path, SDL_Rect *cropRect = nullptr, SDL_Rect *outDim = nullptr);
+    static void retriveCachedTexture(SDL_Texture *&target, std::string path);
     static bool textureCacheUsed; // used for testing
 private:
-    static std::map<std::string, SDL_Texture *> cachedTextures;
+    static std::unordered_map<std::string, SDL_Texture *> cachedTextures;
 };

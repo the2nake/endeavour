@@ -8,71 +8,75 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
-#include <map>
+#include <unordered_map>
 
-std::map<std::string, SDL_Texture *> TextureManager::cachedTextures;
+std::unordered_map<std::string, SDL_Texture *> TextureManager::cachedTextures;
 bool TextureManager::textureCacheUsed = false; // used for testing
 
-SDL_Texture *TextureManager::loadTexture(std::string pathToTexture, SDL_Rect *cropRect, SDL_Rect *outDim)
+SDL_Texture *TextureManager::loadTexture(std::string path, SDL_Rect *crop, SDL_Rect *outDim)
 {
     SDL_Texture *croppedTexture = nullptr;
     SDL_Surface *sourceSurface = nullptr;
     SDL_Texture *sourceTexture = nullptr;
-    if (std::filesystem::exists(pathToTexture.c_str()))
+
+    // check if this configuration has been used befor. if so point to the existing texture
+
+    if (std::filesystem::exists(path.c_str()))
     {
-        if (cachedTextures.find(pathToTexture) != cachedTextures.end())
+        retriveCachedTexture(sourceTexture, path);
+        if (sourceTexture != nullptr)
         {
-            sourceTexture = cachedTextures[pathToTexture];
             textureCacheUsed = true;
         }
         else
         {
-            sourceSurface = IMG_Load(pathToTexture.c_str());
+            sourceSurface = IMG_Load(path.c_str());
             sourceTexture = SDL_CreateTextureFromSurface(Game::renderer, sourceSurface);
-            cachedTextures.insert_or_assign(pathToTexture, sourceTexture);
+            cachedTextures.insert_or_assign(path, sourceTexture);
         }
 
+        int resultw, resulth;
         if (outDim != nullptr)
         {
-            croppedTexture = SDL_CreateTexture(Game::renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, outDim->w, outDim->h);
+            resultw = outDim->w;
+            resulth = outDim->h;
         }
-        else if (cropRect != nullptr)
+        else if (crop != nullptr)
         {
-            croppedTexture = SDL_CreateTexture(Game::renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, cropRect->w, cropRect->h);
+            resultw = crop->w;
+            resulth = crop->h;
         }
         else
-        {
-            int srcw, srch;
-            SDL_QueryTexture(sourceTexture, NULL, NULL, &srcw, &srch);
-            croppedTexture = SDL_CreateTexture(Game::renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, srcw, srch);
-        }
+            SDL_QueryTexture(sourceTexture, NULL, NULL, &resultw, &resulth);
+        croppedTexture = SDL_CreateTexture(Game::renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, resultw, resulth);
 
-        //SDL_SetTextureBlendMode(sourceTexture, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureBlendMode(sourceTexture, SDL_BLENDMODE_BLEND);
         SDL_SetTextureBlendMode(croppedTexture, SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(Game::renderer, croppedTexture);
         SDL_SetRenderDrawColor(Game::renderer, 0x00, 0x00, 0x00, SDL_ALPHA_TRANSPARENT);
         SDL_RenderClear(Game::renderer);
-        SDL_RenderCopy(Game::renderer, sourceTexture, cropRect, nullptr);
+        SDL_RenderCopy(Game::renderer, sourceTexture, crop, nullptr);
 
         SDL_FreeSurface(sourceSurface);
         SDL_SetRenderTarget(Game::renderer, nullptr);
+        // cachedTextures.insert_or_assign(textureQuery{path, crop, outDim}, sourceTexture);
     }
     else
     {
-        std::cout << "Texture with path " << pathToTexture << " could not be loaded as the file does not exist." << std::endl;
+        std::cout << "Texture with path " << path << " could not be loaded as the file does not exist." << std::endl;
     }
 
     return croppedTexture;
 }
 
-SDL_Texture *TextureManager::retriveCachedTexture(std::string pathToTexture)
+void TextureManager::retriveCachedTexture(SDL_Texture *&target, std::string path)
 {
-    if (cachedTextures.find(pathToTexture) != cachedTextures.end())
+    if (cachedTextures.find(path) != cachedTextures.end())
     {
-        return cachedTextures[pathToTexture];
+        target = cachedTextures.at(path);
     }
     else
     {
-        return nullptr;
+        target = nullptr;
     }
 }
