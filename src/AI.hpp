@@ -12,7 +12,11 @@ public:
     void init(float x, float y, SDL_Texture *texture);
 
     void handleEvent(SDL_Event event) override;
+
     void update() override;
+    void updateAnimationState() override;
+    void updateTextures() override;
+
     void render() override;
     void clean() override;
 
@@ -62,6 +66,8 @@ public:
     void setAttribute(std::string name, float value) override { flt_attrs.insert_or_assign(name, value); }
     void setAttribute(std::string name, std::string value) override { str_attrs.insert_or_assign(name, value); }
 
+    std::unordered_map<std::string, std::vector<SDL_Texture *>> animations;
+    std::unordered_map<std::string, std::vector<int>> animationDelays;
 private:
     SDL_Texture *texture;
     float x = 0, y = 0;
@@ -73,6 +79,10 @@ private:
     AttributeMap<int> int_attrs;
     AttributeMap<float> flt_attrs;
     AttributeMap<std::string> str_attrs;
+
+    std::string currentAnimation;
+    int currentAnimationFrame;
+    float msecsUntilNextFrame;
 
     void pathfindToTarget();
     void moveTowardsLocation(GridLocation loc);

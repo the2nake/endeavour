@@ -6,6 +6,10 @@
 #include <vector>
 #include <iosfwd>
 
+namespace std {
+    std::string to_string(SDL_Rect r);
+};
+
 bool approxEquals(double a, double b);
 
 void splitString(std::vector<std::string> &container, std::string toSplit, std::string delim = " ");

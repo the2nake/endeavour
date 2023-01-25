@@ -17,7 +17,7 @@ SDL_Renderer *Game::renderer = nullptr;
 int Game::targetFrameTime = std::floor(1000.0 / 60.0);
 int Game::frameTime = 0;
 
-std::unordered_map<std::string, int> Game::errors;
+std::unordered_map<const char *, int> Game::errors;
 
 std::unordered_map<int, bool> Game::keyIsDownMap;
 
@@ -25,7 +25,7 @@ std::queue<GridLocation> Game::tilesToHighlight = {};
 SDL_Texture *Game::highlightTexture = nullptr;
 int Game::numTilesToHighlight = 0;
 
-Player* Game::player;
+Player *Game::player;
 
 void initSDL()
 {
@@ -77,17 +77,20 @@ void createRendererForWindow(SDL_Window *window)
 
 Game::Game(std::string windowTitle, int w, int h, bool fullscreen, bool shown)
 {
+    SDL_ClearError();
+
     initSDL();
     initSDLImage(IMG_INIT_PNG | IMG_INIT_JPG);
     createWindow(windowTitle, w, h, fullscreen, shown);
     createRendererForWindow(Game::window);
 
+    if (!Level::loadSave("DefaultPlayer", "save_1"))
+        Game::clean();
+
     SDL_Rect crop{0, 0, 16, 16};
     SDL_Rect size{0, 0, Level::tileW, Level::tileH};
     SDL_Texture *highlightTexture = TextureManager::loadTexture("res/proposed/MiniWorldSprites/User Interface/BoxSelector.png", &crop, &size);
 
-    if (!Level::loadSave("DefaultPlayer", "save_1"))
-        Game::clean();
 }
 
 void Game::handleEvents()
@@ -112,6 +115,13 @@ void Game::handleEvents()
         }
 
         player->handleEvent(event);
+    }
+
+    std::string error = SDL_GetError();
+    if (!error.empty())
+    {
+        add_error(error);
+        SDL_ClearError();
     }
 
     // errors
@@ -170,10 +180,10 @@ void Game::render()
 
 void Game::add_error(std::string msg)
 {
-    if (Game::errors.find(msg) == Game::errors.end())
+    if (!msg.empty() && Game::errors.find(msg.c_str()) == Game::errors.end())
     {
-        std::cout << "\033[1;31mError:\033[0m " << msg << std::endl;
-        Game::errors.insert_or_assign(msg, 60);
+        std::cout << "\033[1;31mError:\033[0m " << msg.c_str() << std::endl;
+        Game::errors.insert_or_assign(msg.c_str(), 60);
     }
 }
 

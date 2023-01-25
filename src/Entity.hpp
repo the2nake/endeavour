@@ -16,7 +16,11 @@ public:
     void init(float x, float y, SDL_Texture *texture);
 
     virtual void handleEvent(SDL_Event event);
+
     virtual void update();
+    virtual void updateAnimationState();
+    virtual void updateTextures();
+    
     virtual void render();
 
     virtual void clean();
@@ -66,6 +70,8 @@ public:
     virtual void setAttribute(std::string name, float value) { flt_attrs.insert_or_assign(name, value); }
     virtual void setAttribute(std::string name, std::string value) { str_attrs.insert_or_assign(name, value); }
 
+    std::unordered_map<std::string, std::vector<SDL_Texture *>> animations;
+    std::unordered_map<std::string, std::vector<int>> animationDelays;
 private:
     SDL_Texture *texture = nullptr;
     float x = 0, y = 0;
@@ -76,7 +82,7 @@ private:
     AttributeMap<float> flt_attrs;
     AttributeMap<std::string> str_attrs;
 
+    std::string currentAnimation;
     int currentAnimationFrame;
     float msecsUntilNextFrame;
-    std::vector<SDL_Texture *> animationFrames;
 };

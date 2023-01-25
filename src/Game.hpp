@@ -25,7 +25,7 @@ public:
     static void highlightTile(GridLocation tile);
 
     static void add_error(std::string msg);
-    static std::unordered_map<std::string, int> errors;
+    static std::unordered_map<const char *, int> errors;
 
     static std::unordered_map<int, bool> keyIsDownMap;
 

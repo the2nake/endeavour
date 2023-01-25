@@ -17,7 +17,11 @@ public:
     void init(float x, float y, SDL_Texture *texture);
 
     void handleEvent(SDL_Event event) override;
+
     void update() override;
+    void updateAnimationState() override;
+    void updateTextures() override;
+
     void render() override;
 
     void clean() override;
@@ -80,6 +84,10 @@ public:
     void setAttribute(std::string name, float value) { flt_attrs.insert_or_assign(name, value); }
     void setAttribute(std::string name, std::string value) { str_attrs.insert_or_assign(name, value); }
 
+    void setAnimation(std::string animation);
+    std::unordered_map<std::string, std::vector<SDL_Texture *>> animations;
+    std::unordered_map<std::string, std::vector<int>> animationDelays;
+
 private:
     SDL_Texture *texture;
     float x = 0, y = 0, dx = 0, dy = 0;
@@ -93,9 +101,12 @@ private:
     bool isColliding();
     bool willBeColliding(float x, float y);
 
-    int currentAnimationFrame;
-    float msecsUntilNextFrame;
-    std::vector<SDL_Texture *> animationFrames;
+    std::string currentAnimation = "";
+    int currentAnimationFrame = 0;
+    int msecsUntilNextFrame = 0;
+    
+    int timeSinceLastMovement = 10000;
+    std::string dir = "s";
 };
 
 typedef void (Player::*playerAction)();

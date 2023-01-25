@@ -8,7 +8,7 @@
 
 AI::~AI()
 {
-    clean();
+    SDL_DestroyTexture(texture);
 }
 
 void AI::init(float x, float y, SDL_Texture *texture)
@@ -151,6 +151,40 @@ void AI::correctPositioning()
     }
 }
 
+void AI::updateAnimationState() {
+    if (animations.empty()) {
+        currentAnimation = "";
+        return;
+    }
+
+    if (false)
+    {
+    }
+    else
+    {
+        if (animations.find("idle") != animations.end())
+        {
+            currentAnimation = "idle";
+        }
+    }
+}
+
+void AI::updateTextures()
+{
+    if (currentAnimation == "") {
+        return;
+    }
+
+    msecsUntilNextFrame -= Game::frameTime; // previous frame time in msec
+
+    if (msecsUntilNextFrame <= 0)
+    {
+        msecsUntilNextFrame = animationDelays.at(currentAnimation)[currentAnimationFrame];
+        currentAnimationFrame += (currentAnimationFrame + 1) % animations.at(currentAnimation).size();
+        //this->texture = animations.at(currentAnimation)[currentAnimationFrame];
+    }
+}
+
 void AI::update()
 {
     // drawing coords
@@ -206,5 +240,5 @@ void AI::render()
 
 void AI::clean()
 {
-    SDL_DestroyTexture(texture);
+    this->~AI();
 }

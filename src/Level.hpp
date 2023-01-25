@@ -2,8 +2,11 @@
 #include "Entity.hpp"
 
 #include "pathfinding.hpp"
+#include "TextureManager.hpp"
+#include "common.hpp"
 
 #include "SDL.h"
+#include "pugixml.hpp"
 
 #include <vector>
 
@@ -28,6 +31,13 @@ public:
     static GridWithWeights pathfindingGrid;
 
     static bool loadSave(std::string playerName, std::string saveName);
+
+    /**
+     * Loads the animations in the children of the entityNode into the entity
+     */
+
+    template <typename entityType>
+    static bool loadAnimations(Entity *pointerToEntity, pugi::xml_node entityNode);
     static bool loadLevel(std::string playerName, std::string saveName, std::string levelName);
     static bool loadNPCs(std::string playerName, std::string saveName, std::string levelName);
 

@@ -10,6 +10,10 @@
 
 #include "Line.hpp"
 
+std::string std::to_string(SDL_Rect r) {
+    return std::to_string(r.x) + ", " + std::to_string(r.y) + ", " + std::to_string(r.w) + ", " + std::to_string(r.h);
+}
+
 bool approxEquals(double a, double b)
 {
     return std::abs(a - b) < 0.000001;

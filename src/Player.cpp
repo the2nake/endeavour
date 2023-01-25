@@ -18,7 +18,12 @@ std::vector<int> Player::registeredKeys;
 
 Player::~Player()
 {
-    clean();
+    SDL_DestroyTexture(this->texture);
+    for (auto animation : animations) {
+        for (auto tex : animation.second) {
+            SDL_DestroyTexture(tex);
+        }
+    }
 }
 
 void Player::init(float x, float y, SDL_Texture *texture)
@@ -270,7 +275,7 @@ bool Player::willBeColliding(float newx, float newy)
     GridLocation newPlayerLoc = Level::getPosAt(newx, newy);
     std::queue<SDL_Rect> collisionRectangles;
 
-    //auto start = std::chrono::high_resolution_clock::now();
+    // auto start = std::chrono::high_resolution_clock::now();
     for (int j = newPlayerLoc.x; j <= newPlayerLoc.x + (int)std::floor(texw / Level::tileW); j++)
     {
         for (int k = newPlayerLoc.y; k <= newPlayerLoc.y + (int)std::floor(texh / Level::tileH); k++)
@@ -293,7 +298,7 @@ bool Player::willBeColliding(float newx, float newy)
             }
         }
     }
-    //std::cout << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
+    // std::cout << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
     while (!collisionRectangles.empty())
     {
         if (rectIntersect(&newPlayerRect, &collisionRectangles.front()))
@@ -373,7 +378,8 @@ void Player::move(float mx, float my)
             newx += xStep;
             if (willBeColliding(newx, newy))
             {
-                do newx -= xDir;
+                do
+                    newx -= xDir;
                 while (willBeColliding(newx, newy));
                 xStopped = true;
             }
@@ -383,7 +389,9 @@ void Player::move(float mx, float my)
         {
             newy += yStep;
             if (willBeColliding(newx, newy))
-            {   do newy -= yDir;
+            {
+                do
+                    newy -= yDir;
                 while (willBeColliding(newx, newy));
                 yStopped = true;
             }
@@ -395,9 +403,6 @@ void Player::move(float mx, float my)
 
     x = newx;
     y = newy;
-
-    // moveX(mx);
-    // moveY(my);
 }
 
 void Player::handleEvent(SDL_Event event)
@@ -415,6 +420,77 @@ void Player::refreshRegisteredKeys()
     for (auto it = Game::player->keybinds.begin(); it != Game::player->keybinds.end(); it++)
     {
         registeredKeys.push_back(it->first);
+    }
+}
+
+void Player::setAnimation(std::string animation)
+{
+    if (animations.find(animation) != animations.end())
+    {
+        currentAnimation = animation;
+    }
+    else if (animations.find("idle") != animations.end())
+    {
+        currentAnimation = "idle";
+    }
+    else
+    {
+        currentAnimation = "";
+    }
+}
+
+/**
+ * Updates the character's animation based on movement data, shooting status, etc.
+ */
+
+void Player::updateAnimationState()
+{
+    if (animations.empty())
+    {
+        currentAnimation = "";
+        return;
+    }
+
+    std::string oldAnimation = currentAnimation;
+
+    if (timeSinceLastMovement < Game::targetFrameTime * 2)
+    {
+        setAnimation("walk" + dir);
+    }
+    else if (timeSinceLastMovement < 1000)
+    {
+        setAnimation("still" + dir);
+    }
+    else
+    {
+        setAnimation("idle" + dir);
+    }
+
+    if (oldAnimation != currentAnimation)
+    {
+        currentAnimationFrame = 0;
+        // don't change msecUntilNextFrame to let the current animation finish
+    }
+}
+
+/**
+ * Updates the player's texture each frame
+ */
+
+void Player::updateTextures()
+{
+    if (currentAnimation == "")
+    {
+        return;
+    }
+
+    msecsUntilNextFrame -= Game::frameTime; // previous frame time in msec
+
+    while (msecsUntilNextFrame <= 0)
+    {
+        msecsUntilNextFrame += animationDelays.at(currentAnimation)[currentAnimationFrame];
+        currentAnimationFrame = (currentAnimationFrame + 1) % animations.at(currentAnimation).size();
+        this->texture = animations.at(currentAnimation)[currentAnimationFrame];
     }
 }
 
@@ -476,14 +552,43 @@ void Player::update()
     float movementCost = Level::getMovementCostInArea(x, y, texw, texh);
     float calculatedSpeed = getFloatAttribute("speed") / std::max(movementCost, 1.0f);
 
+    timeSinceLastMovement += Game::frameTime;
+
     if (dx != 0 || dy != 0)
     {
+        timeSinceLastMovement = 0;
         float diagScaleFactor = sqrt(dx * dx + dy * dy);
         dx /= diagScaleFactor; // scaling horizontally
         dy /= diagScaleFactor; // scaling vertically
         // update the player's position
         move(dx * calculatedSpeed, dy * calculatedSpeed);
+
+        std::string oldDir = dir;
+
+        if (dx > 0)
+        {
+            dir = "e";
+        }
+        else if (dx < 0)
+        {
+            dir = "w";
+        }
+        else if (dy < 0)
+        {
+            dir = "n";
+        }
+        else if (dy > 0)
+        {
+            dir = "s";
+        }
+
+        if (dir != oldDir) {
+            msecsUntilNextFrame = 0;
+        }
     }
+
+    updateAnimationState();
+    updateTextures();
 }
 
 void Player::render()
@@ -498,5 +603,5 @@ void Player::render()
 
 void Player::clean()
 {
-    SDL_DestroyTexture(texture);
+    this->~Player();
 }
