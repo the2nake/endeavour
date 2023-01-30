@@ -6,6 +6,10 @@
 #include <vector>
 #include <iosfwd>
 
+namespace std {
+    std::string to_string(SDL_Rect r);
+};
+
 bool approxEquals(double a, double b);
 
 void splitString(std::vector<std::string> &container, std::string toSplit, std::string delim = " ");
@@ -44,3 +48,5 @@ bool rectIntersect(SDL_Rect *r1, SDL_Rect *r2);
 bool rectContainedInRect(SDL_Rect *r1, SDL_Rect *r2);
 
 bool operator==(SDL_Rect rect, SDL_Rect rect2);
+
+void safelyDestroyTexture(SDL_Texture *texture);

@@ -1,7 +1,55 @@
 <level name="level1" />
 <player name="DefaultPlayer" x="920" y="408" speed="1">
-    <animation name="idle">
-        <frame texture="res/tex/characters/champions/borg.png" crop="0 0 16 16" outRect="0 0 32 32" delay="100"/>
-        <frame texture="res/tex/characters/champions/borg.png" crop="0 0 16 16" outRect="16 0 32 32" delay="100"/>
+    <animation name="stilln">
+        <frame src="res/tex/characters/champions/borg.png" cropRect="0 16 16 16" outRect="0 0 32 32" delay="100"/>
+    </animation>
+    <animation name="stille">
+        <frame src="res/tex/characters/champions/borg.png" cropRect="0 48 16 16" outRect="0 0 32 32" delay="100"/>
+    </animation>
+    <animation name="stills">
+        <frame src="res/tex/characters/champions/borg.png" cropRect="0 0 16 16" outRect="0 0 32 32" delay="100"/>
+    </animation>
+    <animation name="stillw">
+        <frame src="res/tex/characters/champions/borg.png" cropRect="0 32 16 16" outRect="0 0 32 32" delay="100"/>
+    </animation>
+    <animation name="idlen">
+        <frame src="res/tex/characters/champions/borg.png" cropRect="0 16 16 16" outRect="0 0 32 32" delay="300"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="16 16 16 16" outRect="0 0 32 32" delay="300"/>
+    </animation>
+    <animation name="idlee">
+        <frame src="res/tex/characters/champions/borg.png" cropRect="0 48 16 16" outRect="0 0 32 32" delay="300"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="16 48 16 16" outRect="0 0 32 32" delay="300"/>
+    </animation>
+    <animation name="idles">
+        <frame src="res/tex/characters/champions/borg.png" cropRect="0 0 16 16" outRect="0 0 32 32" delay="300"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="16 0 16 16" outRect="0 0 32 32" delay="300"/>
+    </animation>
+    <animation name="idlew">
+        <frame src="res/tex/characters/champions/borg.png" cropRect="0 32 16 16" outRect="0 0 32 32" delay="300"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="16 32 16 16" outRect="0 0 32 32" delay="300"/>
+    </animation>
+    <animation name="walkn">
+        <frame src="res/tex/characters/champions/borg.png" cropRect="32 16 16 16" outRect="0 0 32 32" delay="200"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="48 16 16 16" outRect="0 0 32 32" delay="200"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="64 16 16 16" outRect="0 0 32 32" delay="200"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="16 16 16 16" outRect="0 0 32 32" delay="200"/>
+    </animation>
+    <animation name="walke">
+        <frame src="res/tex/characters/champions/borg.png" cropRect="32 48 16 16" outRect="0 0 32 32" delay="200"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="48 48 16 16" outRect="0 0 32 32" delay="200"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="64 48 16 16" outRect="0 0 32 32" delay="200"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="16 48 16 16" outRect="0 0 32 32" delay="200"/>
+    </animation>
+    <animation name="walks">
+        <frame src="res/tex/characters/champions/borg.png" cropRect="32 0 16 16" outRect="0 0 32 32" delay="200"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="48 0 16 16" outRect="0 0 32 32" delay="200"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="64 0 16 16" outRect="0 0 32 32" delay="200"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="16 0 16 16" outRect="0 0 32 32" delay="200"/>
+    </animation>
+    <animation name="walkw">
+        <frame src="res/tex/characters/champions/borg.png" cropRect="32 32 16 16" outRect="0 0 32 32" delay="200"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="48 32 16 16" outRect="0 0 32 32" delay="200"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="64 32 16 16" outRect="0 0 32 32" delay="200"/>
+        <frame src="res/tex/characters/champions/borg.png" cropRect="16 32 16 16" outRect="0 0 32 32" delay="200"/>
     </animation>
 </player>

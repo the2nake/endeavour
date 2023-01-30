@@ -10,6 +10,10 @@
 
 #include "Line.hpp"
 
+std::string std::to_string(SDL_Rect r) {
+    return std::to_string(r.x) + ", " + std::to_string(r.y) + ", " + std::to_string(r.w) + ", " + std::to_string(r.h);
+}
+
 bool approxEquals(double a, double b)
 {
     return std::abs(a - b) < 0.000001;
@@ -174,4 +178,10 @@ bool rectIntersect(SDL_Rect *r1, SDL_Rect *r2)
 bool operator==(SDL_Rect rect, SDL_Rect rect2)
 {
     return rect.x == rect2.x && rect.y == rect2.y && rect.w == rect2.w && rect.h == rect2.h;
+}
+
+void safelyDestroyTexture(SDL_Texture *texture) {
+    if (texture != nullptr) {
+        SDL_DestroyTexture(texture); 
+    }
 }

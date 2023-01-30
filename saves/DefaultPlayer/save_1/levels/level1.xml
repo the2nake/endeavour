@@ -1,11 +1,9 @@
 <tiles>
-	<tile name="v" src="res/tex/tilemap_proto.png" transparent="true" movementCost="1" cropRect="8 8 1 1" outRect="0 0 32 32" isNatural="0" />
 	<tile name="g0" src="res/tex/terrain/grass-textured.png" movementCost="1" cropRect="0 16 16 16" outRect="0 0 32 32" isNatural="0" />
 	<tile name="g1" src="res/tex/terrain/grass-textured.png" movementCost="1" cropRect="16 16 16 16" outRect="0 0 32 32" isNatural="0" />
 	<tile name="g2" src="res/tex/terrain/grass-textured.png" movementCost="1" cropRect="32 16 16 16" outRect="0 0 32 32" isNatural="0" />
-	<tile name="f" src="res/tex/tilemap_proto.png" movementCost="1" cropRect="9 9 8 8" outRect="0 0 32 32" isNatural="0" />
 
-	<tile name="wall1left" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 9 8 8" outRect="0 0 32 32" collisionRect="0 0 8 32" isNatural="0" />
+	<!--<tile name="wall1left" src="res/tex/tilemap_proto.png" movementCost="-1" cropRect="0 9 8 8" outRect="0 0 32 32" collisionRect="0 0 8 32" isNatural="0" />-->
 </tiles>
 <level width="32" height="16" tileW="32" tileH="32">
 	<background>

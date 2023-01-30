@@ -10,6 +10,7 @@
 #include "SDL.h"
 
 #include <iostream>
+#include <string>
 #include <filesystem>
 #include <algorithm>
 
@@ -26,6 +27,37 @@ std::vector<std::vector<std::vector<std::string>>> Level::foreground;
 
 std::unordered_map<std::string, Tile> Level::tileDataLookup;
 std::vector<std::string> Level::transparentTiles;
+
+template <typename entityType>
+bool Level::loadAnimations(Entity *entity, pugi::xml_node entityNode)
+{
+    entityType typedEntity = dynamic_cast<entityType>(entity);
+
+    for (auto animationNode : entityNode.children("animation"))
+    {
+
+        std::string name = animationNode.attribute("name").as_string();
+        if (name != "")
+        {
+            // std::cout << "Loading animation named " << name << " of entity " << typedEntity->getStringAttribute("name") << std::endl;
+            typedEntity->animations.insert_or_assign(name, std::vector<SDL_Texture *>{});
+            typedEntity->animationDelays.insert_or_assign(name, std::vector<int>{});
+
+            for (auto frameNode : animationNode.children("frame"))
+            {
+                SDL_Rect cropRect = stringToSDLRect(frameNode.attribute("cropRect").as_string());
+                SDL_Rect outRect = stringToSDLRect(frameNode.attribute("outRect").as_string());
+                // std::cout << frameNode.attribute("src").as_string() << std::endl;
+                // std::cout << std::to_string(cropRect) << std::endl;
+                // std::cout << std::to_string(outRect) << std::endl;
+                typedEntity->animations.at(name).push_back(TextureManager::loadTexture(frameNode.attribute("src").as_string(), &cropRect, &outRect));
+                typedEntity->animationDelays.at(name).push_back(frameNode.attribute("delay").as_int(100));
+            }
+        }
+    }
+
+    return true;
+}
 
 /**
  * Loads a save at `saves/playerName/saveName/player.xml`
@@ -53,28 +85,26 @@ bool Level::loadSave(std::string playerName, std::string saveName)
 
             SDL_Rect cropRect = stringToSDLRect(firstFrameNode.attribute("crop").as_string());
             SDL_Rect outRect = stringToSDLRect(firstFrameNode.attribute("outRect").as_string());
-            SDL_Texture *playerTexture = TextureManager::loadTexture(firstFrameNode.attribute("texture").as_string(), &cropRect, &outRect);
+            SDL_Texture *playerTexture = TextureManager::loadTexture(firstFrameNode.attribute("src").as_string(), &cropRect, &outRect);
+            Game::player = new Player();
+            Game::player->init(playerX, playerY, playerTexture);
+            Game::player->setAttribute("name", playerNode.attribute("name").as_string());
+            Game::player->setAttribute("speed", playerNode.attribute("speed").as_string() == "" ? (float)(1) : playerNode.attribute("speed").as_float());
 
-            Game::player = Player();
-            Game::player.init(playerX, playerY, playerTexture);
-            Game::player.setAttribute("name", playerNode.attribute("name").as_string());
-            Game::player.setAttribute("speed", playerNode.attribute("speed").as_string() == "" ? (float)(1) : playerNode.attribute("speed").as_float());
+            if (!Level::loadAnimations<Player *>(Game::player, playerNode)) {
+                return false;
+            }
 
             xml_node levelPointerNode = playerFile.child("level");
             std::string levelName = levelPointerNode.attribute("name").as_string();
             if (levelName != "")
             {
-                if (!Level::loadLevel(playerName, saveName, levelName))
-                {
-                    return false;
-                }
+                return Level::loadLevel(playerName, saveName, levelName);
             }
             else
             {
                 return false;
             }
-
-            return true;
         }
         else
         {
@@ -206,13 +236,7 @@ bool Level::loadLevel(std::string playerName, std::string saveName, std::string 
 
         Level::generatePathfindingGrid();
 
-        if (!levelEl.children("npcs").empty())
-        {
-            if (!Level::loadNPCs(playerName, saveName, levelName))
-                return false;
-        }
-
-        return true;
+        return Level::loadNPCs(playerName, saveName, levelName);
     }
     else
     {
@@ -243,9 +267,14 @@ bool Level::loadNPCs(std::string playerName, std::string saveName, std::string l
     if (result)
     {
         std::vector<std::string> npcsToLoad = {};
-        for (xml_node npcListingEl : levelFile.child("npcs").children("npc"))
+        for (auto npcListingEl : levelFile.child("npcs").children("npc"))
         {
             npcsToLoad.push_back(npcListingEl.attribute("id-name").as_string());
+        }
+
+        if (npcsToLoad.empty())
+        {
+            return true;
         }
 
         for (std::string npcName : npcsToLoad)
@@ -256,8 +285,8 @@ bool Level::loadNPCs(std::string playerName, std::string saveName, std::string l
             if (npcFileResult)
             {
                 // Valid npc files are: adjacent to this level, have proper format, and contain at least one npc
-                xml_node npcEl = npcFile.child("npc");
-                xml_node textureEl = npcEl.child("animation").child("frame");
+                xml_node npcNode = npcFile.child("npc");
+                xml_node textureEl = npcNode.child("animation").child("frame");
                 if (textureEl.attribute("src").as_string() != "")
                 {
                     SDL_Rect *cropRect, *outDim;
@@ -286,9 +315,15 @@ bool Level::loadNPCs(std::string playerName, std::string saveName, std::string l
 
                     AI *npc = new AI();
                     SDL_Texture *npcTexture = TextureManager::loadTexture(pathToNPCTexture, cropRect, outDim);
-                    npc->init(npcEl.attribute("x").as_float(), npcEl.attribute("y").as_float(), npcTexture);
-                    npc->setAttribute("name", npcEl.attribute("name").as_string());
-                    npc->setAttribute("speed", npcEl.attribute("speed").as_float());
+                    npc->init(npcNode.attribute("x").as_float(), npcNode.attribute("y").as_float(), npcTexture);
+                    npc->setAttribute("name", npcNode.attribute("name").as_string());
+                    npc->setAttribute("speed", npcNode.attribute("speed").as_float());
+
+                    if (!Level::loadAnimations<AI *>(npc, npcNode))
+                    {
+                        return false;
+                    }
+
                     Level::entities.push_back(npc);
                 }
             }
@@ -367,12 +402,14 @@ void Level::renderLayer(std::string layer)
 
 void Level::renderBackground()
 {
-    if (!background.empty()) renderLayer("background");
+    if (!background.empty())
+        renderLayer("background");
 }
 
 void Level::renderForeground()
 {
-    if (!foreground.empty()) renderLayer("foreground");
+    if (!foreground.empty())
+        renderLayer("foreground");
 }
 
 void Level::generatePathfindingGrid()
@@ -413,7 +450,7 @@ void Level::clean()
     // handles cleaning of entities as well, is this "doing more than one thing?"
     for (Entity *entity : Level::entities)
     {
-        entity->~Entity();
+        entity->clean();
     }
     Level::entities.clear();
 }

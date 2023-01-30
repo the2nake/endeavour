@@ -1,13 +1,13 @@
 #pragma once
 
-#include <string>
-#include <unordered_map>
-//#include <functional>
-#include <vector>
+#include "Entity.hpp"
 
 #include "SDL.h"
 
-#include "Entity.hpp"
+#include <string>
+#include <unordered_map>
+// #include <functional>
+#include <vector>
 
 class Player : public Entity
 {
@@ -17,7 +17,11 @@ public:
     void init(float x, float y, SDL_Texture *texture);
 
     void handleEvent(SDL_Event event) override;
+
     void update() override;
+    void updateAnimationState() override;
+    void updateTextures() override;
+
     void render() override;
 
     void clean() override;
@@ -29,7 +33,6 @@ public:
     int getDefaultKey(std::string alias);
 
     using playerAction = void (Player::*)();
-
     playerAction getFunctionOf(std::string alias);
     std::unordered_map<std::string, playerAction> aliasFunctionMap;
     void initAliasMap();
@@ -55,28 +58,38 @@ public:
 
     int getIntAttribute(std::string name)
     {
-        if (int_attrs.find(name) != int_attrs.end()) return int_attrs.at(name);
-        else return -1;
+        if (int_attrs.find(name) != int_attrs.end())
+            return int_attrs.at(name);
+        else
+            return -1;
     }
 
     float getFloatAttribute(std::string name)
     {
-        if (flt_attrs.find(name) != flt_attrs.end()) return flt_attrs.at(name);
-        else return -1;
+        if (flt_attrs.find(name) != flt_attrs.end())
+            return flt_attrs.at(name);
+        else
+            return -1;
     }
 
     std::string getStringAttribute(std::string name)
     {
-        if (str_attrs.find(name) != str_attrs.end()) return str_attrs.at(name);
-        else return "";
+        if (str_attrs.find(name) != str_attrs.end())
+            return str_attrs.at(name);
+        else
+            return "";
     }
 
     void setAttribute(std::string name, int value) { int_attrs.insert_or_assign(name, value); }
     void setAttribute(std::string name, float value) { flt_attrs.insert_or_assign(name, value); }
     void setAttribute(std::string name, std::string value) { str_attrs.insert_or_assign(name, value); }
 
+    void setAnimation(std::string animation);
+    std::unordered_map<std::string, std::vector<SDL_Texture *>> animations;
+    std::unordered_map<std::string, std::vector<int>> animationDelays;
+
 private:
-    SDL_Texture *texture;
+    SDL_Texture *texture = nullptr;
     float x = 0, y = 0, dx = 0, dy = 0;
     int drawX = 0, drawY = 0;
     int texw = 0, texh = 0;
@@ -87,6 +100,13 @@ private:
 
     bool isColliding();
     bool willBeColliding(float x, float y);
+
+    std::string currentAnimation = "";
+    int currentAnimationFrame = 0;
+    int msecsUntilNextFrame = 0;
+    
+    int timeSinceLastMovement = 10000;
+    std::string dir = "s";
 };
 
 typedef void (Player::*playerAction)();

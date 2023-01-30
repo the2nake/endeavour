@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
 
         //std::cout << game.frameTime << std::endl;
         SDL_Delay(std::max<int>(0, game.targetFrameTime - game.frameTime));
+
+        game.frameTime = std::max(game.frameTime, game.targetFrameTime);
     }
     game.clean();
     return 0;
