@@ -93,6 +93,12 @@ void AI::pathfindToTarget()
  */
 void AI::moveTowardsLocation(GridLocation location)
 {
+    // personal space please
+    if (std::pow((this->x - Game::player->getX()), 2) + std::pow((this->y - Game::player->getY()), 2) < 64*64)
+    {
+        return;
+    }
+
     // calculate some values needed for movement
     float nextCoordX = location.x * Level::tileW + 1;
     float nextCoordY = location.y * Level::tileH + 1;
@@ -151,8 +157,10 @@ void AI::correctPositioning()
     }
 }
 
-void AI::updateAnimationState() {
-    if (animations.empty()) {
+void AI::updateAnimationState()
+{
+    if (animations.empty())
+    {
         currentAnimation = "";
         return;
     }
@@ -171,7 +179,8 @@ void AI::updateAnimationState() {
 
 void AI::updateTextures()
 {
-    if (currentAnimation == "") {
+    if (currentAnimation == "")
+    {
         return;
     }
 
@@ -181,7 +190,7 @@ void AI::updateTextures()
     {
         msecsUntilNextFrame = animationDelays.at(currentAnimation)[currentAnimationFrame];
         currentAnimationFrame += (currentAnimationFrame + 1) % animations.at(currentAnimation).size();
-        //this->texture = animations.at(currentAnimation)[currentAnimationFrame];
+        // this->texture = animations.at(currentAnimation)[currentAnimationFrame];
     }
 }
 

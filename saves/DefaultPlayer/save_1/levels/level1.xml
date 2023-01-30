@@ -58,6 +58,7 @@
 	</background>
 </level>
 <npcs>
-	<npc id-name="Anthony" />
 	<npc id-name="Adam" />
+	<npc id-name="Anthony" />
+	<npc id-name="Adrian" />
 </npcs>

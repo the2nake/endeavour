@@ -34,7 +34,7 @@
 # Build folders, vscode options
 build/**
 CMakeFiles/**
-.vscode/**
+.vscode
 
 sandbox.cpp
 Endeavour
