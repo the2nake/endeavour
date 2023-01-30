@@ -48,3 +48,5 @@ bool rectIntersect(SDL_Rect *r1, SDL_Rect *r2);
 bool rectContainedInRect(SDL_Rect *r1, SDL_Rect *r2);
 
 bool operator==(SDL_Rect rect, SDL_Rect rect2);
+
+void safelyDestroyTexture(SDL_Texture *texture);

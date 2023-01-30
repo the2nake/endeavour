@@ -8,7 +8,7 @@
 
 AI::~AI()
 {
-    SDL_DestroyTexture(texture);
+    safelyDestroyTexture(texture);
 }
 
 void AI::init(float x, float y, SDL_Texture *texture)

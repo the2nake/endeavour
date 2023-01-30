@@ -285,9 +285,6 @@ bool testLevelLoading()
 {
     bool result = true;
 
-    std::cout << Level::loadSave("../test_res/saves/TestPlayer", "save_1") << std::endl;
-    std::cout << Level::entities.size() << std::endl;
-
     if (Level::entities.size() > 0)
     {
         if (Level::entities[0]->getStringAttribute("name") == "Anthony")

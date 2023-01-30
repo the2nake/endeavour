@@ -179,3 +179,9 @@ bool operator==(SDL_Rect rect, SDL_Rect rect2)
 {
     return rect.x == rect2.x && rect.y == rect2.y && rect.w == rect2.w && rect.h == rect2.h;
 }
+
+void safelyDestroyTexture(SDL_Texture *texture) {
+    if (texture != nullptr) {
+        SDL_DestroyTexture(texture); 
+    }
+}

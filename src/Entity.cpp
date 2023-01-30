@@ -9,7 +9,7 @@
 
 Entity::~Entity()
 {
-    SDL_DestroyTexture(texture);
+    safelyDestroyTexture(texture);
 }
 
 void Entity::init(float x, float y, SDL_Texture *texture)

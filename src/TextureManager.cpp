@@ -17,11 +17,21 @@ bool TextureManager::textureCacheUsed = false; // used for testing
  * Unified function to load a texture from a path
  * Includes options for cropping and resizing
  * Caches textures to use again later
-*/
+ */
 
 SDL_Texture *TextureManager::loadTexture(std::string path, SDL_Rect *crop, SDL_Rect *outDim)
 {
-    std::cout << "Loading texture from " + path + " with crop rectangle " + std::to_string(*crop) + " dimensions " + std::to_string(outDim->w) + " width x " + std::to_string(outDim->h) + " height." << std::endl; 
+    std::string cropStr = "full", outWStr = "full", outHStr = "full";
+    if (crop != nullptr) {
+        cropStr = std::to_string(*crop);
+    }
+    if (outDim != nullptr)
+    {
+        outWStr = std::to_string(outDim->w);
+        outHStr = std::to_string(outDim->h);
+    }
+
+    std::cout << "Loading texture from " + path + " with crop rectangle " + cropStr + " dimensions " + outWStr + " width x " + outHStr + " height." << std::endl;
     SDL_Texture *croppedTexture = nullptr;
     SDL_Surface *sourceSurface = nullptr;
     SDL_Texture *sourceTexture = nullptr;

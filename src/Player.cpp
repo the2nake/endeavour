@@ -18,10 +18,10 @@ std::vector<int> Player::registeredKeys;
 
 Player::~Player()
 {
-    SDL_DestroyTexture(this->texture);
+    safelyDestroyTexture(this->texture);
     for (auto animation : animations) {
         for (auto tex : animation.second) {
-            SDL_DestroyTexture(tex);
+            safelyDestroyTexture(tex);
         }
     }
 }
