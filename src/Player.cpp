@@ -537,7 +537,7 @@ void Player::updateTextures()
 
     while (msecsUntilNextFrame <= 0)
     {
-        msecsUntilNextFrame += animationDelays.at(currentAnimation)[currentAnimationFrame];
+        msecsUntilNextFrame += std::max(animationDelays.at(currentAnimation)[currentAnimationFrame], Game::targetFrameTime);
         currentAnimationFrame = (currentAnimationFrame + 1) % animations.at(currentAnimation).size();
         this->texture = animations.at(currentAnimation)[currentAnimationFrame];
     }
