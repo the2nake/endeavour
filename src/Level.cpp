@@ -89,7 +89,7 @@ bool Level::loadSave(std::string playerName, std::string saveName)
             Game::player = new Player();
             Game::player->init(playerX, playerY, playerTexture);
             Game::player->setAttribute("name", playerNode.attribute("name").as_string());
-            Game::player->setAttribute("speed", playerNode.attribute("speed").as_string() == "" ? (float)(1) : playerNode.attribute("speed").as_float());
+            Game::player->setAttribute("speed", strcmp(playerNode.attribute("speed").as_string(), "") == 0 ? (float)(1) : playerNode.attribute("speed").as_float());
 
             if (!Level::loadAnimations<Player *>(Game::player, playerNode)) {
                 return false;
@@ -178,7 +178,7 @@ bool Level::loadLevel(std::string playerName, std::string saveName, std::string 
             tempTile.collisionRect2 = stringToSDLRect(tileEl.attribute("collisionRect2").as_string());
 
             if (tempTile.movementCost <= 0)
-                if (tileEl.attribute("collisionRect").as_string() == "" && tileEl.attribute("collisionRect2").as_string() == "")
+                if (strcmp(tileEl.attribute("collisionRect").as_string(), "") == 0 && strcmp(tileEl.attribute("collisionRect2").as_string(), "") == 0)
                     tempTile.collisionRect1 = {0, 0, Level::tileW, Level::tileH};
 
             // store the data into the lookup table
@@ -287,13 +287,13 @@ bool Level::loadNPCs(std::string playerName, std::string saveName, std::string l
                 // Valid npc files are: adjacent to this level, have proper format, and contain at least one npc
                 xml_node npcNode = npcFile.child("npc");
                 xml_node textureEl = npcNode.child("animation").child("frame");
-                if (textureEl.attribute("src").as_string() != "")
+                if (strcmp(textureEl.attribute("src").as_string(), "") != 0)
                 {
                     SDL_Rect *cropRect, *outDim;
                     SDL_Rect tmpCrop, tmpOut;
                     std::string pathToNPCTexture = textureEl.attribute("src").as_string();
 
-                    if (textureEl.attribute("cropRect").as_string() != "")
+                    if (strcmp(textureEl.attribute("cropRect").as_string(), "") != 0)
                     {
                         tmpCrop = stringToSDLRect(textureEl.attribute("cropRect").as_string());
                         cropRect = &tmpCrop;
@@ -303,7 +303,7 @@ bool Level::loadNPCs(std::string playerName, std::string saveName, std::string l
                         cropRect = nullptr;
                     }
 
-                    if (textureEl.attribute("outRect").as_string() != "")
+                    if (strcmp(textureEl.attribute("outRect").as_string(), "") != 0)
                     {
                         tmpOut = stringToSDLRect(textureEl.attribute("outRect").as_string());
                         outDim = &tmpOut;

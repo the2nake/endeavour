@@ -56,7 +56,7 @@ public:
     int getTextureW() override { return texw; }
     int getTextureH() override { return texh; }
 
-    int getIntAttribute(std::string name)
+    int getIntAttribute(std::string name) override
     {
         if (int_attrs.find(name) != int_attrs.end())
             return int_attrs.at(name);
@@ -64,7 +64,7 @@ public:
             return -1;
     }
 
-    float getFloatAttribute(std::string name)
+    float getFloatAttribute(std::string name) override
     {
         if (flt_attrs.find(name) != flt_attrs.end())
             return flt_attrs.at(name);
@@ -72,7 +72,7 @@ public:
             return -1;
     }
 
-    std::string getStringAttribute(std::string name)
+    std::string getStringAttribute(std::string name) override
     {
         if (str_attrs.find(name) != str_attrs.end())
             return str_attrs.at(name);
@@ -80,9 +80,9 @@ public:
             return "";
     }
 
-    void setAttribute(std::string name, int value) { int_attrs.insert_or_assign(name, value); }
-    void setAttribute(std::string name, float value) { flt_attrs.insert_or_assign(name, value); }
-    void setAttribute(std::string name, std::string value) { str_attrs.insert_or_assign(name, value); }
+    void setAttribute(std::string name, int value) override { int_attrs.insert_or_assign(name, value); }
+    void setAttribute(std::string name, float value) override { flt_attrs.insert_or_assign(name, value); }
+    void setAttribute(std::string name, std::string value) override { str_attrs.insert_or_assign(name, value); }
 
     void setAnimation(std::string animation);
     std::unordered_map<std::string, std::vector<SDL_Texture *>> animations;

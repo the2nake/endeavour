@@ -68,6 +68,7 @@ public:
 
     std::unordered_map<std::string, std::vector<SDL_Texture *>> animations;
     std::unordered_map<std::string, std::vector<int>> animationDelays;
+
 private:
     SDL_Texture *texture = nullptr;
     float x = 0, y = 0;
