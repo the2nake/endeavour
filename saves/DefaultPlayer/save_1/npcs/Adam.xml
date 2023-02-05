@@ -1,15 +1,15 @@
 <npc name="Adam" x="312" y="292" speed="0.75">
 	<animation name="stilln">
-		<frame src="res/tex/characters/monsters/demons/demon-red-armoured.png" cropRect="0 16 16 16" outRect="0 0 32 32" delay="300"/>
+		<frame src="res/tex/characters/monsters/demons/demon-red-armoured.png" cropRect="0 16 16 16" outRect="0 0 32 32" delay="100"/>
 	</animation>
 	<animation name="stille">
-		<frame src="res/tex/characters/monsters/demons/demon-red-armoured.png" cropRect="0 32 16 16" outRect="0 0 32 32" delay="300"/>
+		<frame src="res/tex/characters/monsters/demons/demon-red-armoured.png" cropRect="0 32 16 16" outRect="0 0 32 32" delay="100"/>
 	</animation>
 	<animation name="stills">
-		<frame src="res/tex/characters/monsters/demons/demon-red-armoured.png" cropRect="0 0 16 16" outRect="0 0 32 32" delay="300"/>
+		<frame src="res/tex/characters/monsters/demons/demon-red-armoured.png" cropRect="0 0 16 16" outRect="0 0 32 32" delay="100"/>
 	</animation>
 	<animation name="stillw">
-		<frame src="res/tex/characters/monsters/demons/demon-red-armoured.png" cropRect="0 0 16 16" outRect="0 0 32 32" delay="300"/>
+		<frame src="res/tex/characters/monsters/demons/demon-red-armoured.png" cropRect="0 0 16 16" outRect="0 0 32 32" delay="100"/>
 	</animation>
 
 	<animation name="idlen">
