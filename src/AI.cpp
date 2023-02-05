@@ -94,7 +94,7 @@ void AI::pathfindToTarget()
 void AI::moveTowardsLocation(GridLocation location)
 {
     // personal space please
-    if (std::pow((this->x - Game::player->getX()), 2) + std::pow((this->y - Game::player->getY()), 2) < 64*64)
+    if (std::pow((this->x - Game::player->getX()), 2) + std::pow((this->y - Game::player->getY()), 2) < 64 * 64)
     {
         return;
     }
@@ -108,6 +108,7 @@ void AI::moveTowardsLocation(GridLocation location)
     float calculatedSpeed = getFloatAttribute("speed") / std::max(cost, 1.0f);
     float rootTwoOverTwo = 0.707106f;
     float diagStep = calculatedSpeed * rootTwoOverTwo;
+
     if (std::abs(dX) <= diagStep && std::abs(dY) <= diagStep)
     {
         x = nextCoordX;
@@ -122,13 +123,14 @@ void AI::moveTowardsLocation(GridLocation location)
 
     if (std::abs(dX) <= diagStep)
     {
+        dx = dX;
         x = nextCoordX;
         y += yDirMult * calculatedSpeed - std::abs(dX);
     }
     else if (std::abs(dY) <= diagStep)
     {
-        y = nextCoordY;
         x += xDirMult * calculatedSpeed - std::abs(dY);
+        y = nextCoordY;
     }
     else
     {
@@ -157,6 +159,69 @@ void AI::correctPositioning()
     }
 }
 
+void AI::setAnimation(std::string animation)
+{
+    if (animations.find(animation) != animations.end())
+    {
+        currentAnimation = animation;
+    }
+    else if (animations.find("idle") != animations.end())
+    {
+        currentAnimation = "idle";
+    }
+    else
+    {
+        currentAnimation = "";
+    }
+}
+
+/**
+ * @brief Updates the npc's direction
+ */
+
+void AI::updateMovementDirection()
+{
+    bool currDirPermissable = false;
+
+    if (dir == "n")
+    {
+        currDirPermissable = dy < 0;
+    }
+    else if (dir == "s")
+    {
+        currDirPermissable = dy > 0;
+    }
+    else if (dir == "e")
+    {
+        currDirPermissable = dx > 0;
+    }
+    else if (dir == "w")
+    {
+        currDirPermissable = dx < 0;
+    }
+
+    if (!currDirPermissable)
+    {
+        if (dx > 0)
+        {
+            dir = "e";
+        }
+        else if (dx < 0)
+        {
+            dir = "w";
+        }
+        else if (dy < 0)
+        {
+            dir = "n";
+        }
+        else if (dy > 0)
+        {
+            dir = "s";
+        }
+        msecsUntilNextFrame = 0;
+    }
+}
+
 void AI::updateAnimationState()
 {
     if (animations.empty())
@@ -165,15 +230,25 @@ void AI::updateAnimationState()
         return;
     }
 
-    if (false)
+    std::string oldAnimation = currentAnimation;
+
+    if (timeSinceLastMovement < Game::targetFrameTime * 2)
     {
+        setAnimation("walk" + dir);
+    }
+    else if (timeSinceLastMovement < 1000)
+    {
+        setAnimation("still" + dir);
     }
     else
     {
-        if (animations.find("idle") != animations.end())
-        {
-            currentAnimation = "idle";
-        }
+        setAnimation("idle" + dir);
+    }
+
+    if (oldAnimation != currentAnimation)
+    {
+        currentAnimationFrame = 0;
+        // don't change msecUntilNextFrame to let the current animation finish
     }
 }
 
@@ -186,11 +261,11 @@ void AI::updateTextures()
 
     msecsUntilNextFrame -= Game::frameTime; // previous frame time in msec
 
-    if (msecsUntilNextFrame <= 0)
+    while (msecsUntilNextFrame <= 0)
     {
-        msecsUntilNextFrame = animationDelays.at(currentAnimation)[currentAnimationFrame];
-        currentAnimationFrame += (currentAnimationFrame + 1) % animations.at(currentAnimation).size();
-        // this->texture = animations.at(currentAnimation)[currentAnimationFrame];
+        msecsUntilNextFrame += animationDelays.at(currentAnimation)[currentAnimationFrame];
+        currentAnimationFrame = (currentAnimationFrame + 1) % animations.at(currentAnimation).size();
+        this->texture = animations.at(currentAnimation)[currentAnimationFrame];
     }
 }
 
@@ -199,6 +274,11 @@ void AI::update()
     // drawing coords
     drawX = std::floor(x);
     drawY = std::floor(y);
+    dx = 0; // reset movement velocities
+    dy = 0;
+
+    float startX = x;
+    float startY = y;
 
     // moving towards the target
     if (target != nullptr)
@@ -237,6 +317,22 @@ void AI::update()
             moveTowardsLocation(nextLocation);
         }
     }
+
+    dx = x - startX;
+    dy = y - startY;
+
+    if (std::abs(dx) > 0.5 || std::abs(dy) > 0.5)
+    {
+        timeSinceLastMovement = 0;
+        updateMovementDirection();
+    }
+    else
+    {
+        timeSinceLastMovement += Game::frameTime;
+    }
+
+    updateAnimationState();
+    updateTextures();
     // BUG: if the new path to the player is different, the enemies will stick to the old path, even when a more efficient path is available
 }
 

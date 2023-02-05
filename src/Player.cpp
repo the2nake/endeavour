@@ -442,6 +442,53 @@ void Player::setAnimation(std::string animation)
 }
 
 /**
+ * @brief Updates the player's direction
+ */
+
+void Player::updateMovementDirection()
+{
+    bool currDirPermissable = false;
+
+    if (dir == "n")
+    {
+        currDirPermissable = dy < 0;
+    }
+    else if (dir == "s")
+    {
+        currDirPermissable = dy > 0;
+    }
+    else if (dir == "e")
+    {
+        currDirPermissable = dx > 0;
+    }
+    else if (dir == "w")
+    {
+        currDirPermissable = dx < 0;
+    }
+
+    if (!currDirPermissable)
+    {
+        if (dx > 0)
+        {
+            dir = "e";
+        }
+        else if (dx < 0)
+        {
+            dir = "w";
+        }
+        else if (dy < 0)
+        {
+            dir = "n";
+        }
+        else if (dy > 0)
+        {
+            dir = "s";
+        }
+        msecsUntilNextFrame = 0;
+    }
+}
+
+/**
  * Updates the character's animation based on movement data, shooting status, etc.
  */
 
@@ -554,9 +601,7 @@ void Player::update()
     float movementCost = Level::getMovementCostInArea(x, y, texw, texh);
     float calculatedSpeed = getFloatAttribute("speed") / std::max(movementCost, 1.0f);
 
-    timeSinceLastMovement += Game::frameTime;
-
-    if (dx != 0 || dy != 0)
+    if (std::abs(dx) > 0.5 || std::abs(dy) > 0.5)
     {
         timeSinceLastMovement = 0;
         float diagScaleFactor = sqrt(dx * dx + dy * dy);
@@ -565,45 +610,11 @@ void Player::update()
         // update the player's position
         move(dx * calculatedSpeed, dy * calculatedSpeed);
 
-        bool currDirPermissable = false;
-
-        if (dir == "n")
-        {
-            currDirPermissable =  dy < 0;
-        }
-        else if (dir == "s")
-        {
-            currDirPermissable = dy > 0;
-        }
-        else if (dir == "e")
-        {
-            currDirPermissable = dx > 0;
-        }
-        else if (dir == "w")
-        {
-            currDirPermissable = dx < 0;
-        }
-
-        if (!currDirPermissable)
-        {
-            if (dx > 0)
-            {
-                dir = "e";
-            }
-            else if (dx < 0)
-            {
-                dir = "w";
-            }
-            else if (dy < 0)
-            {
-                dir = "n";
-            }
-            else if (dy > 0)
-            {
-                dir = "s";
-            }
-            msecsUntilNextFrame = 0;
-        }
+        updateMovementDirection();
+    }
+    else
+    {
+        timeSinceLastMovement += Game::frameTime;
     }
 
     updateAnimationState();

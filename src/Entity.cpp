@@ -25,32 +25,73 @@ void Entity::handleEvent(SDL_Event event)
 {
 }
 
-void Entity::updateTextures()
+void Entity::setAnimation(std::string animation)
 {
-    if (currentAnimation == "") {
-        return;
-    }
-
-    msecsUntilNextFrame -= Game::frameTime; // previous frame time in msec
-
-    if (msecsUntilNextFrame <= 0)
+    if (animations.find(animation) != animations.end())
     {
-        // TODO: update the this->texture when switching animations
-        msecsUntilNextFrame = animationDelays.at(currentAnimation)[currentAnimationFrame];
-        currentAnimationFrame += (currentAnimationFrame + 1) % animations.at(currentAnimation).size();
-        // this->texture = animations.at(currentAnimation)[currentAnimationFrame];
+        currentAnimation = animation;
+    }
+    else if (animations.find("idle") != animations.end())
+    {
+        currentAnimation = "idle";
+    }
+    else
+    {
+        currentAnimation = "";
+    }
+}
+
+/**
+ * @brief Updates the entity's direction
+ */
+
+void Entity::updateMovementDirection()
+{
+    bool currDirPermissable = false;
+
+    if (dir == "n")
+    {
+        currDirPermissable = dy < 0;
+    }
+    else if (dir == "s")
+    {
+        currDirPermissable = dy > 0;
+    }
+    else if (dir == "e")
+    {
+        currDirPermissable = dx > 0;
+    }
+    else if (dir == "w")
+    {
+        currDirPermissable = dx < 0;
     }
 
-    // TODO: integrate animation with loading functions
-    // TODO: document animations framework
-    // NOTE: maybe I should update texw and texh? since it's related to collision
-    //       or, I could just list that as unintended behaviour or something
-    //       make sure to consider the performance impact as well
+    if (!currDirPermissable)
+    {
+        if (dx > 0)
+        {
+            dir = "e";
+        }
+        else if (dx < 0)
+        {
+            dir = "w";
+        }
+        else if (dy < 0)
+        {
+            dir = "n";
+        }
+        else if (dy > 0)
+        {
+            dir = "s";
+        }
+        msecsUntilNextFrame = 0;
+    }
 }
 
 void Entity::updateAnimationState()
 {
-    if (animations.empty()) {
+    if (animations.empty())
+    {
         currentAnimation = "";
         return;
     }
@@ -67,10 +108,50 @@ void Entity::updateAnimationState()
     }
 }
 
+void Entity::updateTextures()
+{
+    if (currentAnimation == "")
+    {
+        return;
+    }
+
+    msecsUntilNextFrame -= Game::frameTime; // previous frame time in msec
+
+    while (msecsUntilNextFrame <= 0)
+    {
+        msecsUntilNextFrame += animationDelays.at(currentAnimation)[currentAnimationFrame];
+        currentAnimationFrame = (currentAnimationFrame + 1) % animations.at(currentAnimation).size();
+        this->texture = animations.at(currentAnimation)[currentAnimationFrame];
+    }
+
+    // TODO: integrate animation with loading functions
+    // TODO: document animations framework
+    // NOTE: maybe I should update texw and texh? since it's related to collision
+    //       or, I could just list that as unintended behaviour or something
+    //       make sure to consider the performance impact as well
+}
+
 void Entity::update()
 {
     drawX = std::floor(x);
     drawY = std::floor(y);
+    dx = 0; // reset movement velocities
+    dy = 0;
+    float startX = x;
+    float startY = y;
+
+    dx = x - startX;
+    dy = y - startY;
+
+    if (std::abs(dx) > 0.5 || std::abs(dy) > 0.5)
+    {
+        timeSinceLastMovement = 0;
+        updateMovementDirection();
+    }
+    else
+    {
+        timeSinceLastMovement += Game::frameTime;
+    }
 
     updateAnimationState();
     updateTextures();
