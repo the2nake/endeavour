@@ -21,6 +21,7 @@ set_target_properties(Endeavour PROPERTIES
 
 target_include_directories(Endeavour PUBLIC
                            "include/"
+                           "vendor/include"
                            "vendor/pugixml/"
                            ${SDL2_INCLUDE_DIRS}
                            ${SDL2_IMAGE_INCLUDE_DIRS}
@@ -28,6 +29,7 @@ target_include_directories(Endeavour PUBLIC
                            )
 target_include_directories(test PUBLIC
                            "include/"
+                           "vendor/include"
                            "vendor/pugixml/"
                            ${SDL2_INCLUDE_DIRS}
                            ${SDL2_IMAGE_INCLUDE_DIRS}
