@@ -86,9 +86,9 @@ private:
     AttributeMap<float> flt_attrs;
     AttributeMap<std::string> str_attrs;
 
-    std::string currentAnimation;
-    int currentAnimationFrame;
-    float msecsUntilNextFrame;
+    std::string currentAnimation = "";
+    int currentAnimationFrame = 0;
+    int msecsUntilNextFrame = 0;
 
     int timeSinceLastMovement = 10000;
     std::string dir = "s";
