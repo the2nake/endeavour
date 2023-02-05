@@ -19,8 +19,10 @@ std::vector<int> Player::registeredKeys;
 Player::~Player()
 {
     safelyDestroyTexture(this->texture);
-    for (auto animation : animations) {
-        for (auto tex : animation.second) {
+    for (auto animation : animations)
+    {
+        for (auto tex : animation.second)
+        {
             safelyDestroyTexture(tex);
         }
     }
@@ -563,26 +565,43 @@ void Player::update()
         // update the player's position
         move(dx * calculatedSpeed, dy * calculatedSpeed);
 
-        std::string oldDir = dir;
+        bool currDirPermissable = false;
 
-        if (dx > 0)
+        if (dir == "n")
         {
-            dir = "e";
+            currDirPermissable =  dy < 0;
         }
-        else if (dx < 0)
+        else if (dir == "s")
         {
-            dir = "w";
+            currDirPermissable = dy > 0;
         }
-        else if (dy < 0)
+        else if (dir == "e")
         {
-            dir = "n";
+            currDirPermissable = dx > 0;
         }
-        else if (dy > 0)
+        else if (dir == "w")
         {
-            dir = "s";
+            currDirPermissable = dx < 0;
         }
 
-        if (dir != oldDir) {
+        if (!currDirPermissable)
+        {
+            if (dx > 0)
+            {
+                dir = "e";
+            }
+            else if (dx < 0)
+            {
+                dir = "w";
+            }
+            else if (dy < 0)
+            {
+                dir = "n";
+            }
+            else if (dy > 0)
+            {
+                dir = "s";
+            }
             msecsUntilNextFrame = 0;
         }
     }
