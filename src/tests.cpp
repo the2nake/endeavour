@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 #include <filesystem>
-#include "SDL.h"
+#include "SDL2/SDL.h"
 
 #include "Player.hpp"
 #include "TextureManager.hpp"

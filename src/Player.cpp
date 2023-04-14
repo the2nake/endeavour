@@ -5,7 +5,7 @@
 #include <cmath>
 #include <chrono>
 
-#include "SDL.h"
+#include "SDL2/SDL.h"
 
 #include "TextureManager.hpp"
 #include "Game.hpp"

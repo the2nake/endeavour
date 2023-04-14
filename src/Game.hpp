@@ -3,7 +3,7 @@
 #include "Player.hpp"
 #include "Level.hpp"
 
-#include "SDL.h"
+#include "SDL2/SDL.h"
 
 #include <string>
 #include <queue>
