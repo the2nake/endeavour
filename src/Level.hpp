@@ -100,7 +100,7 @@ public:
         }
         else
         {
-            return Tile{nullptr, 1, false};
+            return Tile{nullptr, 1, false, {0, 0, 0, 0}, {0, 0, 0, 0}};
         }
     }
 

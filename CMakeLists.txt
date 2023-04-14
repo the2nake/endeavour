@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.10)
 
 project(Endeavour)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set(MY_DEBUG_OPTIONS "-Wall" "-Wextra" "-g")
+set(MY_RELEASE_OPTIONS "-O3" "-Wall" "-Wextra")
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/vendor/cmake_modules/)
@@ -13,7 +20,18 @@ find_package(SDL2_ttf REQUIRED)
 add_executable(Endeavour src/main.cpp src/Game.cpp src/Entity.cpp src/Player.cpp src/pathfinding.cpp src/TextureManager.cpp src/AI.cpp src/Level.cpp src/Line.cpp src/common.cpp vendor/pugixml/pugixml.cpp)
 add_executable(test src/tests.cpp src/Game.cpp src/Entity.cpp src/Player.cpp src/pathfinding.cpp src/TextureManager.cpp src/AI.cpp src/Level.cpp src/Line.cpp src/common.cpp vendor/pugixml/pugixml.cpp)
 
+target_compile_options(Endeavour PUBLIC "$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
+target_compile_options(Endeavour PUBLIC "$<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>")
+
+target_compile_options(test PUBLIC "$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
+
 set_target_properties(Endeavour PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../lib"  
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/.."
+)
+
+set_target_properties(test PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../lib"  
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../lib"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/.."

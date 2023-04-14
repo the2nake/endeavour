@@ -576,7 +576,7 @@ int main()
              &testLineAngle,
              &testLineIntersection};
     // ---
-    for (int i = 0; i < tests.size(); i++)
+    for (uint i = 0; i < tests.size(); i++)
     {
         if ((*tests[i])())
         {

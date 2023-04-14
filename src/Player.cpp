@@ -561,7 +561,7 @@ void Player::update()
 
     // executing the right function and handling the cooldowns
     std::unordered_map<std::string, double>::iterator defaultCooldownIter;
-    for (int i = 0; i < registeredKeys.size(); i++)
+    for (uint i = 0; i < registeredKeys.size(); i++)
     {
         auto checkPressIter = Game::keyIsDownMap.find(registeredKeys[i]);
         // check if the key has ever been pressed to prevent segmentation fault
